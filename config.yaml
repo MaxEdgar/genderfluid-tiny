@@ -1,0 +1,33 @@
+model:
+  name: "genderfluid-tiny"
+  version: "1.0.0"
+  min_ngram: 2
+  max_ngram: 5
+  feature_dimensions: 4096
+  min_confidence: 0.70
+  min_macro_f1: 0.80
+
+training:
+  seed: 42
+  max_features_sweep: [1024, 2048, 4096, 8192]
+  ngram_sweep: [(2, 4), (2, 5), (3, 5)]
+
+data:
+  train_split: 0.80
+  validation_split: 0.10
+  test_split: 0.10
+  input_file: "data/names.jsonl"
+
+export:
+  output_dir: "models/"
+  gguf_output: "models/genderfluid-tiny.gguf"
+  bin_output: "models/genderfluid-tiny.bin"
+
+privacy:
+  log_names: false
+
+quality:
+  minimum_macro_f1: 0.80
+
+benchmark:
+  iterations: 3
