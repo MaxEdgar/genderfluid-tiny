@@ -165,18 +165,6 @@
         footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; color: var(--text-muted); font-size: 13px; transition: border-color 0.3s var(--ease); }
         footer a { color: var(--text-dim); margin: 0 10px; }
 
-        /* GITHUB BUTTON */
-        .github-btn { position: fixed; bottom: 24px; left: 24px; z-index: 200; display: flex; align-items: center; gap: 8px; padding: 10px 20px; border: 4px solid var(--accent); border-color: transparent; font-size: 14px; background-color: transparent; border-radius: 100px; font-weight: 600; font-family: var(--font); color: var(--accent); box-shadow: 0 0 0 2px var(--accent); cursor: pointer; overflow: hidden; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); text-decoration: none; }
-        .github-btn .gh-icon { width: 18px; height: 18px; fill: var(--accent); flex-shrink: 0; position: relative; z-index: 10; transition: fill 0.3s var(--ease); }
-        .github-btn .arr-2 { position: absolute; width: 20px; fill: var(--accent); z-index: 9; left: -25%; transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
-        .github-btn .circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background-color: var(--accent); border-radius: 50%; opacity: 0; z-index: 1; transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
-        .github-btn .text { position: relative; z-index: 10; transform: translateX(-4px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
-        .github-btn:hover { box-shadow: 0 0 0 12px transparent; color: #fff; border-radius: 12px; }
-        .github-btn:hover .gh-icon { fill: #fff; }
-        .github-btn:hover .text { transform: translateX(4px); }
-        .github-btn:active { scale: 0.95; box-shadow: 0 0 0 4px var(--accent); }
-        .github-btn:hover .circle { width: 220px; height: 220px; opacity: 1; }
-
         /* THEME TOGGLE */
         .theme-toggle { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 200; transition: all 0.2s var(--ease); box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
         [data-theme="light"] .theme-toggle { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
@@ -275,14 +263,6 @@
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
 </button>
-
-<!-- GITHUB BUTTON -->
-<a href="https://github.com/MaxEdgar/genderfluid-tiny" class="github-btn" target="_blank" rel="noopener">
-    <span class="circle"></span>
-    <svg class="gh-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-    <span class="text">GitHub</span>
-    <svg class="arr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"/></svg>
-</a>
 
 <div class="main" id="main">
 <div class="content">
