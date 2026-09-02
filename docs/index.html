@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +11,45 @@
     <style>
         :root {
             --bg: #141414;
-            --gray-1: #F1F0EA;
-            --gray-2: #cac9c4;
-            --gray-3: #a2a19d;
-            --gray-4: #7a7977;
-            --gray-5: #525150;
-            --gray-6: #2a2929;
+            --bg-alt: #1a1a1a;
+            --text: #cac9c4;
+            --text-dim: #a2a19d;
+            --text-muted: #7a7977;
+            --border: #525150;
+            --surface: #2a2929;
             --accent: #f35d12;
             --accent-dim: rgba(243, 93, 18, 0.12);
+            --heading: #F1F0EA;
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
             --nav-h: 56px;
             --sidebar-w: 260px;
             --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
+        [data-theme="light"] {
+            --bg: #ffffff;
+            --bg-alt: #f8f8f7;
+            --text: #3d3c3a;
+            --text-dim: #5a5957;
+            --text-muted: #8a8987;
+            --border: #d4d3d0;
+            --surface: #f0efed;
+            --accent: #d44a0e;
+            --accent-dim: rgba(212, 74, 14, 0.08);
+            --heading: #1a1918;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: var(--font); background: var(--bg); color: var(--gray-2); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; transition: background 0.3s var(--ease), color 0.3s var(--ease); }
 
         /* NAV */
-        nav { position: fixed; top: 0; width: 100%; height: var(--nav-h); background: rgba(20,20,20,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--gray-5); z-index: 100; display: flex; align-items: center; padding: 0 20px; }
+        nav { position: fixed; top: 0; width: 100%; height: var(--nav-h); background: rgba(20,20,20,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; padding: 0 20px; transition: background 0.3s var(--ease), border-color 0.3s var(--ease); }
+        [data-theme="light"] nav { background: rgba(255,255,255,0.88); }
         nav .inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         nav .left { display: flex; align-items: center; gap: 14px; }
 
-        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
-        .burger:hover { background: var(--gray-6); }
+        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-dim); border-radius: 6px; transition: background 0.15s var(--ease); display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
+        .burger:hover { background: var(--surface); }
         .burger svg { width: 22px; height: 22px; }
         .burger .close-icon { display: none; }
         .burger.open .menu-icon { display: none; }
@@ -43,28 +57,27 @@
 
         nav .logo { font-weight: 700; font-size: 15px; color: var(--accent); text-decoration: none; }
         nav .links { display: flex; gap: 20px; align-items: center; }
-        nav .links a { color: var(--gray-3); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s var(--ease); }
-        nav .links a:hover { color: var(--gray-1); }
-
+        nav .links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s var(--ease); }
+        nav .links a:hover { color: var(--heading); }
 
         /* SIDEBAR */
-        .sidebar { position: fixed; top: var(--nav-h); left: 0; width: var(--sidebar-w); height: calc(100vh - var(--nav-h)); background: var(--bg); border-right: 1px solid var(--gray-5); overflow-y: auto; overflow-x: hidden; padding: 16px 0; z-index: 50; scrollbar-width: thin; scrollbar-color: var(--gray-5) transparent; transform: translateX(-100%); transition: transform 0.3s var(--ease); }
+        .sidebar { position: fixed; top: var(--nav-h); left: 0; width: var(--sidebar-w); height: calc(100vh - var(--nav-h)); background: var(--bg); border-right: 1px solid var(--border); overflow-y: auto; overflow-x: hidden; padding: 16px 0; z-index: 50; scrollbar-width: thin; scrollbar-color: var(--border) transparent; transform: translateX(-100%); transition: transform 0.3s var(--ease), background 0.3s var(--ease), border-color 0.3s var(--ease); }
         .sidebar.open { transform: translateX(0); }
         .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--gray-5); border-radius: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .nav-group { margin-bottom: 2px; }
-        .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-4); cursor: pointer; user-select: none; transition: color 0.15s var(--ease); }
-        .nav-group-header:hover { color: var(--gray-2); }
+        .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); cursor: pointer; user-select: none; transition: color 0.15s var(--ease); }
+        .nav-group-header:hover { color: var(--text); }
         .nav-group-header .caret { width: 16px; height: 16px; transition: transform 0.2s var(--ease); flex-shrink: 0; opacity: 0.5; }
         .nav-group.open > .nav-group-header .caret { transform: rotate(90deg); }
         .nav-group-items { overflow: hidden; max-height: 0; transition: max-height 0.3s var(--ease), opacity 0.2s var(--ease); opacity: 0; }
         .nav-group.open > .nav-group-items { max-height: 600px; opacity: 1; }
-        .nav-group-items a { display: block; padding: 5px 16px 5px 36px; font-size: 13px; color: var(--gray-3); text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s var(--ease); }
-        .nav-group-items a:hover { color: var(--gray-1); background: var(--gray-6); }
+        .nav-group-items a { display: block; padding: 5px 16px 5px 36px; font-size: 13px; color: var(--text-dim); text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s var(--ease); }
+        .nav-group-items a:hover { color: var(--heading); background: var(--surface); }
         .nav-group-items a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); font-weight: 500; }
 
-        /* OVERLAY - mobile only */
+        /* OVERLAY */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 45; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
         .overlay.open { opacity: 1; pointer-events: auto; }
 
@@ -89,9 +102,9 @@
         section:nth-child(14) { animation-delay: 0.7s; }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--gray-1); margin-bottom: 12px; }
-        h2 { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--gray-1); padding-bottom: 8px; border-bottom: 1px solid var(--gray-5); }
-        h3 { font-size: 16px; font-weight: 600; color: var(--gray-1); margin: 20px 0 8px; }
+        h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--heading); margin-bottom: 12px; }
+        h2 { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--heading); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        h3 { font-size: 16px; font-weight: 600; color: var(--heading); margin: 20px 0 8px; }
         p { margin-bottom: 14px; }
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
@@ -99,45 +112,68 @@
         li { margin-bottom: 4px; }
 
         .hero { padding: 48px 0 40px; margin-bottom: 48px; text-align: center; }
-        .hero .install-wrap { margin-top: 24px; display: inline-flex; align-items: center; gap: 0; background: var(--gray-6); border: 1px solid var(--gray-5); border-radius: 8px; overflow: hidden; transition: border-color 0.2s var(--ease); }
+        .hero .install-wrap { margin-top: 24px; display: inline-flex; align-items: center; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.2s var(--ease), background 0.3s var(--ease); }
         .hero .install-wrap:hover { border-color: var(--accent); }
         .hero .install-cmd { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; font-family: var(--mono); font-size: 14px; color: var(--accent); cursor: default; }
-        .hero .install-cmd span { color: var(--gray-4); user-select: none; }
-        .hero .install-copy { background: none; border: none; border-left: 1px solid var(--gray-5); color: var(--gray-4); cursor: pointer; padding: 10px 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s var(--ease); }
-        .hero .install-copy:hover { color: var(--accent); background: rgba(243, 93, 18, 0.08); }
+        .hero .install-cmd span { color: var(--text-muted); user-select: none; }
+        .hero .install-copy { background: none; border: none; border-left: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 10px 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s var(--ease); }
+        .hero .install-copy:hover { color: var(--accent); background: var(--accent-dim); }
         .hero .install-copy svg { width: 16px; height: 16px; }
         .hero .install-copy.copied { color: #4ade80; }
         .hero .stats { display: flex; justify-content: center; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
         .hero .stat { text-align: center; }
-        .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--gray-1); font-variant-numeric: tabular-nums; }
-        .hero .stat span { font-size: 11px; color: var(--gray-4); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+        .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--heading); font-variant-numeric: tabular-nums; }
+        .hero .stat span { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
 
-        pre { background: var(--gray-6); border: 1px solid var(--gray-5); border-radius: 8px; padding: 16px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.65; margin: 14px 0; transition: border-color 0.2s var(--ease); }
-        pre:hover { border-color: var(--gray-4); }
+        /* Code blocks with copy button */
+        .code-wrap { position: relative; }
+        .code-wrap pre { margin-top: 0; }
+        .code-copy { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.15s var(--ease); opacity: 0; z-index: 2; }
+        .code-wrap:hover .code-copy { opacity: 1; }
+        .code-copy:hover { color: var(--accent); background: var(--accent-dim); }
+        .code-copy svg { width: 14px; height: 14px; }
+        .code-copy.copied { color: #4ade80; opacity: 1; }
+
+        pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.65; margin: 14px 0; transition: border-color 0.2s var(--ease), background 0.3s var(--ease); }
+        pre:hover { border-color: var(--text-muted); }
         pre .p { color: #7ee787; user-select: none; }
-        pre .c { color: var(--gray-4); }
+        [data-theme="light"] pre .p { color: #1a7f37; }
+        pre .c { color: var(--text-muted); }
         pre .s { color: #a5d6ff; }
+        [data-theme="light"] pre .s { color: #0a3069; }
         pre .k { color: #ff7b72; }
+        [data-theme="light"] pre .k { color: #cf222e; }
         pre .fn { color: #d2a8ff; }
-        code { font-family: var(--mono); font-size: 13px; background: var(--gray-6); border: 1px solid var(--gray-5); padding: 2px 6px; border-radius: 4px; }
+        [data-theme="light"] pre .fn { color: #8250df; }
+        code { font-family: var(--mono); font-size: 13px; background: var(--surface); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; transition: background 0.3s var(--ease), border-color 0.3s var(--ease); }
         pre code { background: none; border: none; padding: 0; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--gray-5); border: 1px solid var(--gray-5); border-radius: 8px; overflow: hidden; margin: 18px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 18px 0; transition: background 0.3s var(--ease), border-color 0.3s var(--ease); }
         .grid .item { background: var(--bg); padding: 20px; transition: background 0.15s var(--ease); }
-        .grid .item:hover { background: var(--gray-6); }
-        .grid .item strong { display: block; font-size: 14px; font-weight: 600; color: var(--gray-1); margin-bottom: 4px; }
-        .grid .item span { font-size: 13px; color: var(--gray-3); line-height: 1.5; }
+        .grid .item:hover { background: var(--surface); }
+        .grid .item strong { display: block; font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 4px; }
+        .grid .item span { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 
         table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
-        th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--gray-1); color: var(--gray-1); }
-        td { padding: 8px 12px; border-bottom: 1px solid var(--gray-6); color: var(--gray-3); }
-        tr:hover td { color: var(--gray-2); }
+        th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--heading); color: var(--heading); }
+        td { padding: 8px 12px; border-bottom: 1px solid var(--surface); color: var(--text-dim); }
+        tr:hover td { color: var(--text); }
 
         .callout { border-left: 3px solid var(--accent); background: var(--accent-dim); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
         .callout strong { color: var(--accent); }
 
-        footer { border-top: 1px solid var(--gray-5); padding: 28px 24px; text-align: center; color: var(--gray-4); font-size: 13px; }
-        footer a { color: var(--gray-3); margin: 0 10px; }
+        footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; color: var(--text-muted); font-size: 13px; transition: border-color 0.3s var(--ease); }
+        footer a { color: var(--text-dim); margin: 0 10px; }
+
+        /* THEME TOGGLE */
+        .theme-toggle { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 200; transition: all 0.2s var(--ease); box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+        [data-theme="light"] .theme-toggle { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .theme-toggle:hover { color: var(--accent); border-color: var(--accent); transform: scale(1.1); }
+        .theme-toggle svg { width: 20px; height: 20px; }
+        .theme-toggle .icon-sun { display: none; }
+        [data-theme="light"] .theme-toggle .icon-sun { display: block; }
+        [data-theme="light"] .theme-toggle .icon-moon { display: none; }
+        [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
 
         /* MOBILE */
         @media (max-width: 900px) {
@@ -222,6 +258,12 @@
     </div>
 </aside>
 
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+
 <div class="main" id="main">
 <div class="content">
 
@@ -248,11 +290,11 @@
     <!-- INSTALLATION -->
     <section id="installation">
         <h2>Installation</h2>
-<pre><code><span class="p">$</span> pip install genderfluid-tiny</code></pre>
+<div class="code-wrap"><pre><code><span class="p">$</span> pip install genderfluid-tiny</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>From source:</p>
-<pre><code><span class="p">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
+<div class="code-wrap"><pre><code><span class="p">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
 <span class="p">$</span> cd genderfluid-tiny
-<span class="p">$</span> pip install -e .</code></pre>
+<span class="p">$</span> pip install -e .</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Requirements: Python 3.10+, scikit-learn, numpy. No GPU or internet required.</p>
     </section>
 
@@ -273,16 +315,16 @@
     <!-- QUICK START -->
     <section id="quickstart">
         <h2>Quick start</h2>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, name_probability
+<div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, name_probability
 
 classify_name(<span class="s">"Emma"</span>)      <span class="c"># "girl-associated"</span>
 classify_name(<span class="s">"James"</span>)     <span class="c"># "boy-associated"</span>
 classify_name(<span class="s">"Alex"</span>)      <span class="c"># "uncertain"</span>
 
 is_girl_name(<span class="s">"Emma"</span>)       <span class="c"># True</span>
-name_probability(<span class="s">"Emma"</span>)   <span class="c"># 0.9731</span></code></pre>
+name_probability(<span class="s">"Emma"</span>)   <span class="c"># 0.9731</span></code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Or from the command line:</p>
-<pre><code><span class="p">$</span> genderfluid predict Emma
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Emma
 
 Name: Emma
 
@@ -291,22 +333,22 @@ Boy-associated:  0.5%
 Uncertain:       2.2%
 
 Classification: girl-associated
-Confidence:     high</code></pre>
+Confidence:     high</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- PYTHON API -->
     <section id="python-api">
         <h2>Python API</h2>
         <h3>Simple functions</h3>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, is_boy_name, name_probability
+<div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, is_boy_name, name_probability
 
 classify_name(<span class="s">"Emma"</span>)       <span class="c"># "girl-associated"</span>
 is_girl_name(<span class="s">"Emma"</span>)        <span class="c"># True</span>
 is_boy_name(<span class="s">"James"</span>)        <span class="c"># True</span>
-name_probability(<span class="s">"Emma"</span>)    <span class="c"># 0.9731</span></code></pre>
+name_probability(<span class="s">"Emma"</span>)    <span class="c"># 0.9731</span></code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
 
         <h3>Full result dict</h3>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names
+<div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names
 
 result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
 <span class="c"># {</span>
@@ -316,27 +358,27 @@ result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
 <span class="c">#   "uncertain_probability": 0.0585,</span>
 <span class="c">#   "classification": "girl-associated",</span>
 <span class="c">#   "confidence": "medium"</span>
-<span class="c"># }</span></code></pre>
+<span class="c"># }</span></code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
 
         <h3>Model instance (for repeated use)</h3>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> GenderfluidModel
+<div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> GenderfluidModel
 
 model = GenderfluidModel()  <span class="c"># loads once, cached</span>
 model.predict(<span class="s">"Elva Retta"</span>)
-model.predict_batch([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre>
+model.predict_batch([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
 
         <h3>Batch prediction</h3>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_names
+<div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_names
 
 results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>, <span class="s">"Max"</span>])
 <span class="k">for</span> r <span class="k">in</span> results:
-    print(f<span class="s">"{r['name']}: {r['classification']}"</span>)</code></pre>
+    print(f<span class="s">"{r['name']}: {r['classification']}"</span>)</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- CLI -->
     <section id="cli">
         <h2>Command line</h2>
-<pre><code><span class="p">$</span> genderfluid predict Elva Retta
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Elva Retta
 
 Name: Elva Retta
 
@@ -345,15 +387,15 @@ Boy-associated:  1.2%
 Uncertain:       1.2%
 
 Classification: girl-associated
-Confidence:     high</code></pre>
+Confidence:     high</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Multi-word names work without quotes:</p>
-<pre><code><span class="p">$</span> genderfluid predict Michelle Renatta Chan</code></pre>
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Michelle Renatta Chan</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- COMPARE -->
     <section id="compare">
         <h2>Compare names</h2>
-<pre><code><span class="p">$</span> genderfluid predict --compare Emma James Alex Max Taylor
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict --compare Emma James Alex Max Taylor
 
 Name                      Classification         Girl    Boy Confidence
 ----------------------------------------------------------------------
@@ -363,27 +405,27 @@ Alex                      uncertain               27%    59% low
 Max                       boy-associated           7%    77% medium
 Taylor                    uncertain               42%    17% low
 
-5 names in 30.5 ms</code></pre>
+5 names in 30.5 ms</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- BATCH -->
     <section id="batch">
         <h2>Batch processing</h2>
         <p>Create a text file with one name per line:</p>
-<pre><code><span class="c"># names.txt</span>
+<div class="code-wrap"><pre><code><span class="c"># names.txt</span>
 Emma
 James
 Alex
-Michelle Renatta Chan</code></pre>
+Michelle Renatta Chan</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Then run:</p>
-<pre><code><span class="p">$</span> genderfluid predict --file names.txt</code></pre>
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict --file names.txt</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Output is JSONL (one JSON object per line), with timing info at the end.</p>
     </section>
 
     <!-- JSON OUTPUT -->
     <section id="json-output">
         <h2>JSON output</h2>
-<pre><code><span class="p">$</span> genderfluid predict --json Alex
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict --json Alex
 
 {
   "name": "Alex",
@@ -392,13 +434,13 @@ Michelle Renatta Chan</code></pre>
   "uncertain_probability": 0.1395,
   "classification": "uncertain",
   "confidence": "low"
-}</code></pre>
+}</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- ARCHITECTURE -->
     <section id="architecture">
         <h2>Architecture</h2>
-<pre><code>Input name
+<div class="code-wrap"><pre><code>Input name
   |
 Unicode normalization + lowercase
   |
@@ -410,7 +452,7 @@ Logistic regression (3 classes)
   |
 Sigmoid calibration
   |
-Output: girl-associated / boy-associated / uncertain</code></pre>
+Output: girl-associated / boy-associated / uncertain</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>The classifier extracts character-level patterns. Names ending in
         <code>-a</code>, <code>-ia</code>, <code>-ine</code> tend to be feminine.
         Names ending in <code>-o</code>, <code>-us</code>, <code>-er</code> tend
@@ -447,7 +489,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
             <tr><td>Throughput</td><td>5,551 names/sec</td></tr>
             <tr><td>Peak RSS</td><td>198 MB</td></tr>
         </table>
-<pre><code><span class="p">$</span> genderfluid benchmark</code></pre>
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- ACCURACY -->
@@ -488,10 +530,10 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
     <!-- TRAINING -->
     <section id="training">
         <h2>Training from source</h2>
-<pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download and process SSA + Census data</span>
+<div class="code-wrap"><pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download and process SSA + Census data</span>
 <span class="p">$</span> python prepare_data.py        <span class="c"># validate and split data</span>
 <span class="p">$</span> python train.py               <span class="c"># train model</span>
-<span class="p">$</span> python evaluate.py            <span class="c"># evaluate on test set</span></code></pre>
+<span class="p">$</span> python evaluate.py            <span class="c"># evaluate on test set</span></code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>The training script:</p>
         <ol>
             <li>Loads and validates the dataset</li>
@@ -506,9 +548,9 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
     <section id="dataset">
         <h2>Dataset</h2>
         <p>JSONL format, one entry per line:</p>
-<pre><code>{"name": "Emma", "label": "girl-associated"}
+<div class="code-wrap"><pre><code>{"name": "Emma", "label": "girl-associated"}
 {"name": "James", "label": "boy-associated"}
-{"name": "Alex", "label": "uncertain"}</code></pre>
+{"name": "Alex", "label": "uncertain"}</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Optional fields: <code>weight</code>, <code>country</code>, <code>language</code>, <code>year</code>.</p>
         <p>Training data sources:</p>
         <ul>
@@ -553,6 +595,25 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
 </div>
 
 <script>
+// Theme toggle
+var themeToggle = document.getElementById('themeToggle');
+var html = document.documentElement;
+
+var savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    html.setAttribute('data-theme', savedTheme);
+} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    html.setAttribute('data-theme', 'light');
+}
+
+themeToggle.addEventListener('click', function() {
+    var current = html.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+});
+
+// Sidebar
 var burger = document.getElementById('burger');
 var sidebar = document.getElementById('sidebar');
 var overlay = document.getElementById('overlay');
@@ -579,19 +640,13 @@ function closeMenu() {
 }
 
 burger.addEventListener('click', function() {
-    if (isSidebarOpen()) {
-        closeMenu();
-    } else {
-        openMenu();
-    }
+    if (isSidebarOpen()) closeMenu(); else openMenu();
 });
 
 overlay.addEventListener('click', closeMenu);
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && isSidebarOpen()) {
-        closeMenu();
-    }
+    if (e.key === 'Escape' && isSidebarOpen()) closeMenu();
 });
 
 sidebar.querySelectorAll('a[href^="#"]').forEach(function(link) {
@@ -601,15 +656,7 @@ sidebar.querySelectorAll('a[href^="#"]').forEach(function(link) {
 });
 
 window.addEventListener('resize', function() {
-    var wasMobile = isMobile;
     isMobile = window.innerWidth <= 900;
-    if (wasMobile !== isMobile) {
-        if (isMobile) {
-            closeMenu();
-        } else {
-            closeMenu();
-        }
-    }
 });
 
 function toggleGroup(header) {
@@ -632,25 +679,44 @@ var observer = new IntersectionObserver(function(entries) {
 
 sections.forEach(function(s) { observer.observe(s); });
 
-// Copy button
-var copyBtn = document.getElementById('copyBtn');
-var iconCopy = copyBtn.querySelector('.icon-copy');
-var iconCheck = copyBtn.querySelector('.icon-check');
+// Copy buttons
+function setupCopyButtons() {
+    var copyBtn = document.getElementById('copyBtn');
+    var iconCopy = copyBtn.querySelector('.icon-copy');
+    var iconCheck = copyBtn.querySelector('.icon-check');
 
-copyBtn.addEventListener('click', function() {
-    navigator.clipboard.writeText('pip install genderfluid-tiny').then(function() {
-        iconCopy.style.display = 'none';
-        iconCheck.style.display = 'block';
-        copyBtn.classList.add('copied');
-        setTimeout(function() {
-            iconCopy.style.display = 'block';
-            iconCheck.style.display = 'none';
-            copyBtn.classList.remove('copied');
-        }, 2000);
+    copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText('pip install genderfluid-tiny').then(function() {
+            iconCopy.style.display = 'none';
+            iconCheck.style.display = 'block';
+            copyBtn.classList.add('copied');
+            setTimeout(function() {
+                iconCopy.style.display = 'block';
+                iconCheck.style.display = 'none';
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        });
     });
-});
 
-// Slow ease-out counting animation
+    document.querySelectorAll('.code-copy').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var pre = btn.previousElementSibling;
+            var text = pre.textContent;
+            navigator.clipboard.writeText(text).then(function() {
+                btn.classList.add('copied');
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+                }, 2000);
+            });
+        });
+    });
+}
+
+setupCopyButtons();
+
+// Counting animation
 function animateCount(el) {
     var target = parseFloat(el.getAttribute('data-count'));
     var suffix = el.getAttribute('data-suffix') || '';
@@ -661,7 +727,6 @@ function animateCount(el) {
     function step(timestamp) {
         if (!start) start = timestamp;
         var progress = Math.min((timestamp - start) / duration, 1);
-        // ease-out quart: starts fast, decelerates smoothly
         var eased = 1 - Math.pow(1 - progress, 4);
         var current = eased * target;
 
