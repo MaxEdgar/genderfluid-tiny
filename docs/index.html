@@ -372,9 +372,9 @@ name_probability(<span class="s">"Emma"</span>)    <span class="c"># 0.9731</spa
         <h3>Full result dict</h3>
 <div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names
 
-result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
+result = predict_name(<span class="s">"Isabella"</span>)
 <span class="c"># {</span>
-<span class="c">#   "name": "Michelle Renatta Chan",</span>
+<span class="c">#   "name": "Isabella",</span>
 <span class="c">#   "girl_associated_probability": 0.8929,</span>
 <span class="c">#   "boy_associated_probability": 0.0486,</span>
 <span class="c">#   "uncertain_probability": 0.0585,</span>
@@ -386,7 +386,7 @@ result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
 <div class="code-wrap"><pre><code><span class="k">from</span> genderfluid <span class="k">import</span> GenderfluidModel
 
 model = GenderfluidModel()  <span class="c"># loads once, cached</span>
-model.predict(<span class="s">"Elva Retta"</span>)
+model.predict(<span class="s">"Olivia"</span>)
 model.predict_batch([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
 
         <h3>Batch prediction</h3>
@@ -400,9 +400,9 @@ results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"<
     <!-- CLI -->
     <section id="cli">
         <h2>Command line</h2>
-<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Elva Retta
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Olivia
 
-Name: Elva Retta
+Name: Olivia
 
 Girl-associated: 97.5%
 Boy-associated:  1.2%
@@ -411,7 +411,7 @@ Uncertain:       1.2%
 Classification: girl-associated
 Confidence:     high</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Multi-word names work without quotes:</p>
-<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Michelle Renatta Chan</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+<div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict Isabella</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- COMPARE -->
@@ -438,7 +438,7 @@ Taylor                    uncertain               42%    17% low
 Emma
 James
 Alex
-Michelle Renatta Chan</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+Isabella</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Then run:</p>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict --file names.txt</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>Output is JSONL (one JSON object per line), with timing info at the end.</p>

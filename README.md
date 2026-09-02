@@ -81,8 +81,8 @@ name_probability("Emma")    # 0.9731
 ```python
 from genderfluid import predict_name, predict_names
 
-result = predict_name("Michelle Renatta Chan")
-# {"name": "Michelle Renatta Chan",
+result = predict_name("Isabella")
+# {"name": "Isabella",
 #  "girl_associated_probability": 0.8929,
 #  "boy_associated_probability": 0.0486,
 #  "uncertain_probability": 0.0585,
@@ -100,14 +100,14 @@ for r in results:
 from genderfluid import GenderfluidModel
 
 model = GenderfluidModel()  # loads once, cached
-model.predict("Elva Retta")
+model.predict("Olivia")
 model.predict_batch(["Emma", "James", "Alex", "Max", "Taylor"])
 ```
 
 ## CLI
 
 ```bash
-genderfluid predict "Elva Retta"                    # human-readable
+genderfluid predict "Olivia"                       # human-readable
 genderfluid predict --json "Alex"                   # JSON output
 genderfluid predict --compare "Emma" "James" "Alex" # comparison table
 genderfluid predict --file names.txt                # batch from file

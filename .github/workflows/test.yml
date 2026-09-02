@@ -31,4 +31,4 @@ jobs:
         run: pytest tests/ -v
 
       - name: Run inference
-        run: python predict.py --json "Elva Retta"
+        run: python predict.py --json "Olivia"

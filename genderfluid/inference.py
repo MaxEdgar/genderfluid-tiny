@@ -22,7 +22,7 @@ class GenderfluidModel:
         model = GenderfluidModel()              # loads default model
         model = GenderfluidModel("path/to.bin") # loads custom model
 
-        result = model.predict("Elva Retta")
+        result = model.predict("Olivia")
         print(result["classification"])  # "girl-associated"
 
         results = model.predict_batch(["Emma", "James", "Alex"])
@@ -152,7 +152,7 @@ def predict_name(
     Predict gender association for a single name.
 
     Args:
-        name: Full name string (e.g. "Elva Retta", "Alex", "Michelle Renatta Chan")
+        name: Full name string (e.g. "Olivia", "Alex", "Isabella")
         model_path: Path to model file (optional, uses default)
         country: Optional country context (informational only)
         language: Optional language context (informational only)
@@ -164,7 +164,7 @@ def predict_name(
 
     Example::
 
-        result = predict_name("Elva Retta")
+        result = predict_name("Olivia")
         print(result["classification"])  # "girl-associated"
     """
     if model_path:

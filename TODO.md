@@ -17,7 +17,7 @@ When changing the version number, update ALL of these files:
 ## Before pushing
 
 1. Run tests: `python -m pytest tests/ -v`
-2. Run inference: `python predict.py "Elva Retta"`
+2. Run inference: `python predict.py "Olivia"`
 3. Verify model exists: `ls -lh models/genderfluid-tiny.bin`
 4. Verify no emoji in repo: `grep -rP '[\x{1F300}-\x{1F9FF}]' . --include='*.md' --include='*.py' --include='*.yml'`
 
