@@ -23,7 +23,7 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -52,7 +52,7 @@ jobs:
 
       - name: Run aggressive training
         run: python train_aggressive.py
-        timeout-minutes: 25
+        timeout-minutes: 40
 
       - name: Verify model
         run: |

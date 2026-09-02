@@ -35,9 +35,9 @@ np.random.seed(SEED)
 # ============================================================
 
 FEATURE_DIMS = [4096, 8192, 16384]
-NGRAM_RANGES = [(2, 4), (2, 5), (3, 5), (2, 6)]
-C_VALUES = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
-SOLVERS = ["lbfgs", "liblinear"]
+NGRAM_RANGES = [(2, 5), (3, 5)]
+C_VALUES = [0.5, 1.0, 5.0]
+SOLVERS = ["lbfgs"]
 MAX_ITER = 2000
 MAX_MODEL_SIZE_MB = 50.0
 MIN_MACRO_F1_TARGET = 0.85
