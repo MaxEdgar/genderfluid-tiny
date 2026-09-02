@@ -1,23 +1,48 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "genderfluid-tiny"
 version = "1.0.0"
-description = "Tiny local name-gender association classifier"
+description = "Tiny local name-gender association classifier. Estimates statistical associations between names and gendered naming conventions."
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.10"
+authors = [
+    {name = "Max Edgar"},
+]
+keywords = ["name", "gender", "classifier", "nlp", "offline"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
     "scikit-learn>=1.0",
     "numpy>=1.20",
-    "pyyaml>=5.4",
 ]
+
+[project.urls]
+Homepage = "https://github.com/MaxEdgar/genderfluid-tiny"
+Repository = "https://github.com/MaxEdgar/genderfluid-tiny"
+Issues = "https://github.com/MaxEdgar/genderfluid-tiny/issues"
 
 [project.scripts]
 genderfluid = "genderfluid.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["genderfluid*"]
+
+[tool.setuptools.package-data]
+genderfluid = ["models/*.bin"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

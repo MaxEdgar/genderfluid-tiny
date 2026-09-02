@@ -6,6 +6,8 @@ dist/
 build/
 .eggs/
 *.egg
+*.whl
+*.tar.gz
 
 .venv/
 .env
@@ -17,6 +19,7 @@ htmlcov/
 
 *.bin
 !models/genderfluid-tiny.bin
+!genderfluid/models/genderfluid-tiny.bin
 
 models/checkpoints/
 /tmp/

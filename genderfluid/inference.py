@@ -9,7 +9,7 @@ from genderfluid.model_io import load_model
 
 
 DEFAULT_MODEL_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "models", "genderfluid-tiny.bin"
+    os.path.dirname(__file__), "models", "genderfluid-tiny.bin"
 )
 
 
