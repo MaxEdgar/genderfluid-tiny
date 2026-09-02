@@ -1,3 +1,12 @@
+# TODO
+
+## Future goals
+
+- Expand training dataset to 1M names
+- Improve accuracy beyond 68.9%
+
+---
+
 # Release Checklist
 
 Steps to follow every time you bump the version.
