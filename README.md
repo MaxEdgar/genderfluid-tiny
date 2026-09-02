@@ -217,7 +217,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 ## Limitations
 
-- Predictions reflect naming conventions in the training data
+- Works with full names: first, middle, and last
 - U.S./English-centric training data
 - Name associations vary by culture, language, and generation
 - The `uncertain` category exists for genuinely ambiguous names
@@ -229,9 +229,9 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ## FAQ
 
-### How does it determine gender?
+### What data is it trained on?
 
-It predicts the most likely gender association for a name based on statistical patterns in its training data (102,927 names from U.S. SSA and Census records). The prediction is about the name itself, not the person using it.
+102,927 names from U.S. Social Security Administration baby names (1880-2020) and Census 2020 records.
 
 ### How accurate is it?
 
