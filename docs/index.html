@@ -11,7 +11,6 @@
     <style>
         :root {
             --bg: #141414;
-            --bg-raised: #1a1a1a;
             --gray-1: #F1F0EA;
             --gray-2: #cac9c4;
             --gray-3: #a2a19d;
@@ -26,224 +25,54 @@
             --sidebar-w: 260px;
             --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
+        body { font-family: var(--font); background: var(--bg); color: var(--gray-2); line-height: 1.7; -webkit-font-smoothing: antialiased; }
 
-        body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--gray-2);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-        }
+        /* NAV */
+        nav { position: fixed; top: 0; width: 100%; height: var(--nav-h); background: rgba(20,20,20,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--gray-5); z-index: 100; display: flex; align-items: center; padding: 0 20px; }
+        nav .inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+        nav .left { display: flex; align-items: center; gap: 14px; }
 
-        /* ═══ NAV ═══ */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: var(--nav-h);
-            background: rgba(20, 20, 20, 0.88);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--gray-5);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        nav .inner {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        nav .left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .burger {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            color: var(--gray-2);
-            border-radius: 6px;
-            transition: background 0.15s var(--ease);
-        }
-
+        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
         .burger:hover { background: var(--gray-6); }
-
-        .burger svg { width: 20px; height: 20px; display: block; }
+        .burger svg { width: 20px; height: 20px; }
         .burger .close-icon { display: none; }
         .burger.open .menu-icon { display: none; }
         .burger.open .close-icon { display: block; }
 
-        nav .logo {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--accent);
-            text-decoration: none;
-            letter-spacing: -0.01em;
-        }
-
-        nav .links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        nav .links a {
-            color: var(--gray-3);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.15s var(--ease);
-        }
-
+        nav .logo { font-weight: 700; font-size: 15px; color: var(--accent); text-decoration: none; }
+        nav .links { display: flex; gap: 20px; align-items: center; }
+        nav .links a { color: var(--gray-3); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s var(--ease); }
         nav .links a:hover { color: var(--gray-1); }
-
-        .nav-badge {
-            background: var(--accent);
-            color: var(--bg);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: opacity 0.15s var(--ease);
-        }
-
+        .nav-badge { background: var(--accent); color: var(--bg); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; text-decoration: none; }
         .nav-badge:hover { opacity: 0.85; }
 
-        /* ═══ SIDEBAR ═══ */
-        .sidebar {
-            position: fixed;
-            top: var(--nav-h);
-            left: 0;
-            width: var(--sidebar-w);
-            height: calc(100vh - var(--nav-h));
-            background: var(--bg);
-            border-right: 1px solid var(--gray-5);
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px 0;
-            z-index: 50;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gray-5) transparent;
-        }
-
+        /* SIDEBAR */
+        .sidebar { position: fixed; top: var(--nav-h); left: 0; width: var(--sidebar-w); height: calc(100vh - var(--nav-h)); background: var(--bg); border-right: 1px solid var(--gray-5); overflow-y: auto; overflow-x: hidden; padding: 16px 0; z-index: 50; scrollbar-width: thin; scrollbar-color: var(--gray-5) transparent; transition: transform 0.25s var(--ease); }
         .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
         .sidebar::-webkit-scrollbar-thumb { background: var(--gray-5); border-radius: 4px; }
 
-        /* Tree sections */
-        .nav-group { margin-bottom: 4px; }
-
-        .nav-group-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--gray-4);
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.15s var(--ease);
-        }
-
+        .nav-group { margin-bottom: 2px; }
+        .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-4); cursor: pointer; user-select: none; transition: color 0.15s var(--ease); }
         .nav-group-header:hover { color: var(--gray-2); }
+        .nav-group-header .caret { width: 16px; height: 16px; transition: transform 0.2s var(--ease); flex-shrink: 0; opacity: 0.5; }
+        .nav-group.open > .nav-group-header .caret { transform: rotate(90deg); }
+        .nav-group-items { overflow: hidden; max-height: 0; transition: max-height 0.3s var(--ease), opacity 0.2s var(--ease); opacity: 0; }
+        .nav-group.open > .nav-group-items { max-height: 600px; opacity: 1; }
+        .nav-group-items a { display: block; padding: 5px 16px 5px 36px; font-size: 13px; color: var(--gray-3); text-decoration: none; border-left: 2px solid transparent; transition: all 0.15s var(--ease); }
+        .nav-group-items a:hover { color: var(--gray-1); background: var(--gray-6); }
+        .nav-group-items a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); font-weight: 500; }
 
-        .nav-group-header .caret {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.2s var(--ease);
-            flex-shrink: 0;
-            opacity: 0.5;
-        }
+        /* OVERLAY */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 40; }
+        .overlay.open { display: block; }
 
-        .nav-group.open > .nav-group-header .caret {
-            transform: rotate(90deg);
-        }
+        /* MAIN */
+        .main { margin-left: var(--sidebar-w); padding-top: var(--nav-h); min-height: 100vh; }
+        .content { max-width: 740px; margin: 0 auto; padding: 48px 40px 80px; }
 
-        .nav-group-items {
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.3s var(--ease), opacity 0.2s var(--ease);
-            opacity: 0;
-        }
-
-        .nav-group.open > .nav-group-items {
-            max-height: 500px;
-            opacity: 1;
-        }
-
-        .nav-group-items a {
-            display: block;
-            padding: 5px 16px 5px 36px;
-            font-size: 13px;
-            color: var(--gray-3);
-            text-decoration: none;
-            border-left: 2px solid transparent;
-            transition: all 0.15s var(--ease);
-        }
-
-        .nav-group-items a:hover {
-            color: var(--gray-1);
-            background: var(--gray-6);
-        }
-
-        .nav-group-items a.active {
-            color: var(--accent);
-            border-left-color: var(--accent);
-            background: var(--accent-dim);
-            font-weight: 500;
-        }
-
-        /* ═══ OVERLAY ═══ */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 40;
-            opacity: 0;
-            transition: opacity 0.25s var(--ease);
-        }
-
-        .overlay.open { display: block; opacity: 1; }
-
-        /* ═══ MAIN ═══ */
-        .main {
-            margin-left: var(--sidebar-w);
-            padding-top: var(--nav-h);
-            min-height: 100vh;
-        }
-
-        .content {
-            max-width: 740px;
-            margin: 0 auto;
-            padding: 48px 40px 80px;
-        }
-
-        section {
-            margin-bottom: 56px;
-            scroll-margin-top: calc(var(--nav-h) + 24px);
-            opacity: 0;
-            transform: translateY(16px);
-            animation: fadeUp 0.5s var(--ease) forwards;
-        }
-
+        section { margin-bottom: 52px; scroll-margin-top: calc(var(--nav-h) + 24px); opacity: 0; transform: translateY(12px); animation: fadeUp 0.45s var(--ease) forwards; }
         section:nth-child(1) { animation-delay: 0.05s; }
         section:nth-child(2) { animation-delay: 0.1s; }
         section:nth-child(3) { animation-delay: 0.15s; }
@@ -254,246 +83,72 @@
         section:nth-child(8) { animation-delay: 0.4s; }
         section:nth-child(9) { animation-delay: 0.45s; }
         section:nth-child(10) { animation-delay: 0.5s; }
+        section:nth-child(11) { animation-delay: 0.55s; }
+        section:nth-child(12) { animation-delay: 0.6s; }
+        section:nth-child(13) { animation-delay: 0.65s; }
+        section:nth-child(14) { animation-delay: 0.7s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 {
-            font-size: clamp(28px, 4vw, 42px);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            color: var(--gray-1);
-            margin-bottom: 12px;
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--gray-1);
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--gray-5);
-        }
-
-        h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray-1);
-            margin: 20px 0 8px;
-        }
-
+        h1 { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--gray-1); margin-bottom: 12px; }
+        h2 { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--gray-1); padding-bottom: 8px; border-bottom: 1px solid var(--gray-5); }
+        h3 { font-size: 16px; font-weight: 600; color: var(--gray-1); margin: 20px 0 8px; }
         p { margin-bottom: 14px; }
-
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
+        ul, ol { padding-left: 20px; margin-bottom: 14px; }
+        li { margin-bottom: 4px; }
 
-        /* ═══ HERO ═══ */
-        .hero {
-            padding: 48px 0 40px;
-            margin-bottom: 48px;
-            text-align: center;
-            border-bottom: 1px solid var(--gray-5);
-        }
-
-        .hero .install {
-            margin-top: 24px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--gray-6);
-            border: 1px solid var(--gray-5);
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-family: var(--mono);
-            font-size: 14px;
-            color: var(--accent);
-            transition: border-color 0.2s var(--ease);
-        }
-
+        .hero { padding: 48px 0 40px; margin-bottom: 48px; text-align: center; border-bottom: 1px solid var(--gray-5); }
+        .hero .install { margin-top: 24px; display: inline-flex; align-items: center; gap: 10px; background: var(--gray-6); border: 1px solid var(--gray-5); padding: 10px 18px; border-radius: 8px; font-family: var(--mono); font-size: 14px; color: var(--accent); transition: border-color 0.2s var(--ease); }
         .hero .install:hover { border-color: var(--accent); }
-
-        .hero .install span {
-            color: var(--gray-4);
-            user-select: none;
-        }
-
-        .hero .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 36px;
-            flex-wrap: wrap;
-        }
-
+        .hero .install span { color: var(--gray-4); user-select: none; }
+        .hero .stats { display: flex; justify-content: center; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
         .hero .stat { text-align: center; }
+        .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--gray-1); }
+        .hero .stat span { font-size: 11px; color: var(--gray-4); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
 
-        .hero .stat strong {
-            display: block;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--gray-1);
-            letter-spacing: -0.02em;
-        }
-
-        .hero .stat span {
-            font-size: 11px;
-            color: var(--gray-4);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 500;
-        }
-
-        /* ═══ CODE ═══ */
-        pre {
-            background: var(--gray-6);
-            border: 1px solid var(--gray-5);
-            border-radius: 8px;
-            padding: 16px 20px;
-            overflow-x: auto;
-            font-family: var(--mono);
-            font-size: 13px;
-            line-height: 1.65;
-            margin: 14px 0;
-            transition: border-color 0.2s var(--ease);
-        }
-
+        pre { background: var(--gray-6); border: 1px solid var(--gray-5); border-radius: 8px; padding: 16px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.65; margin: 14px 0; transition: border-color 0.2s var(--ease); }
         pre:hover { border-color: var(--gray-4); }
-
         pre .p { color: #7ee787; user-select: none; }
         pre .c { color: var(--gray-4); }
         pre .s { color: #a5d6ff; }
         pre .k { color: #ff7b72; }
         pre .fn { color: #d2a8ff; }
-
-        code {
-            font-family: var(--mono);
-            font-size: 13px;
-            background: var(--gray-6);
-            border: 1px solid var(--gray-5);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
+        code { font-family: var(--mono); font-size: 13px; background: var(--gray-6); border: 1px solid var(--gray-5); padding: 2px 6px; border-radius: 4px; }
         pre code { background: none; border: none; padding: 0; }
 
-        /* ═══ GRID ═══ */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1px;
-            background: var(--gray-5);
-            border: 1px solid var(--gray-5);
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 18px 0;
-        }
-
-        .grid .item {
-            background: var(--bg);
-            padding: 20px;
-            transition: background 0.15s var(--ease);
-        }
-
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--gray-5); border: 1px solid var(--gray-5); border-radius: 8px; overflow: hidden; margin: 18px 0; }
+        .grid .item { background: var(--bg); padding: 20px; transition: background 0.15s var(--ease); }
         .grid .item:hover { background: var(--gray-6); }
+        .grid .item strong { display: block; font-size: 14px; font-weight: 600; color: var(--gray-1); margin-bottom: 4px; }
+        .grid .item span { font-size: 13px; color: var(--gray-3); line-height: 1.5; }
 
-        .grid .item strong {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-1);
-            margin-bottom: 4px;
-        }
-
-        .grid .item span {
-            font-size: 13px;
-            color: var(--gray-3);
-            line-height: 1.5;
-        }
-
-        /* ═══ TABLE ═══ */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 14px 0;
-            font-size: 14px;
-        }
-
-        th {
-            text-align: left;
-            font-weight: 600;
-            padding: 8px 12px;
-            border-bottom: 2px solid var(--gray-1);
-            color: var(--gray-1);
-        }
-
-        td {
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--gray-6);
-            color: var(--gray-3);
-        }
-
+        table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+        th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--gray-1); color: var(--gray-1); }
+        td { padding: 8px 12px; border-bottom: 1px solid var(--gray-6); color: var(--gray-3); }
         tr:hover td { color: var(--gray-2); }
 
-        /* ═══ CALLOUT ═══ */
-        .callout {
-            border-left: 3px solid var(--accent);
-            background: var(--accent-dim);
-            padding: 12px 16px;
-            border-radius: 0 8px 8px 0;
-            margin: 16px 0;
-            font-size: 14px;
-            color: var(--gray-2);
-        }
-
+        .callout { border-left: 3px solid var(--accent); background: var(--accent-dim); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; }
         .callout strong { color: var(--accent); }
 
-        /* ═══ FOOTER ═══ */
-        footer {
-            border-top: 1px solid var(--gray-5);
-            padding: 28px 24px;
-            text-align: center;
-            color: var(--gray-4);
-            font-size: 13px;
-        }
+        footer { border-top: 1px solid var(--gray-5); padding: 28px 24px; text-align: center; color: var(--gray-4); font-size: 13px; }
+        footer a { color: var(--gray-3); margin: 0 10px; }
 
-        footer a {
-            color: var(--gray-3);
-            margin: 0 10px;
-            transition: color 0.15s var(--ease);
-        }
-
-        footer a:hover { color: var(--gray-1); }
-
-        /* ═══ MOBILE ═══ */
-        @media (max-width: 768px) {
-            .burger { display: flex; }
-            nav .links { display: none; }
-
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 60;
-                width: 280px;
-                transition: transform 0.3s var(--ease);
-            }
-
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); width: 280px; z-index: 60; }
             .sidebar.open { transform: translateX(0); }
-
             .main { margin-left: 0; }
-
-            .content {
-                padding: 32px 20px 60px;
-            }
-
+            .content { padding: 32px 20px 60px; }
             .hero .stats { gap: 28px; }
             .grid { grid-template-columns: 1fr; }
+        }
+        @media (min-width: 901px) {
+            .sidebar { transform: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
 <nav>
     <div class="inner">
         <div class="left">
@@ -511,12 +166,9 @@
     </div>
 </nav>
 
-<!-- ═══ OVERLAY ═══ -->
 <div class="overlay" id="overlay"></div>
 
-<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
-
     <div class="nav-group open">
         <div class="nav-group-header" onclick="toggleGroup(this)">
             <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
@@ -525,9 +177,9 @@
         <div class="nav-group-items">
             <a href="#overview" class="active">Overview</a>
             <a href="#installation">Installation</a>
+            <a href="#what-it-does">What it does</a>
         </div>
     </div>
-
     <div class="nav-group open">
         <div class="nav-group-header" onclick="toggleGroup(this)">
             <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
@@ -539,7 +191,6 @@
             <a href="#cli">Command line</a>
         </div>
     </div>
-
     <div class="nav-group open">
         <div class="nav-group-header" onclick="toggleGroup(this)">
             <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
@@ -547,27 +198,29 @@
         </div>
         <div class="nav-group-items">
             <a href="#compare">Compare names</a>
+            <a href="#batch">Batch processing</a>
+            <a href="#json-output">JSON output</a>
             <a href="#architecture">Architecture</a>
-            <a href="#features">Features</a>
         </div>
     </div>
-
     <div class="nav-group open">
         <div class="nav-group-header" onclick="toggleGroup(this)">
             <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             Reference
         </div>
         <div class="nav-group-items">
+            <a href="#features">Features</a>
             <a href="#benchmark">Benchmark</a>
+            <a href="#accuracy">Accuracy</a>
             <a href="#more-cli">CLI reference</a>
             <a href="#training">Training</a>
+            <a href="#dataset">Dataset</a>
+            <a href="#limitations">Limitations</a>
             <a href="#license">License</a>
         </div>
     </div>
-
 </aside>
 
-<!-- ═══ MAIN ═══ -->
 <div class="main">
 <div class="content">
 
@@ -576,9 +229,7 @@
         <h1>genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
         49KB model, CPU only, no API needed.</p>
-        <div class="install">
-            <span>$</span> pip install genderfluid-tiny
-        </div>
+        <div class="install"><span>$</span> pip install genderfluid-tiny</div>
         <div class="stats">
             <div class="stat"><strong>49 KB</strong><span>Model</span></div>
             <div class="stat"><strong>0.9 ms</strong><span>Prediction</span></div>
@@ -595,6 +246,21 @@
 <pre><code><span class="p">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
 <span class="p">$</span> cd genderfluid-tiny
 <span class="p">$</span> pip install -e .</code></pre>
+        <p>Requirements: Python 3.10+, scikit-learn, numpy. No GPU or internet required.</p>
+    </section>
+
+    <!-- WHAT IT DOES -->
+    <section id="what-it-does">
+        <h2>What it does</h2>
+        <p>Given a name, genderfluid-tiny estimates whether it is statistically
+        associated with feminine or masculine naming conventions. It outputs
+        <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
+        <div class="callout">
+            <strong>Important:</strong> This is not a gender identity classifier.
+            It measures naming patterns learned from training data.
+        </div>
+        <p>The model was trained on 102,927 names from U.S. Social Security
+        Administration data (1880-2020) and Census 2020 records.</p>
     </section>
 
     <!-- QUICK START -->
@@ -608,7 +274,7 @@ classify_name(<span class="s">"Alex"</span>)      <span class="c"># "uncertain"<
 
 is_girl_name(<span class="s">"Emma"</span>)       <span class="c"># True</span>
 name_probability(<span class="s">"Emma"</span>)   <span class="c"># 0.9731</span></code></pre>
-        <p>From the command line:</p>
+        <p>Or from the command line:</p>
 <pre><code><span class="p">$</span> genderfluid predict Emma
 
 Name: Emma
@@ -632,25 +298,32 @@ is_girl_name(<span class="s">"Emma"</span>)        <span class="c"># True</span>
 is_boy_name(<span class="s">"James"</span>)        <span class="c"># True</span>
 name_probability(<span class="s">"Emma"</span>)    <span class="c"># 0.9731</span></code></pre>
 
-        <h3>Full result</h3>
+        <h3>Full result dict</h3>
 <pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names
 
 result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
-<span class="c"># {"name": "Michelle Renatta Chan",</span>
-<span class="c">#  "girl_associated_probability": 0.8929,</span>
-<span class="c">#  "boy_associated_probability": 0.0486,</span>
-<span class="c">#  "uncertain_probability": 0.0585,</span>
-<span class="c">#  "classification": "girl-associated",</span>
-<span class="c">#  "confidence": "medium"}</span>
+<span class="c"># {</span>
+<span class="c">#   "name": "Michelle Renatta Chan",</span>
+<span class="c">#   "girl_associated_probability": 0.8929,</span>
+<span class="c">#   "boy_associated_probability": 0.0486,</span>
+<span class="c">#   "uncertain_probability": 0.0585,</span>
+<span class="c">#   "classification": "girl-associated",</span>
+<span class="c">#   "confidence": "medium"</span>
+<span class="c"># }</span></code></pre>
 
-results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre>
-
-        <h3>Model instance</h3>
+        <h3>Model instance (for repeated use)</h3>
 <pre><code><span class="k">from</span> genderfluid <span class="k">import</span> GenderfluidModel
 
 model = GenderfluidModel()  <span class="c"># loads once, cached</span>
 model.predict(<span class="s">"Elva Retta"</span>)
 model.predict_batch([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre>
+
+        <h3>Batch prediction</h3>
+<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_names
+
+results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>, <span class="s">"Max"</span>])
+<span class="k">for</span> r <span class="k">in</span> results:
+    print(f<span class="s">"{r['name']}: {r['classification']}"</span>)</code></pre>
     </section>
 
     <!-- CLI -->
@@ -666,6 +339,8 @@ Uncertain:       1.2%
 
 Classification: girl-associated
 Confidence:     high</code></pre>
+        <p>Multi-word names work without quotes:</p>
+<pre><code><span class="p">$</span> genderfluid predict Michelle Renatta Chan</code></pre>
     </section>
 
     <!-- COMPARE -->
@@ -679,14 +354,43 @@ Emma                      girl-associated         97%     0% high
 James                     boy-associated           8%    79% medium
 Alex                      uncertain               27%    59% low
 Max                       boy-associated           7%    77% medium
-Taylor                    uncertain               42%    17% low</code></pre>
+Taylor                    uncertain               42%    17% low
+
+5 names in 30.5 ms</code></pre>
+    </section>
+
+    <!-- BATCH -->
+    <section id="batch">
+        <h2>Batch processing</h2>
+        <p>Create a text file with one name per line:</p>
+<pre><code><span class="c"># names.txt</span>
+Emma
+James
+Alex
+Michelle Renatta Chan</code></pre>
+        <p>Then run:</p>
+<pre><code><span class="p">$</span> genderfluid predict --file names.txt</code></pre>
+        <p>Output is JSONL (one JSON object per line), with timing info at the end.</p>
+    </section>
+
+    <!-- JSON OUTPUT -->
+    <section id="json-output">
+        <h2>JSON output</h2>
+<pre><code><span class="p">$</span> genderfluid predict --json Alex
+
+{
+  "name": "Alex",
+  "girl_associated_probability": 0.2692,
+  "boy_associated_probability": 0.5914,
+  "uncertain_probability": 0.1395,
+  "classification": "uncertain",
+  "confidence": "low"
+}</code></pre>
     </section>
 
     <!-- ARCHITECTURE -->
     <section id="architecture">
         <h2>Architecture</h2>
-        <p>Character n-grams from normalized names feed into a logistic regression
-        trained on 102,927 names from SSA (1880-2020) and Census 2020.</p>
 <pre><code>Input name
   |
 Unicode normalization + lowercase
@@ -700,11 +404,11 @@ Logistic regression (3 classes)
 Sigmoid calibration
   |
 Output: girl-associated / boy-associated / uncertain</code></pre>
-
-        <div class="callout">
-            <strong>Note:</strong> This model does not determine gender identity.
-            It measures statistical naming patterns from training data.
-        </div>
+        <p>The classifier extracts character-level patterns. Names ending in
+        <code>-a</code>, <code>-ia</code>, <code>-ine</code> tend to be feminine.
+        Names ending in <code>-o</code>, <code>-us</code>, <code>-er</code> tend
+        to be masculine. The model learns these patterns from data rather than
+        hard-coding rules.</p>
     </section>
 
     <!-- FEATURES -->
@@ -717,61 +421,109 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
             <div class="item"><strong>Real data</strong><span>102,927 names from SSA and Census 2020.</span></div>
+            <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hyphens, apostrophes.</span></div>
+            <div class="item"><strong>MIT-free API</strong><span>Simple Python functions. No complex setup.</span></div>
         </div>
     </section>
 
     <!-- BENCHMARK -->
     <section id="benchmark">
         <h2>Benchmark</h2>
+        <p>Measured on Intel Celeron N4000 @ 1.10GHz:</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
             <tr><td>Model size</td><td>49 KB</td></tr>
-            <tr><td>Test accuracy</td><td>68.9%</td></tr>
+            <tr><td>Loading time</td><td>0.3 ms</td></tr>
+            <tr><td>Single prediction</td><td>0.93 ms</td></tr>
+            <tr><td>Batch (100 names)</td><td>18.7 ms</td></tr>
+            <tr><td>Batch (1000 names)</td><td>180 ms</td></tr>
+            <tr><td>Throughput</td><td>5,551 names/sec</td></tr>
+            <tr><td>Peak RSS</td><td>198 MB</td></tr>
+        </table>
+<pre><code><span class="p">$</span> genderfluid benchmark</code></pre>
+    </section>
+
+    <!-- ACCURACY -->
+    <section id="accuracy">
+        <h2>Accuracy</h2>
+        <p>Tested on held-out test data (10,294 names):</p>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Accuracy</td><td>68.9%</td></tr>
             <tr><td>Macro F1</td><td>0.629</td></tr>
             <tr><td>Girl-associated F1</td><td>0.844</td></tr>
             <tr><td>Boy-associated F1</td><td>0.664</td></tr>
-            <tr><td>Single prediction</td><td>0.93 ms</td></tr>
-            <tr><td>Batch (1000)</td><td>180 ms</td></tr>
-            <tr><td>Training data</td><td>102,927 names</td></tr>
+            <tr><td>Uncertain F1</td><td>0.380</td></tr>
+            <tr><td>Calibration error</td><td>0.031</td></tr>
         </table>
+        <p>The model is trained on U.S./English naming conventions. Accuracy
+        varies by cultural context.</p>
     </section>
 
     <!-- MORE CLI -->
     <section id="more-cli">
         <h2>CLI reference</h2>
-<pre><code><span class="c"># Predict a name</span>
-genderfluid predict Elva Retta
-
-<span class="c"># JSON output</span>
-genderfluid predict --json Alex
-
-<span class="c"># Compare names</span>
-genderfluid predict --compare Emma James Alex
-
-<span class="c"># Batch from file</span>
-genderfluid predict --file names.txt
-
-<span class="c"># Interactive mode</span>
-genderfluid interactive
-
-<span class="c"># Model info</span>
-genderfluid stats
-
-<span class="c"># Benchmark</span>
-genderfluid benchmark</code></pre>
+        <table>
+            <tr><th>Command</th><th>Description</th></tr>
+            <tr><td><code>genderfluid predict &lt;name&gt;</code></td><td>Predict gender association</td></tr>
+            <tr><td><code>genderfluid predict --json &lt;name&gt;</code></td><td>JSON output</td></tr>
+            <tr><td><code>genderfluid predict --compare &lt;names&gt;</code></td><td>Compare multiple names</td></tr>
+            <tr><td><code>genderfluid predict --file &lt;file&gt;</code></td><td>Batch from file (JSONL output)</td></tr>
+            <tr><td><code>genderfluid predict --info</code></td><td>Show model metadata</td></tr>
+            <tr><td><code>genderfluid interactive</code></td><td>Interactive prediction mode</td></tr>
+            <tr><td><code>genderfluid stats</code></td><td>Model statistics</td></tr>
+            <tr><td><code>genderfluid benchmark</code></td><td>Run inference benchmark</td></tr>
+            <tr><td><code>genderfluid --version</code></td><td>Show version</td></tr>
+            <tr><td><code>genderfluid --help</code></td><td>Show help</td></tr>
+        </table>
     </section>
 
     <!-- TRAINING -->
     <section id="training">
         <h2>Training from source</h2>
-<pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download SSA + Census data</span>
-<span class="p">$</span> python prepare_data.py        <span class="c"># validate and split</span>
+<pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download and process SSA + Census data</span>
+<span class="p">$</span> python prepare_data.py        <span class="c"># validate and split data</span>
 <span class="p">$</span> python train.py               <span class="c"># train model</span>
-<span class="p">$</span> python evaluate.py            <span class="c"># evaluate</span></code></pre>
-        <h3>Dataset format</h3>
+<span class="p">$</span> python evaluate.py            <span class="c"># evaluate on test set</span></code></pre>
+        <p>The training script:</p>
+        <ol>
+            <li>Loads and validates the dataset</li>
+            <li>Trains logistic regression with 3 classes</li>
+            <li>Calibrates probabilities with sigmoid scaling</li>
+            <li>Evaluates on the test set</li>
+            <li>Saves the model to <code>models/genderfluid-tiny.bin</code></li>
+        </ol>
+    </section>
+
+    <!-- DATASET -->
+    <section id="dataset">
+        <h2>Dataset</h2>
+        <p>JSONL format, one entry per line:</p>
 <pre><code>{"name": "Emma", "label": "girl-associated"}
 {"name": "James", "label": "boy-associated"}
 {"name": "Alex", "label": "uncertain"}</code></pre>
+        <p>Optional fields: <code>weight</code>, <code>country</code>, <code>language</code>, <code>year</code>.</p>
+        <p>Training data sources:</p>
+        <ul>
+            <li>U.S. Social Security Administration baby names (1880-2020): 100,364 unique names</li>
+            <li>U.S. Census Bureau 2020 Census first names: 53,616 unique names</li>
+        </ul>
+        <p>Names with 85%+ statistical association are labeled
+        <code>girl-associated</code> or <code>boy-associated</code>.
+        Below that threshold: <code>uncertain</code>.</p>
+    </section>
+
+    <!-- LIMITATIONS -->
+    <section id="limitations">
+        <h2>Limitations</h2>
+        <ul>
+            <li>Estimates statistical patterns, not gender identity</li>
+            <li>U.S./English-centric training data</li>
+            <li>Name associations vary by culture, language, and generation</li>
+            <li>The <code>uncertain</code> category exists for genuinely ambiguous names</li>
+            <li>Not suitable for high-stakes decisions</li>
+            <li>The classifier can be wrong</li>
+        </ul>
     </section>
 
     <!-- LICENSE -->
@@ -794,7 +546,6 @@ genderfluid benchmark</code></pre>
 </div>
 
 <script>
-// Hamburger toggle
 const burger = document.getElementById('burger');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
@@ -809,12 +560,10 @@ function toggleMenu() {
 burger.addEventListener('click', toggleMenu);
 overlay.addEventListener('click', toggleMenu);
 
-// Tree toggle
 function toggleGroup(header) {
     header.parentElement.classList.toggle('open');
 }
 
-// Active link on scroll
 const sections = document.querySelectorAll('section[id]');
 const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
 
@@ -830,9 +579,8 @@ const observer = new IntersectionObserver(entries => {
 
 sections.forEach(s => observer.observe(s));
 
-// Close menu on link click (mobile)
 sidebarLinks.forEach(l => l.addEventListener('click', () => {
-    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+    if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
         toggleMenu();
     }
 }));
