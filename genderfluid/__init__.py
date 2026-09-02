@@ -66,7 +66,7 @@ def name_probability(name: str) -> float:
     return predict_name(name)["girl_associated_probability"]
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __all__ = [
     "predict_name",
     "predict_names",

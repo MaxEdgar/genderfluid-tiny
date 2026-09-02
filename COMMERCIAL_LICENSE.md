@@ -30,7 +30,7 @@ A commercial license is required if you use genderfluid-tiny in:
 Contact the maintainer to discuss commercial licensing terms:
 
 - GitHub: https://github.com/MaxEdgar/genderfluid-tiny/issues (open a private discussion)
-- Email: [TODO: add your email]
+- Email: maxedgar008@gmail.com
 
 ### What a commercial license includes
 
