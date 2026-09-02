@@ -20,7 +20,7 @@ std::string GenderFluidModel::normalize_name(const std::string& name) const {
     result.reserve(name.size());
 
     for (char c : name) {
-        if (c == '-' || c == '\'' || c == '\u2019' || c == '\u2018') {
+        if (c == '-' || c == '\'' ) {
             result += ' ';
         } else if (std::isalpha(static_cast<unsigned char>(c))) {
             result += std::tolower(static_cast<unsigned char>(c));

@@ -27,5 +27,7 @@ native/*.o
 data/train.jsonl
 data/validation.jsonl
 data/test.jsonl
+data/ssa_alldata.txt
+data/census_2020_firstnames_sex.xlsx
 
 benchmark_output/

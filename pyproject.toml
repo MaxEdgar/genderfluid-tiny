@@ -1,12 +1,12 @@
 [build-system]
 requires = ["setuptools>=61.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "genderfluid-tiny"
 version = "1.0.0"
-description = "Ultra-tiny name-gender association classifier"
-requires-python = ">=3.9"
+description = "Tiny local name-gender association classifier"
+requires-python = ">=3.10"
 dependencies = [
     "scikit-learn>=1.0",
     "numpy>=1.20",
@@ -14,7 +14,10 @@ dependencies = [
 ]
 
 [project.scripts]
-genderfluid = "predict:main"
+genderfluid = "genderfluid.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["genderfluid*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

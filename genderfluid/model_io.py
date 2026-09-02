@@ -6,19 +6,19 @@ import os
 import numpy as np
 
 from genderfluid.features import FeatureExtractor
-from genderfluid.classifier import NameClassifier
+from genderfluid.classifier import NameClassifier, NUM_CLASSES
 
 
-# Binary format:
-# Header: 4 bytes magic "GFT\0", 4 bytes version
+# Binary format v2:
+# Header: 4 bytes magic "GFT\0", 4 bytes version (2)
 # Config JSON length (4 bytes), Config JSON bytes
-# Feature extractor weights shape (2x int32), weights as float32
 # Classifier coef shape (2x int32), coef as float32
 # Classifier intercept shape (1x int32), intercept as float32
-# Calibration: class_prior probabilities (3x float32)
+# Class prior (3x float32)
+# Calibration A (3x float32), Calibration B (3x float32)
 
 MAGIC = b"GFT\x00"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 
 
 def save_model(
@@ -50,33 +50,30 @@ def save_model(
         f.write(struct.pack("<I", len(config_json)))
         f.write(config_json)
 
-        # Feature extractor is stateless (hashing), nothing to save for weights
-
         # Classifier coefficients
         if classifier.model is not None:
             coef = classifier.model.coef_.astype(np.float32)
             intercept = classifier.model.intercept_.astype(np.float32)
-
             f.write(struct.pack("<ii", *coef.shape))
             f.write(coef.tobytes())
-
             f.write(struct.pack("<i", intercept.shape[0]))
             f.write(intercept.tobytes())
         else:
-            # Save empty arrays
             f.write(struct.pack("<ii", 0, 0))
             f.write(struct.pack("<i", 0))
 
-        # Calibrated classifier class priors if available
-        if classifier.calibrated is not None and hasattr(classifier.calibrated, "calibrated_classifiers_"):
-            # Save class prior from base estimator
-            if hasattr(classifier.model, "class_prior_"):
-                priors = classifier.model.class_prior_.astype(np.float32)
-            else:
-                priors = np.zeros(3, dtype=np.float32)
-            f.write(priors.tobytes())
+        # Class prior
+        if hasattr(classifier.model, "class_prior_") and classifier.model is not None:
+            priors = classifier.model.class_prior_.astype(np.float32)
         else:
-            f.write(np.zeros(3, dtype=np.float32).tobytes())
+            priors = np.zeros(NUM_CLASSES, dtype=np.float32)
+        f.write(priors.tobytes())
+
+        # Calibration parameters (sigmoid A, B per class)
+        calib_A = classifier.calib_A if classifier.calib_A is not None else np.ones(NUM_CLASSES, dtype=np.float32)
+        calib_B = classifier.calib_B if classifier.calib_B is not None else np.zeros(NUM_CLASSES, dtype=np.float32)
+        f.write(calib_A.astype(np.float32).tobytes())
+        f.write(calib_B.astype(np.float32).tobytes())
 
     return os.path.getsize(output_path)
 
@@ -94,10 +91,10 @@ def load_model(
         # Header
         magic = f.read(4)
         if magic != MAGIC:
-            raise ValueError(f"Invalid model file: bad magic bytes")
+            raise ValueError("Invalid model file: bad magic bytes")
 
         version = struct.unpack("<I", f.read(4))[0]
-        if version != FORMAT_VERSION:
+        if version not in (1, FORMAT_VERSION):
             raise ValueError(f"Unsupported model version: {version}")
 
         # Config
@@ -109,11 +106,12 @@ def load_model(
         fe_config = config.get("feature_extractor", {})
         feature_extractor = FeatureExtractor.from_config(fe_config)
 
-        # Classifier
+        # Classifier coefficients
         coef_shape = struct.unpack("<ii", f.read(8))
         if coef_shape[0] > 0 and coef_shape[1] > 0:
-            coef = np.frombuffer(f.read(coef_shape[0] * coef_shape[1] * 4), dtype=np.float32).reshape(coef_shape)
-
+            coef = np.frombuffer(
+                f.read(coef_shape[0] * coef_shape[1] * 4), dtype=np.float32
+            ).reshape(coef_shape)
             intercept_len = struct.unpack("<i", f.read(4))[0]
             intercept = np.frombuffer(f.read(intercept_len * 4), dtype=np.float32)
         else:
@@ -124,11 +122,19 @@ def load_model(
         # Class priors
         priors = np.frombuffer(f.read(12), dtype=np.float32)
 
+        # Calibration parameters
+        if version >= 2:
+            calib_A = np.frombuffer(f.read(12), dtype=np.float32).copy()
+            calib_B = np.frombuffer(f.read(12), dtype=np.float32).copy()
+        else:
+            # v1 format: skip old calibration data, use identity
+            calib_A = np.ones(NUM_CLASSES, dtype=np.float32)
+            calib_B = np.zeros(NUM_CLASSES, dtype=np.float32)
+
         # Reconstruct classifier
         clf_config = config.get("classifier", {})
         classifier = NameClassifier.from_config(clf_config)
 
-        # Create model directly (bypass training)
         from sklearn.linear_model import LogisticRegression
         model = LogisticRegression(
             C=clf_config.get("C", 1.0),
@@ -142,8 +148,8 @@ def load_model(
         if len(priors) == 3:
             model.class_prior_ = priors
         classifier.model = model
-        # Mark calibrated as None since we saved the base model
-        classifier.calibrated = None
+        classifier.calib_A = calib_A
+        classifier.calib_B = calib_B
 
         metadata = config.get("metadata", {})
 
@@ -156,6 +162,5 @@ def save_native_bin(
     metadata: dict,
     output_path: str,
 ) -> int:
-    """Save model in a compact native binary format for C++ inference."""
-    # This is the same as save_model but with a more explicit layout
+    """Save model in compact binary format for C++ inference."""
     return save_model(feature_extractor, classifier, metadata, output_path)

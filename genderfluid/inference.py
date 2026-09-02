@@ -1,42 +1,145 @@
-"""Inference module - high-level API for predictions."""
+"""Inference API for genderfluid-tiny."""
 
 import os
 from typing import Optional
 
 from genderfluid.preprocessing import normalize_name
-from genderfluid.features import FeatureExtractor
-from genderfluid.classifier import NameClassifier, LABELS
+from genderfluid.classifier import LABELS
 from genderfluid.model_io import load_model
 
 
-# Default model path
 DEFAULT_MODEL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "models", "genderfluid-tiny.bin"
 )
 
-# Singleton model cache
-_model_cache: Optional[tuple[FeatureExtractor, NameClassifier, dict]] = None
-_model_path_cache: Optional[str] = None
+
+class GenderfluidModel:
+    """
+    Name-gender association classifier.
+
+    Usage::
+
+        model = GenderfluidModel()              # loads default model
+        model = GenderfluidModel("path/to.bin") # loads custom model
+
+        result = model.predict("Elva Retta")
+        print(result["classification"])  # "girl-associated"
+
+        results = model.predict_batch(["Emma", "James", "Alex"])
+    """
+
+    def __init__(self, model_path: Optional[str] = None):
+        path = model_path or DEFAULT_MODEL_PATH
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                f"No model found at {path}\n\n"
+                "Train a model first:\n"
+                "  python process_real_data.py\n"
+                "  python prepare_data.py\n"
+                "  python train.py"
+            )
+        self._fe, self._clf, self._metadata = load_model(path)
+        self._model_path = path
+
+    @property
+    def metadata(self) -> dict:
+        return self._metadata
+
+    @property
+    def model_path(self) -> str:
+        return self._model_path
+
+    def _format_result(self, name: str, class_idx: int, proba) -> dict:
+        proba = proba[0] if proba.ndim > 1 else proba
+        max_prob = float(max(proba))
+
+        if max_prob >= 0.90:
+            confidence = "high"
+        elif max_prob >= 0.70:
+            confidence = "medium"
+        else:
+            confidence = "low"
+
+        return {
+            "name": name,
+            "girl_associated_probability": round(float(proba[0]), 4),
+            "boy_associated_probability": round(float(proba[1]), 4),
+            "uncertain_probability": round(float(proba[2]), 4),
+            "classification": LABELS[class_idx],
+            "confidence": confidence,
+        }
+
+    def predict(self, name: str) -> dict:
+        """
+        Predict gender association for a single name.
+
+        Returns dict with keys: name, girl_associated_probability,
+        boy_associated_probability, uncertain_probability,
+        classification, confidence.
+        """
+        normalized = normalize_name(name)
+        if not normalized:
+            return {
+                "name": name,
+                "girl_associated_probability": 0.33,
+                "boy_associated_probability": 0.33,
+                "uncertain_probability": 0.34,
+                "classification": "uncertain",
+                "confidence": "low",
+            }
+
+        features = self._fe.extract(normalized).reshape(1, -1)
+        class_idx, proba = self._clf.predict(features)
+        return self._format_result(name, int(class_idx[0]), proba)
+
+    def predict_batch(self, names: list[str]) -> list[dict]:
+        """
+        Predict gender association for multiple names.
+
+        More efficient than calling predict() in a loop
+        because the model is loaded once and features are batched.
+        """
+        normalized = [normalize_name(n) for n in names]
+
+        results = [None] * len(names)
+        valid = [(i, normalized[i]) for i in range(len(names)) if normalized[i]]
+
+        if valid:
+            valid_names = [n for _, n in valid]
+            features = self._fe.extract_batch(valid_names)
+            class_indices, probas = self._clf.predict(features)
+
+            for j, (orig_idx, _) in enumerate(valid):
+                results[orig_idx] = self._format_result(
+                    names[orig_idx], int(class_indices[j]), probas[j:j+1]
+                )
+
+        for i, name in enumerate(names):
+            if results[i] is None:
+                results[i] = {
+                    "name": name,
+                    "girl_associated_probability": 0.33,
+                    "boy_associated_probability": 0.33,
+                    "uncertain_probability": 0.34,
+                    "classification": "uncertain",
+                    "confidence": "low",
+                }
+
+        return results
 
 
-def _load_or_cache(model_path: Optional[str] = None) -> tuple[FeatureExtractor, NameClassifier, dict]:
-    """Load model from disk or use cached version."""
-    global _model_cache, _model_path_cache
+# ---------------------------------------------------------------------------
+# Module-level convenience functions (use singleton model for repeated calls)
+# ---------------------------------------------------------------------------
 
-    path = model_path or DEFAULT_MODEL_PATH
+_default_model: Optional[GenderfluidModel] = None
 
-    if _model_cache is not None and _model_path_cache == path:
-        return _model_cache
 
-    if not os.path.exists(path):
-        raise FileNotFoundError(
-            f"No model found at {path}\n\n"
-            "Run: python train.py"
-        )
-
-    _model_cache = load_model(path)
-    _model_path_cache = path
-    return _model_cache
+def _get_default_model() -> GenderfluidModel:
+    global _default_model
+    if _default_model is None:
+        _default_model = GenderfluidModel()
+    return _default_model
 
 
 def predict_name(
@@ -49,55 +152,28 @@ def predict_name(
     Predict gender association for a single name.
 
     Args:
-        name: Full name string
+        name: Full name string (e.g. "Elva Retta", "Alex", "Michelle Renatta Chan")
         model_path: Path to model file (optional, uses default)
-        country: Optional country context
-        language: Optional language context
+        country: Optional country context (informational only)
+        language: Optional language context (informational only)
 
     Returns:
-        Dictionary with prediction results
+        Dictionary with keys: name, girl_associated_probability,
+        boy_associated_probability, uncertain_probability,
+        classification, confidence.
+
+    Example::
+
+        result = predict_name("Elva Retta")
+        print(result["classification"])  # "girl-associated"
     """
-    feature_extractor, classifier, metadata = _load_or_cache(model_path)
-
-    normalized = normalize_name(name)
-    if not normalized:
-        return {
-            "name": name,
-            "girl_associated_probability": 0.33,
-            "boy_associated_probability": 0.33,
-            "uncertain_probability": 0.34,
-            "classification": "uncertain",
-            "confidence": "low",
-            "warning": "Empty or invalid name",
-        }
-
-    features = feature_extractor.extract(normalized)
-    features_2d = features.reshape(1, -1)
-
-    class_idx, proba = classifier.predict(features_2d)
-    class_idx = class_idx[0]
-    proba = proba[0]
-
-    classification = LABELS[class_idx]
-    max_prob = float(max(proba))
-
-    if max_prob >= 0.90:
-        confidence = "high"
-    elif max_prob >= 0.70:
-        confidence = "medium"
+    if model_path:
+        model = GenderfluidModel(model_path)
     else:
-        confidence = "low"
+        model = _get_default_model()
 
-    result = {
-        "name": name,
-        "girl_associated_probability": round(float(proba[0]), 4),
-        "boy_associated_probability": round(float(proba[1]), 4),
-        "uncertain_probability": round(float(proba[2]), 4),
-        "classification": classification,
-        "confidence": confidence,
-    }
+    result = model.predict(name)
 
-    # Add context warnings if requested but data is insufficient
     if country or language:
         result["context_warning"] = (
             "Model was not trained with regional/language context. "
@@ -114,54 +190,24 @@ def predict_names(
     """
     Predict gender association for multiple names (batch).
 
-    Optimized to not reload the model for each prediction.
+    More efficient than calling predict_name() in a loop.
+
+    Args:
+        names: List of name strings
+        model_path: Path to model file (optional, uses default)
+
+    Returns:
+        List of prediction dictionaries.
+
+    Example::
+
+        results = predict_names(["Emma", "James", "Alex"])
+        for r in results:
+            print(f"{r['name']}: {r['classification']}")
     """
-    feature_extractor, classifier, metadata = _load_or_cache(model_path)
+    if model_path:
+        model = GenderfluidModel(model_path)
+    else:
+        model = _get_default_model()
 
-    results = []
-    normalized_names = [normalize_name(n) for n in names]
-
-    # Batch feature extraction
-    valid_indices = [i for i, n in enumerate(normalized_names) if n]
-    if valid_indices:
-        valid_features = feature_extractor.extract_batch(
-            [normalized_names[i] for i in valid_indices]
-        )
-        class_indices, probas = classifier.predict(valid_features)
-
-    for i, name in enumerate(names):
-        norm = normalized_names[i]
-        if not norm:
-            results.append({
-                "name": name,
-                "girl_associated_probability": 0.33,
-                "boy_associated_probability": 0.33,
-                "uncertain_probability": 0.34,
-                "classification": "uncertain",
-                "confidence": "low",
-                "warning": "Empty or invalid name",
-            })
-        else:
-            idx = valid_indices.index(i)
-            class_idx = class_indices[idx]
-            proba = probas[idx]
-            classification = LABELS[class_idx]
-            max_prob = float(max(proba))
-
-            if max_prob >= 0.90:
-                confidence = "high"
-            elif max_prob >= 0.70:
-                confidence = "medium"
-            else:
-                confidence = "low"
-
-            results.append({
-                "name": name,
-                "girl_associated_probability": round(float(proba[0]), 4),
-                "boy_associated_probability": round(float(proba[1]), 4),
-                "uncertain_probability": round(float(proba[2]), 4),
-                "classification": classification,
-                "confidence": confidence,
-            })
-
-    return results
+    return model.predict_batch(names)

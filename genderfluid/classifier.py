@@ -1,22 +1,26 @@
-"""Logistic regression classifier with probability calibration."""
+"""Logistic regression classifier with lightweight probability calibration."""
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.calibration import CalibratedClassifierCV
 from typing import Optional
 
 
 LABELS = ["girl-associated", "boy-associated", "uncertain"]
 LABEL_TO_IDX = {label: i for i, label in enumerate(LABELS)}
 NUM_CLASSES = 3
-MIN_EXAMPLES_PER_CLASS = 5  # Enough for cv=3 plus margin
+MIN_EXAMPLES_PER_CLASS = 5
+
+
+def _sigmoid(x):
+    return 1.0 / (1.0 + np.exp(-np.clip(x, -30, 30)))
 
 
 class NameClassifier:
     """
     Logistic regression classifier for name-gender association.
 
-    Always trains with all 3 classes to ensure predict_proba returns shape (n, 3).
+    Uses lightweight sigmoid (Platt) calibration instead of
+    CalibratedClassifierCV to keep memory usage minimal.
     """
 
     def __init__(
@@ -29,7 +33,9 @@ class NameClassifier:
         self.max_iter = max_iter
         self.min_confidence = min_confidence
         self.model: Optional[LogisticRegression] = None
-        self.calibrated: Optional[CalibratedClassifierCV] = None
+        # Per-class sigmoid calibration parameters: A, B for sigmoid(A*raw + B)
+        self.calib_A: Optional[np.ndarray] = None
+        self.calib_B: Optional[np.ndarray] = None
 
     def train(
         self,
@@ -46,7 +52,6 @@ class NameClassifier:
         y_train = y.copy()
         sw_train = sample_weight.copy() if sample_weight is not None else None
 
-        # Add enough synthetic examples per missing class for cv=3
         for cls in sorted(missing):
             n_pad = MIN_EXAMPLES_PER_CLASS
             X_pad = rng.randn(n_pad, X.shape[1]).astype(np.float32) * 0.001
@@ -70,35 +75,80 @@ class NameClassifier:
         )
         self.model.fit(X_train, y_train, sample_weight=sw_train)
 
-        # Calibrate probabilities
-        self.calibrated = CalibratedClassifierCV(
-            self.model, cv=3, method="sigmoid"
-        )
-        self.calibrated.fit(X_train, y_train, sample_weight=sw_train)
+        # Lightweight Platt scaling calibration on a holdout from training data
+        n = len(y_train)
+        cal_size = min(2000, n // 5)
+        idx = rng.choice(n, cal_size, replace=False)
+        X_cal, y_cal = X_train[idx], y_train[idx]
+
+        raw_proba = self.model.predict_proba(X_cal)
+        # Fit per-class sigmoid: P(y=c|raw) = sigmoid(A * logit(raw) + B)
+        self.calib_A = np.ones(NUM_CLASSES, dtype=np.float32)
+        self.calib_B = np.zeros(NUM_CLASSES, dtype=np.float32)
+
+        for c in range(NUM_CLASSES):
+            targets = (y_cal == c).astype(np.float32)
+            if targets.sum() < 5 or (1 - targets).sum() < 5:
+                continue
+            raw = raw_proba[:, c].clip(1e-7, 1 - 1e-7)
+            logit = np.log(raw / (1 - raw))
+            # Simple linear fit: A, B via least squares
+            # Platt scaling: minimize targets * log(sigmoid(A*l+B)) + (1-targets) * log(1-sigmoid(A*l+B))
+            # Use a robust 2-parameter fit
+            best_A, best_B = 1.0, 0.0
+            best_loss = float("inf")
+            for A_try in [0.5, 1.0, 1.5, 2.0]:
+                for B_try in [-1.0, -0.5, 0.0, 0.5, 1.0]:
+                    s = _sigmoid(A_try * logit + B_try)
+                    s = s.clip(1e-7, 1 - 1e-7)
+                    loss = -np.mean(targets * np.log(s) + (1 - targets) * np.log(1 - s))
+                    if loss < best_loss:
+                        best_loss = loss
+                        best_A, best_B = A_try, B_try
+            self.calib_A[c] = best_A
+            self.calib_B[c] = best_B
+
+        del X_cal, y_cal, raw_proba
+        import gc
+        gc.collect()
+
+    def _calibrate_proba(self, raw_proba: np.ndarray) -> np.ndarray:
+        """Apply sigmoid calibration to raw probabilities."""
+        if self.calib_A is None:
+            return raw_proba
+
+        calibrated = np.zeros_like(raw_proba)
+        for c in range(raw_proba.shape[1]):
+            raw = raw_proba[:, c].clip(1e-7, 1 - 1e-7)
+            logit = np.log(raw / (1 - raw))
+            calibrated[:, c] = _sigmoid(self.calib_A[c] * logit + self.calib_B[c])
+
+        # Renormalize
+        row_sums = calibrated.sum(axis=1, keepdims=True)
+        row_sums = np.maximum(row_sums, 1e-10)
+        calibrated /= row_sums
+        return calibrated
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        """Get calibrated probabilities for each class. Always returns shape (n, 3)."""
-        if self.calibrated is not None:
-            proba = self.calibrated.predict_proba(X)
-        elif self.model is not None:
-            proba = self.model.predict_proba(X)
-        else:
+        """Get calibrated probabilities. Always returns shape (n, 3)."""
+        if self.model is None:
             raise RuntimeError("Model not trained. Call train() first.")
 
-        # Ensure 3-column output
-        if proba.shape[1] < NUM_CLASSES:
-            full_proba = np.zeros((proba.shape[0], NUM_CLASSES), dtype=np.float32)
-            model_classes = self.model.classes_
-            for i, c in enumerate(model_classes):
-                full_proba[:, c] = proba[:, i]
-            for c in range(NUM_CLASSES):
-                if c not in model_classes:
-                    full_proba[:, c] = 1.0 / NUM_CLASSES
-            row_sums = full_proba.sum(axis=1, keepdims=True)
-            full_proba /= row_sums
-            return full_proba
+        raw_proba = self.model.predict_proba(X)
 
-        return proba
+        # Ensure 3-column output
+        if raw_proba.shape[1] < NUM_CLASSES:
+            full = np.zeros((raw_proba.shape[0], NUM_CLASSES), dtype=np.float32)
+            for i, c in enumerate(self.model.classes_):
+                full[:, c] = raw_proba[:, i]
+            for c in range(NUM_CLASSES):
+                if c not in self.model.classes_:
+                    full[:, c] = 1.0 / NUM_CLASSES
+            row_sums = full.sum(axis=1, keepdims=True)
+            full /= np.maximum(row_sums, 1e-10)
+            raw_proba = full
+
+        return self._calibrate_proba(raw_proba.astype(np.float32))
 
     def predict(self, X: np.ndarray) -> tuple:
         """

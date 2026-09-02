@@ -27,15 +27,6 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
-      - name: Generate dataset
-        run: python generate_names.py
-
-      - name: Prepare data
-        run: python prepare_data.py
-
-      - name: Train model
-        run: python train.py
-
       - name: Run tests
         run: pytest tests/ -v
 
