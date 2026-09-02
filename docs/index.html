@@ -302,10 +302,10 @@
             </button>
         </div>
         <div class="stats">
-            <div class="stat"><strong data-count="49" data-suffix=" KB">0 KB</strong><span>Model</span></div>
-            <div class="stat"><strong data-count="0.9" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
-            <div class="stat"><strong data-count="102" data-suffix="K">0K</strong><span>Names trained</span></div>
-            <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
+            <div class="stat"><strong data-count="49" data-start="99" data-suffix=" KB">99 KB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="0.9" data-start="9.9" data-suffix=" ms" data-decimal="1">9.9 ms</strong><span>Prediction</span></div>
+            <div class="stat"><strong data-count="102" data-start="200" data-suffix="K">200K</strong><span>Names trained</span></div>
+            <div class="stat"><strong data-count="0" data-start="999" data-suffix="">999</strong><span>API calls</span></div>
         </div>
     </section>
 
@@ -742,16 +742,17 @@ setupCopyButtons();
 // Counting animation
 function animateCount(el) {
     var target = parseFloat(el.getAttribute('data-count'));
+    var from = parseFloat(el.getAttribute('data-start')) || 0;
     var suffix = el.getAttribute('data-suffix') || '';
     var decimals = parseInt(el.getAttribute('data-decimal')) || 0;
-    var duration = 8000;
+    var duration = 5000;
     var start = null;
 
     function step(timestamp) {
         if (!start) start = timestamp;
         var progress = Math.min((timestamp - start) / duration, 1);
         var eased = Math.pow(progress, 3);
-        var current = eased * target;
+        var current = from + (target - from) * eased;
 
         if (decimals > 0) {
             el.textContent = current.toFixed(decimals) + suffix;
