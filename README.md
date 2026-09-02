@@ -14,6 +14,10 @@
 
 ---
 
+**[Documentation](https://maxedgar.github.io/genderfluid-tiny/)** | [PyPI](https://pypi.org/project/genderfluid-tiny/) | [GitHub](https://github.com/MaxEdgar/genderfluid-tiny)
+
+---
+
 ## What is genderfluid-tiny?
 
 genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 102,927 real names from U.S. Social Security Administration data (1880-2020) and Census 2020 records.
