@@ -34,7 +34,7 @@
         nav .inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         nav .left { display: flex; align-items: center; gap: 14px; }
 
-        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: none; align-items: center; justify-content: center; width: 36px; height: 36px; }
+        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; }
         .burger:hover { background: var(--gray-6); }
         .burger svg { width: 22px; height: 22px; }
         .burger .close-icon { display: none; }
@@ -64,12 +64,12 @@
         .nav-group-items a:hover { color: var(--gray-1); background: var(--gray-6); }
         .nav-group-items a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); font-weight: 500; }
 
-        /* OVERLAY */
+        /* OVERLAY - mobile only */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 45; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
         .overlay.open { opacity: 1; pointer-events: auto; }
 
         /* MAIN */
-        .main { margin-left: var(--sidebar-w); padding-top: var(--nav-h); min-height: 100vh; }
+        .main { margin-left: var(--sidebar-w); padding-top: var(--nav-h); min-height: 100vh; transition: margin-left 0.3s var(--ease); }
         .content { max-width: 740px; margin: 0 auto; padding: 48px 40px 80px; }
 
         section { margin-bottom: 52px; scroll-margin-top: calc(var(--nav-h) + 24px); opacity: 0; transform: translateY(12px); animation: fadeUp 0.45s var(--ease) forwards; }
@@ -99,9 +99,14 @@
         li { margin-bottom: 4px; }
 
         .hero { padding: 48px 0 40px; margin-bottom: 48px; text-align: center; }
-        .hero .install { margin-top: 24px; display: inline-flex; align-items: center; gap: 10px; background: var(--gray-6); border: 1px solid var(--gray-5); padding: 10px 18px; border-radius: 8px; font-family: var(--mono); font-size: 14px; color: var(--accent); transition: border-color 0.2s var(--ease); }
-        .hero .install:hover { border-color: var(--accent); }
-        .hero .install span { color: var(--gray-4); user-select: none; }
+        .hero .install-wrap { margin-top: 24px; display: inline-flex; align-items: center; gap: 0; background: var(--gray-6); border: 1px solid var(--gray-5); border-radius: 8px; overflow: hidden; transition: border-color 0.2s var(--ease); }
+        .hero .install-wrap:hover { border-color: var(--accent); }
+        .hero .install-cmd { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; font-family: var(--mono); font-size: 14px; color: var(--accent); cursor: default; }
+        .hero .install-cmd span { color: var(--gray-4); user-select: none; }
+        .hero .install-copy { background: none; border: none; border-left: 1px solid var(--gray-5); color: var(--gray-4); cursor: pointer; padding: 10px 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s var(--ease); }
+        .hero .install-copy:hover { color: var(--accent); background: rgba(243, 93, 18, 0.08); }
+        .hero .install-copy svg { width: 16px; height: 16px; }
+        .hero .install-copy.copied { color: #4ade80; }
         .hero .stats { display: flex; justify-content: center; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
         .hero .stat { text-align: center; }
         .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--gray-1); font-variant-numeric: tabular-nums; }
@@ -134,9 +139,8 @@
         footer { border-top: 1px solid var(--gray-5); padding: 28px 24px; text-align: center; color: var(--gray-4); font-size: 13px; }
         footer a { color: var(--gray-3); margin: 0 10px; }
 
-        /* Mobile */
+        /* MOBILE */
         @media (max-width: 900px) {
-            .burger { display: flex; }
             .sidebar { transform: translateX(-100%); width: 280px; z-index: 60; }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
@@ -220,7 +224,7 @@
     </div>
 </aside>
 
-<div class="main">
+<div class="main" id="main">
 <div class="content">
 
     <!-- OVERVIEW -->
@@ -228,7 +232,13 @@
         <h1>genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
         49KB model, CPU only, no API needed.</p>
-        <div class="install"><span>$</span> pip install genderfluid-tiny</div>
+        <div class="install-wrap">
+            <div class="install-cmd"><span>$</span> pip install genderfluid-tiny</div>
+            <button class="install-copy" id="copyBtn" aria-label="Copy to clipboard" title="Copy to clipboard">
+                <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <svg class="icon-check" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+        </div>
         <div class="stats">
             <div class="stat"><strong data-count="49" data-suffix=" KB">0 KB</strong><span>Model</span></div>
             <div class="stat"><strong data-count="0.9" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
@@ -545,15 +555,19 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
 </div>
 
 <script>
-const burger = document.getElementById('burger');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
+var burger = document.getElementById('burger');
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('overlay');
+var main = document.getElementById('main');
+var isMobile = window.innerWidth <= 900;
 
 function openMenu() {
     burger.classList.add('open');
     sidebar.classList.add('open');
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    if (isMobile) {
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeMenu() {
@@ -573,28 +587,31 @@ burger.addEventListener('click', function() {
 
 overlay.addEventListener('click', closeMenu);
 
-// Close on Escape
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && sidebar.classList.contains('open')) {
         closeMenu();
     }
 });
 
-// Close sidebar on link click (mobile)
 sidebar.querySelectorAll('a[href^="#"]').forEach(function(link) {
     link.addEventListener('click', function() {
-        if (window.innerWidth <= 900) {
-            closeMenu();
-        }
+        if (isMobile) closeMenu();
     });
 });
 
-// Toggle sidebar groups
+window.addEventListener('resize', function() {
+    isMobile = window.innerWidth <= 900;
+    if (!isMobile) {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+});
+
 function toggleGroup(header) {
     header.parentElement.classList.toggle('open');
 }
 
-// Scroll spy for active sidebar links
+// Scroll spy
 var sections = document.querySelectorAll('section[id]');
 var sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
 
@@ -610,7 +627,25 @@ var observer = new IntersectionObserver(function(entries) {
 
 sections.forEach(function(s) { observer.observe(s); });
 
-// Animate counting numbers on scroll
+// Copy button
+var copyBtn = document.getElementById('copyBtn');
+var iconCopy = copyBtn.querySelector('.icon-copy');
+var iconCheck = copyBtn.querySelector('.icon-check');
+
+copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText('pip install genderfluid-tiny').then(function() {
+        iconCopy.style.display = 'none';
+        iconCheck.style.display = 'block';
+        copyBtn.classList.add('copied');
+        setTimeout(function() {
+            iconCopy.style.display = 'block';
+            iconCheck.style.display = 'none';
+            copyBtn.classList.remove('copied');
+        }, 2000);
+    });
+});
+
+// Counting animation
 function animateCount(el) {
     var target = parseFloat(el.getAttribute('data-count'));
     var suffix = el.getAttribute('data-suffix') || '';
@@ -621,7 +656,6 @@ function animateCount(el) {
     function step(timestamp) {
         if (!start) start = timestamp;
         var progress = Math.min((timestamp - start) / duration, 1);
-        // Ease out cubic
         var eased = 1 - Math.pow(1 - progress, 3);
         var current = eased * target;
 
@@ -631,15 +665,12 @@ function animateCount(el) {
             el.textContent = Math.round(current) + suffix;
         }
 
-        if (progress < 1) {
-            requestAnimationFrame(step);
-        }
+        if (progress < 1) requestAnimationFrame(step);
     }
 
     requestAnimationFrame(step);
 }
 
-// Observe stats for counting animation
 var statsObserved = false;
 var statsSection = document.querySelector('.hero .stats');
 if (statsSection) {
