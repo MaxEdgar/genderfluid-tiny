@@ -41,7 +41,7 @@ dependencies = [
 Homepage = "https://github.com/MaxEdgar/genderfluid-tiny"
 Repository = "https://github.com/MaxEdgar/genderfluid-tiny"
 Issues = "https://github.com/MaxEdgar/genderfluid-tiny/issues"
-Documentation = "https://github.com/MaxEdgar/genderfluid-tiny#readme"
+Documentation = "https://maxedgar.github.io/genderfluid-tiny/"
 Changelog = "https://github.com/MaxEdgar/genderfluid-tiny/releases"
 
 [project.scripts]

@@ -9,7 +9,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/genderfluid-tiny.svg)](https://pypi.org/project/genderfluid-tiny/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-29%20passed-brightgreen.svg)](tests/)
-[![License](https://img.shields.io/badge/license-MIT-gray.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Polyform%20NC-gray.svg)](LICENSE)
 [![Model size](https://img.shields.io/badge/model-49%20KB-brightgreen.svg)](models/)
 
 ---
@@ -31,7 +31,7 @@ Unlike API-based gender detection services, genderfluid-tiny runs entirely offli
 | Training data | 102,927 names (SSA + Census) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
-| License | MIT |
+| License | Polyform Noncommercial |
 | Python | 3.10+ |
 
 ## Install
@@ -208,7 +208,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
 | Model size | 49 KB | 600 KB+ | 10 MB+ |
-| License | MIT | GPLv3 | -- |
+| License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
 | Uncertain category | Yes | Partial | No |
@@ -275,4 +275,5 @@ genderfluid-tiny/
 
 ## License
 
-MIT
+Polyform Noncommercial License 1.0.0. Free for personal, educational, and noncommercial use.
+Commercial use requires a license. See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md).
