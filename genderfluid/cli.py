@@ -220,7 +220,7 @@ def _build_parser():
         prog="genderfluid",
         description="genderfluid-tiny: name gender association classifier",
     )
-    parser.add_argument("--version", action="version", version="genderfluid-tiny 1.0.1")
+    parser.add_argument("--version", action="version", version="genderfluid-tiny 1.0.2")
     parser.add_argument("--color", action="store_true", help="colored output")
     parser.add_argument("--verbose", "-v", action="store_true", help="verbose output")
 

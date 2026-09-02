@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>genderfluid-tiny -- Offline Python Name-Gender Classifier</title>
+    <meta name="description" content="Tiny offline Python classifier that predicts gender associations from names. 49KB model, CPU only, no API needed.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #f0f6fc;
+            letter-spacing: -0.02em;
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #8b949e;
+            margin-top: 12px;
+        }
+
+        .hero .install {
+            margin-top: 32px;
+        }
+
+        .hero .install code {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            color: #58a6ff;
+            display: inline-block;
+        }
+
+        /* Stats bar */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 32px 0;
+            border-bottom: 1px solid #21262d;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f0f6fc;
+        }
+
+        .stat .label {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+
+        /* Sections */
+        section {
+            padding: 60px 0;
+            border-bottom: 1px solid #21262d;
+        }
+
+        section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: #f0f6fc;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #8b949e;
+        }
+
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Code blocks */
+        pre {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        pre code {
+            color: #c9d1d9;
+            font-size: 0.9rem;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        .prompt {
+            color: #7ee787;
+        }
+
+        .comment {
+            color: #8b949e;
+        }
+
+        .string {
+            color: #a5d6ff;
+        }
+
+        .keyword {
+            color: #ff7b72;
+        }
+
+        .output {
+            color: #8b949e;
+        }
+
+        /* Feature grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #21262d;
+        }
+
+        th {
+            color: #f0f6fc;
+            font-weight: 600;
+        }
+
+        td {
+            color: #8b949e;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #484f58;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 2rem; }
+            .stats { gap: 24px; }
+            .stat .value { font-size: 1.4rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="container">
+        <h1>genderfluid-tiny</h1>
+        <p class="tagline">Offline Python classifier that predicts gender associations from names.</p>
+        <div class="install">
+            <code>pip install genderfluid-tiny</code>
+        </div>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="container" style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap;">
+        <div class="stat">
+            <div class="value">49 KB</div>
+            <div class="label">Model size</div>
+        </div>
+        <div class="stat">
+            <div class="value">&lt; 1 ms</div>
+            <div class="label">Single prediction</div>
+        </div>
+        <div class="stat">
+            <div class="value">102K</div>
+            <div class="label">Training names</div>
+        </div>
+        <div class="stat">
+            <div class="value">0</div>
+            <div class="label">API calls</div>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="container">
+        <h2>What it does</h2>
+        <p>Given a name, genderfluid-tiny estimates whether it is statistically associated with feminine or masculine naming conventions. It outputs <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
+        <p>This is not a gender identity classifier. It measures naming patterns learned from 102,927 real names in U.S. Social Security Administration data (1880-2020) and Census 2020 records.</p>
+
+        <h3>Python API</h3>
+<pre><code><span class="keyword">from</span> genderfluid <span class="keyword">import</span> classify_name, is_girl_name, name_probability
+
+classify_name(<span class="string">"Emma"</span>)       <span class="comment"># "girl-associated"</span>
+classify_name(<span class="string">"James"</span>)      <span class="comment"># "boy-associated"</span>
+classify_name(<span class="string">"Alex"</span>)       <span class="comment"># "uncertain"</span>
+
+is_girl_name(<span class="string">"Emma"</span>)        <span class="comment"># True</span>
+name_probability(<span class="string">"Emma"</span>)    <span class="comment"># 0.9731</span></code></pre>
+
+        <h3>CLI</h3>
+<pre><code><span class="prompt">$</span> genderfluid predict Elva Retta
+
+Name: Elva Retta
+
+Girl-associated: 97.5%
+Boy-associated:  1.2%
+Uncertain:       1.2%
+
+Classification: girl-associated
+Confidence:     high</code></pre>
+
+        <h3>Compare names</h3>
+<pre><code><span class="prompt">$</span> genderfluid predict --compare Emma James Alex Max Taylor
+
+Name                      Classification         Girl    Boy Confidence
+----------------------------------------------------------------------
+Emma                      girl-associated         97%     0% high
+James                     boy-associated           8%    79% medium
+Alex                      uncertain               27%    59% low
+Max                       boy-associated           7%    77% medium
+Taylor                    uncertain               42%    17% low</code></pre>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>Architecture</h2>
+<pre><code>Input name
+  |
+Unicode normalization + lowercase
+  |
+Character n-gram extraction (2-5 grams)
+  |
+Hashing trick (4096-dim feature vector)
+  |
+Logistic regression (3 classes)
+  |
+Sigmoid calibration
+  |
+Output: girl-associated / boy-associated / uncertain</code></pre>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>Performance</h2>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Model size</td><td>49 KB</td></tr>
+            <tr><td>Test accuracy</td><td>68.9%</td></tr>
+            <tr><td>Macro F1</td><td>0.629</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.844</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.664</td></tr>
+            <tr><td>Single name latency</td><td>0.93 ms</td></tr>
+            <tr><td>Batch (1000 names)</td><td>180 ms</td></tr>
+            <tr><td>Throughput</td><td>5,551 names/sec</td></tr>
+        </table>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>Features</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Fully offline</h3>
+                <p>No internet required. No data leaves your machine. No API key needed.</p>
+            </div>
+            <div class="card">
+                <h3>Tiny model</h3>
+                <p>49 KB. Smaller than most profile pictures. Fits anywhere.</p>
+            </div>
+            <div class="card">
+                <h3>Fast inference</h3>
+                <p>Sub-millisecond single predictions. Thousands of names per second.</p>
+            </div>
+            <div class="card">
+                <h3>Real data</h3>
+                <p>Trained on 102,927 names from SSA (1880-2020) and Census 2020.</p>
+            </div>
+            <div class="card">
+                <h3>Uncertain category</h3>
+                <p>Does not force binary classification. Ambiguous names get marked uncertain.</p>
+            </div>
+            <div class="card">
+                <h3>CPU only</h3>
+                <p>No GPU required. Works on old hardware. No CUDA, no AVX.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>Install</h2>
+<pre><code><span class="prompt">$</span> pip install genderfluid-tiny</code></pre>
+
+        <h3>From source</h3>
+<pre><code><span class="prompt">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
+<span class="prompt">$</span> cd genderfluid-tiny
+<span class="prompt">$</span> pip install -e .</code></pre>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>More CLI commands</h2>
+<pre><code><span class="comment"># JSON output</span>
+<span class="prompt">$</span> genderfluid predict --json Alex
+
+<span class="comment"># Interactive mode</span>
+<span class="prompt">$</span> genderfluid interactive
+
+<span class="comment"># Model info</span>
+<span class="prompt">$</span> genderfluid stats
+
+<span class="comment"># Benchmark</span>
+<span class="prompt">$</span> genderfluid benchmark
+
+<span class="comment"># Batch from file</span>
+<span class="prompt">$</span> genderfluid predict --file names.txt</code></pre>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>License</h2>
+        <p>Polyform Noncommercial License 1.0.0. Free for personal, educational, and noncommercial use. Commercial use requires a license.</p>
+        <p><a href="https://github.com/MaxEdgar/genderfluid-tiny/blob/main/COMMERCIAL_LICENSE.md">Commercial licensing info</a></p>
+        <p><a href="https://github.com/MaxEdgar/genderfluid-tiny">View on GitHub</a></p>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        genderfluid-tiny v1.0.2
+    </div>
+</footer>
+
+</body>
+</html>
