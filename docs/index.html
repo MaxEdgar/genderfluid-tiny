@@ -190,11 +190,13 @@
         [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
 
         /* EASTER EGG */
-        .fall { animation: fall-down 1.5s ease-in forwards; }
+        .fall { animation: fall-down var(--fall-duration, 1.5s) var(--fall-delay, 0s) ease-in forwards; }
         @keyframes fall-down {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(120vh) rotate(25deg); opacity: 0; }
+            100% { transform: translateY(120vh) rotate(var(--fall-rotate, 15deg)); opacity: 0; }
         }
+        .easter-btn { position: fixed; bottom: 8px; right: 8px; background: none; border: none; color: var(--text-muted); font-family: var(--font); font-size: 10px; cursor: pointer; opacity: 0.3; transition: opacity 0.3s var(--ease); z-index: 200; }
+        .easter-btn:hover { opacity: 1; }
 
         /* MOBILE */
         @media (max-width: 900px) {
@@ -611,10 +613,6 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a></p>
     </section>
 
-    <div class="easter-egg" id="easterEgg" style="text-align:center;padding:40px 0 20px;">
-        <button onclick="triggerGravity()" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:6px 16px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;transition:all 0.2s var(--ease);">Click me</button>
-    </div>
-
     <footer>
         genderfluid-tiny v1.0.2 &nbsp;&middot;&nbsp;
         <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
@@ -789,14 +787,26 @@ if (statsSection) {
 
 // Easter egg: gravity
 function triggerGravity() {
-    var elements = document.querySelectorAll('section, footer, nav, .sidebar, .theme-toggle, .github-btn, .easter-egg');
-    elements.forEach(function(el, i) {
-        setTimeout(function() {
-            el.classList.add('fall');
-        }, i * 80);
+    var elements = document.querySelectorAll('section, footer, nav, .sidebar, .theme-toggle, .github-btn');
+    // shuffle elements for random order
+    var arr = Array.from(elements);
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    arr.forEach(function(el, i) {
+        var dur = 0.8 + Math.random() * 2;
+        var delay = Math.random() * 1.5;
+        var rot = -40 + Math.random() * 80;
+        el.style.setProperty('--fall-duration', dur + 's');
+        el.style.setProperty('--fall-delay', delay + 's');
+        el.style.setProperty('--fall-rotate', rot + 'deg');
+        el.classList.add('fall');
     });
 }
 </script>
+
+<button class="easter-btn" onclick="triggerGravity()">Click me</button>
 
 </body>
 </html>
