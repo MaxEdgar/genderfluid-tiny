@@ -1,83 +1,55 @@
-# genderfluid tiny
+# genderfluid-tiny
 
-Tiny local name-gender association classifier.
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 49KB model, CPU only, no API needed.**
 
-Estimates statistical associations between names and gendered naming conventions
-in its training data. Does not determine a person's gender identity.
+`pip install genderfluid-tiny`
 
 ---
 
+[![PyPI version](https://img.shields.io/pypi/v/genderfluid-tiny.svg)](https://pypi.org/project/genderfluid-tiny/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-29%20passed-brightgreen.svg)](tests/)
-[![Model size](https://img.shields.io/badge/model-0.05%20MB-brightgreen.svg)](models/)
 [![License](https://img.shields.io/badge/license-MIT-gray.svg)](LICENSE)
+[![Model size](https://img.shields.io/badge/model-49%20KB-brightgreen.svg)](models/)
 
 ---
 
-## Overview
+## What is genderfluid-tiny?
 
-A small offline classifier that estimates whether a name is statistically
-associated with feminine or masculine naming conventions. The classifier
-uses character n-gram features and logistic regression. It outputs three
-categories: `girl-associated`, `boy-associated`, and `uncertain`.
+genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 102,927 real names from U.S. Social Security Administration data (1880-2020) and Census 2020 records.
+
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 49KB.
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Inference | CPU only |
+| Model size | 49 KB (0.05 MB) |
+| Training data | 102,927 names (SSA + Census) |
+| Inference | CPU only, no GPU needed |
 | Internet | Not required |
-| GPU | Not required |
-| Model size | 0.05 MB (49,689 bytes) |
+| License | MIT |
 | Python | 3.10+ |
 
----
-
-## Installation
+## Install
 
 ```bash
-git clone https://github.com/MaxEdgar/genderfluid-tiny.git
-cd genderfluid-tiny
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+pip install genderfluid-tiny
 ```
 
-Or install as a package:
-
-```bash
-pip install -e .
-```
-
-After installation, the `genderfluid` command is available system-wide.
-
-Windows:
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+That's it. The `genderfluid` command and Python API are available immediately.
 
 ## Quick start
 
 ```bash
-python predict.py "Elva Retta"
+genderfluid predict "Emma"
 ```
 
-Or after `pip install -e .`:
-
-```bash
-genderfluid predict "Elva Retta"
 ```
-
-Output:
-
-```
-Name: Elva Retta
+Name: Emma
 
 Girl-associated: 97.5%
-Boy-associated:  1.2%
-Uncertain:       1.2%
+Boy-associated:  0.0%
+Uncertain:       2.5%
 
 Classification: girl-associated
 Confidence:     high
@@ -85,139 +57,62 @@ Confidence:     high
 
 ## Python API
 
-There are two ways to use the Python API.
-
-**Option 1: Simple one-liners**
+### Simple one-liners
 
 ```python
 from genderfluid import classify_name, is_girl_name, is_boy_name, name_probability
 
-classify_name("Emma")        # "girl-associated"
-classify_name("James")       # "boy-associated"
-classify_name("Alex")        # "uncertain"
+classify_name("Emma")       # "girl-associated"
+classify_name("James")      # "boy-associated"
+classify_name("Alex")       # "uncertain"
 
-is_girl_name("Emma")         # True
-is_boy_name("James")         # True
+is_girl_name("Emma")        # True
+is_boy_name("James")        # True
 
-name_probability("Emma")     # 0.9731
-name_probability("Alex")     # 0.2692
+name_probability("Emma")    # 0.9731
 ```
 
-**Option 2: Full result dict**
+### Full result dict
 
 ```python
 from genderfluid import predict_name, predict_names
 
-result = predict_name("Alex")
-print(result["classification"])  # "uncertain"
-print(result["girl_associated_probability"])  # 0.2692
+result = predict_name("Michelle Renatta Chan")
+# {"name": "Michelle Renatta Chan",
+#  "girl_associated_probability": 0.8929,
+#  "boy_associated_probability": 0.0486,
+#  "uncertain_probability": 0.0585,
+#  "classification": "girl-associated",
+#  "confidence": "medium"}
 
 results = predict_names(["Emma", "James", "Alex"])
 for r in results:
     print(f"{r['name']}: {r['classification']}")
 ```
 
-**Option 3: Model instance (recommended for repeated use)**
+### Model instance (for repeated use)
 
 ```python
 from genderfluid import GenderfluidModel
 
-model = GenderfluidModel()  # loads default model
-
-result = model.predict("Elva Retta")
-print(result["classification"])  # "girl-associated"
-
-# Batch prediction (more efficient for many names)
-results = model.predict_batch(["Emma", "James", "Alex", "Max", "Taylor"])
-for r in results:
-    print(f"{r['name']}: {r['classification']} ({r['confidence']})")
+model = GenderfluidModel()  # loads once, cached
+model.predict("Elva Retta")
+model.predict_batch(["Emma", "James", "Alex", "Max", "Taylor"])
 ```
-
-The model is loaded once and cached. Subsequent predictions are fast.
-
-**Prediction result format:**
-
-```python
-{
-    "name": "Elva Retta",
-    "girl_associated_probability": 0.975,
-    "boy_associated_probability": 0.012,
-    "uncertain_probability": 0.012,
-    "classification": "girl-associated",
-    "confidence": "high"
-}
-```
-
-Confidence levels: `high` (>= 90%), `medium` (>= 70%), `low` (< 70%).
 
 ## CLI
 
-After `pip install -e .`, use the `genderfluid` command. Or run directly
-with `python -m genderfluid` or `python predict.py`.
-
-**Predict a name:**
-
 ```bash
-genderfluid predict "Elva Retta"
-genderfluid "Alex"                      # shorthand
-python predict.py "Elva Retta"         # backward-compatible
+genderfluid predict "Elva Retta"                    # human-readable
+genderfluid predict --json "Alex"                   # JSON output
+genderfluid predict --compare "Emma" "James" "Alex" # comparison table
+genderfluid predict --file names.txt                # batch from file
+genderfluid interactive                             # interactive mode
+genderfluid stats                                   # model info
+genderfluid benchmark                               # performance test
 ```
 
-**Compare multiple names:**
-
-```bash
-genderfluid predict --compare "Emma" "James" "Alex" "Max" "Taylor"
-```
-
-Output:
-
-```
-Name                      Classification         Girl    Boy Confidence
-----------------------------------------------------------------------
-Emma                      girl-associated         97%     0% high
-James                     boy-associated           8%    79% medium
-Alex                      uncertain               27%    59% low
-Max                       boy-associated           7%    77% medium
-Taylor                    uncertain               42%    17% low
-
-5 names in 31.6 ms
-```
-
-**Batch from file:**
-
-```bash
-genderfluid predict --file names.txt
-```
-
-Reads one name per line, outputs JSONL with timing info.
-
-**JSON output:**
-
-```bash
-genderfluid predict --json "Michelle Renatta Chan"
-```
-
-**Interactive mode:**
-
-```bash
-genderfluid interactive
-```
-
-**Model statistics:**
-
-```bash
-genderfluid stats
-```
-
-**Benchmark:**
-
-```bash
-genderfluid benchmark
-```
-
-## Model
-
-The classifier works as follows:
+## How it works
 
 ```
 Input name
@@ -226,7 +121,7 @@ Unicode normalization + lowercase
   |
 Character n-gram extraction (2-5 grams)
   |
-Hashing trick (compact fixed-size feature vector)
+Hashing trick (4096-dim feature vector)
   |
 Logistic regression (3 classes)
   |
@@ -235,10 +130,55 @@ Sigmoid calibration
 Output: girl-associated / boy-associated / uncertain
 ```
 
-Trained on 102,927 real names from SSA (1880-2020) and Census 2020 data.
-Test accuracy: 70.7%. Macro F1: 0.64.
+The classifier extracts character-level patterns from names. Names ending in `-a`, `-ia`, `-ine` tend to be feminine. Names ending in `-o`, `-us`, `-er` tend to be masculine. The model learns these patterns from real data rather than hard-coding rules.
 
-## Training
+## Accuracy
+
+Tested on held-out test data (10,294 names):
+
+| Metric | Value |
+|--------|-------|
+| Accuracy | 68.9% |
+| Macro F1 | 0.629 |
+| Girl-associated F1 | 0.844 |
+| Boy-associated F1 | 0.664 |
+| Uncertain F1 | 0.380 |
+
+The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
+
+## Benchmark
+
+Measured on Intel Celeron N4000 @ 1.10GHz:
+
+```
+Model size:       49 KB
+Loading time:     0.3 ms
+Single name:      0.93 ms
+Batch (100):     18.7 ms   (5,335 names/sec)
+Batch (1000):   180.1 ms   (5,551 names/sec)
+```
+
+Run `genderfluid benchmark` on your own hardware.
+
+## Use cases
+
+- **Data pipelines**: Classify gender associations in CSV/spreadsheet data
+- **Name validation**: Check if a name follows typical gender patterns
+- **Research**: Analyze naming trends across datasets
+- **Privacy-sensitive applications**: Process names without sending data to external APIs
+- **Offline applications**: Works without internet connectivity
+- **Embedded systems**: 49KB model runs on low-resource devices
+
+## Training data
+
+Built from real public data:
+
+1. **U.S. Social Security Administration** baby names (1880-2020): 100,364 unique names
+2. **U.S. Census Bureau** 2020 Census first names: 53,616 unique names
+
+Combined: 102,927 names with 50+ occurrences. Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
+
+## Training from source
 
 ```bash
 python process_real_data.py   # download and process SSA + Census data
@@ -247,13 +187,9 @@ python train.py               # train and save model
 python evaluate.py            # evaluate on validation/test splits
 ```
 
-The training script loads and validates the dataset, trains a logistic
-regression classifier, calibrates probabilities, and saves the model
-to `models/genderfluid-tiny.bin`.
+## Dataset format
 
-## Dataset
-
-JSONL format, one entry per line:
+JSONL, one entry per line:
 
 ```json
 {"name": "Emma", "label": "girl-associated"}
@@ -263,80 +199,73 @@ JSONL format, one entry per line:
 
 Optional fields: `weight`, `country`, `language`, `year`.
 
-The included dataset is built from real public data:
+## Comparison with alternatives
 
-1. U.S. Social Security Administration baby names (1880-2020)
-2. U.S. Census Bureau 2020 Census first names
-
-Processed by `process_real_data.py`. Names with 85% or stronger
-statistical association are labeled `girl-associated` or `boy-associated`.
-Names below that threshold are `uncertain`.
-
-## Benchmark
-
-Measured on Intel Celeron N4000 @ 1.10GHz, Python 3.14:
-
-```
-Model size:       0.05 MB (49,689 bytes)
-Loading time:     0.3 ms
-Single name:      0.93 ms
-Batch (10):       2.5 ms   (4,065 names/sec)
-Batch (100):     18.7 ms   (5,335 names/sec)
-Batch (1000):   180.1 ms   (5,551 names/sec)
-Peak RSS:        198 MB
-```
-
-Run `genderfluid benchmark` to measure on your own hardware.
+| Feature | genderfluid-tiny | gender-guesser | chicksexer |
+|---------|-----------------|----------------|------------|
+| Model size | 49 KB | 600 KB+ | 10 MB+ |
+| License | MIT | GPLv3 | -- |
+| Last updated | 2026 | 2016 | -- |
+| Approach | ML (n-gram + LR) | Lookup table | ML |
+| Uncertain category | Yes | Partial | No |
+| pip install | Yes | Yes | Yes |
+| Offline | Yes | Yes | Yes |
 
 ## Limitations
 
-The model estimates statistical patterns in its training data. It does not
-determine gender identity.
-
-Name associations vary by culture, language, and generation. The classifier
-may be wrong. The `uncertain` category exists for ambiguous cases. Training
-data can contain bias.
+- Estimates statistical patterns in training data, not gender identity
+- U.S./English-centric training data
+- Name associations vary by culture, language, and generation
+- The `uncertain` category exists for genuinely ambiguous names
+- Not suitable for high-stakes decisions
 
 ## Privacy
 
-All inference runs locally. Names are not transmitted to any external service.
-Logging of names is disabled by default (`config.yaml`).
+All inference runs locally. Names are not transmitted to any external service. Logging of names is disabled by default.
 
-## Repository
+## FAQ
+
+### Is this a gender identity detector?
+
+No. genderfluid-tiny estimates statistical associations between names and gendered naming conventions in its training data. It does not determine or verify a person's gender identity.
+
+### How accurate is it?
+
+68.9% accuracy on held-out test data. Girl-associated names: 84% F1. Boy-associated names: 66% F1. Uncertain/ambiguous names: 38% F1.
+
+### Does it work offline?
+
+Yes. After `pip install genderfluid-tiny`, no internet connection is needed.
+
+### What Python versions are supported?
+
+Python 3.10, 3.11, 3.12, 3.13.
+
+### Can I retrain the model?
+
+Yes. See the Training from source section above. The training pipeline is included.
+
+### Does it work with non-English names?
+
+The model is trained on U.S./English naming data. It may not work well for names from other cultural contexts. The preprocessing preserves Unicode characters, so names with accents and special characters are handled.
+
+## Repository structure
 
 ```
 genderfluid-tiny/
-├── genderfluid/
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── cli.py
-│   ├── preprocessing.py
-│   ├── features.py
-│   ├── classifier.py
-│   ├── calibration.py
-│   ├── inference.py
-│   └── model_io.py
-├── data/
-│   ├── names.jsonl
-│   └── README.md
-├── models/
-│   └── genderfluid-tiny.bin
-├── native/
-│   ├── main.cpp
-│   ├── model.cpp
-│   └── model.h
-├── tests/
-│   └── test_all.py
-├── train.py
-├── predict.py
-├── evaluate.py
-├── benchmark.py
-├── prepare_data.py
-├── process_real_data.py
-├── requirements.txt
-├── pyproject.toml
-├── config.yaml
-├── .gitignore
+├── genderfluid/          # Python package
+│   ├── __init__.py       # Public API
+│   ├── cli.py            # Command-line interface
+│   ├── inference.py      # GenderfluidModel class
+│   ├── classifier.py     # Logistic regression + calibration
+│   ├── features.py       # Character n-gram extraction
+│   ├── preprocessing.py  # Name normalization
+│   └── model_io.py       # Binary save/load
+├── data/                 # Training dataset
+├── models/               # Trained model
+├── native/               # C++ inference (optional)
+├── tests/                # 29 tests
+├── pyproject.toml        # Package config
 └── README.md
 ```
 
