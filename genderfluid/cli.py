@@ -123,9 +123,13 @@ def cmd_predict(args):
             print(f"\n{len(names)} names in {elapsed*1000:.1f} ms")
         return
 
-    if args.name:
+    if args.name is not None:
+        name = " ".join(args.name) if isinstance(args.name, list) else args.name
+        if not name:
+            print("Usage: genderfluid predict <name>")
+            return
         t0 = time.time()
-        result = model.predict(args.name)
+        result = model.predict(name)
         elapsed = (time.time() - t0) * 1000
 
         if args.json:
@@ -223,7 +227,7 @@ def _build_parser():
     sub = parser.add_subparsers(dest="command")
 
     p_predict = sub.add_parser("predict", help="predict gender association for a name")
-    p_predict.add_argument("name", nargs="?", help="name to classify")
+    p_predict.add_argument("name", nargs="*", help="name to classify (words are joined)")
     p_predict.add_argument("--file", "-f", help="file with one name per line")
     p_predict.add_argument("--compare", "-c", nargs="+", help="compare multiple names")
     p_predict.add_argument("--json", "-j", action="store_true", help="output JSON")
