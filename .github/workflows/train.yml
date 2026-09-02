@@ -1,0 +1,97 @@
+name: Train Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force training even on main"
+        required: false
+        default: "false"
+        type: boolean
+  push:
+    branches: [main]
+    paths:
+      - "data/train.jsonl"
+      - "data/validation.jsonl"
+      - "data/test.jsonl"
+      - "train_aggressive.py"
+      - "genderfluid/features.py"
+      - "genderfluid/classifier.py"
+      - "genderfluid/calibration.py"
+      - "config.yaml"
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify training data exists
+        run: |
+          for f in data/train.jsonl data/validation.jsonl data/test.jsonl; do
+            if [ ! -f "$f" ]; then
+              echo "ERROR: $f not found"
+              exit 1
+            fi
+            lines=$(wc -l < "$f")
+            echo "$f: $lines lines"
+          done
+
+      - name: Run aggressive training
+        run: python train_aggressive.py
+        timeout-minutes: 25
+
+      - name: Verify model
+        run: |
+          MODEL="models/genderfluid-tiny.bin"
+          if [ ! -f "$MODEL" ]; then
+            echo "ERROR: Model not found at $MODEL"
+            exit 1
+          fi
+          SIZE=$(stat --format='%s' "$MODEL")
+          SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc)
+          echo "Model size: $SIZE_MB MB ($SIZE bytes)"
+          if [ $(echo "$SIZE_MB > 50" | bc) -eq 1 ]; then
+            echo "ERROR: Model exceeds 50MB limit"
+            exit 1
+          fi
+          echo "Size check: PASS"
+
+      - name: Run tests
+        run: python -m pytest tests/ -v
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: genderfluid-tiny-model
+          path: models/genderfluid-tiny.bin
+          retention-days: 90
+
+      - name: Upload sweep results
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweep-results
+          path: models/sweep_results.json
+          retention-days: 90
+
+      - name: Commit model if improved
+        if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add models/genderfluid-tiny.bin models/sweep_results.json
+          git diff --cached --quiet || git commit -m "train: update model from aggressive sweep [skip ci]"
+          git push
