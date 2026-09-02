@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>genderfluid-tiny</title>
+    <title>Docs | genderfluid-tiny</title>
     <meta name="description" content="Offline Python classifier that predicts gender associations from names. 49KB model, CPU only, no API.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,7 @@
     <style>
         :root {
             --bg: #141414;
+            --bg-raised: #1a1a1a;
             --gray-1: #F1F0EA;
             --gray-2: #cac9c4;
             --gray-3: #a2a19d;
@@ -18,10 +19,12 @@
             --gray-5: #525150;
             --gray-6: #2a2929;
             --accent: #f35d12;
+            --accent-dim: rgba(243, 93, 18, 0.12);
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
             --nav-h: 56px;
             --sidebar-w: 260px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,14 +38,15 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ── NAV ── */
+        /* ═══ NAV ═══ */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
             height: var(--nav-h);
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(20, 20, 20, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--gray-5);
             z-index: 100;
             display: flex;
@@ -60,15 +64,33 @@
         nav .left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
+
+        .burger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            color: var(--gray-2);
+            border-radius: 6px;
+            transition: background 0.15s var(--ease);
+        }
+
+        .burger:hover { background: var(--gray-6); }
+
+        .burger svg { width: 20px; height: 20px; display: block; }
+        .burger .close-icon { display: none; }
+        .burger.open .menu-icon { display: none; }
+        .burger.open .close-icon { display: block; }
 
         nav .logo {
             font-weight: 700;
             font-size: 15px;
             color: var(--accent);
-            letter-spacing: -0.01em;
             text-decoration: none;
+            letter-spacing: -0.01em;
         }
 
         nav .links {
@@ -77,38 +99,30 @@
             align-items: center;
         }
 
-        nav a {
+        nav .links a {
             color: var(--gray-3);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: color 0.15s;
+            transition: color 0.15s var(--ease);
         }
 
-        nav a:hover { color: var(--gray-1); }
+        nav .links a:hover { color: var(--gray-1); }
 
-        /* ── BURGER ── */
-        .burger {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: var(--gray-2);
+        .nav-badge {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.15s var(--ease);
         }
 
-        .burger svg {
-            width: 24px;
-            height: 24px;
-            display: block;
-        }
+        .nav-badge:hover { opacity: 0.85; }
 
-        .burger .close { display: none; }
-
-        .burger.open .menu { display: none; }
-        .burger.open .close { display: block; }
-
-        /* ── SIDEBAR ── */
+        /* ═══ SIDEBAR ═══ */
         .sidebar {
             position: fixed;
             top: var(--nav-h);
@@ -118,68 +132,156 @@
             background: var(--bg);
             border-right: 1px solid var(--gray-5);
             overflow-y: auto;
-            padding: 20px 0;
+            overflow-x: hidden;
+            padding: 16px 0;
             z-index: 50;
-            transition: transform 0.2s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gray-5) transparent;
         }
 
-        .sidebar .section {
-            padding: 0 16px;
-            margin-bottom: 8px;
-        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--gray-5); border-radius: 4px; }
 
-        .sidebar .section-title {
-            font-size: 11px;
+        /* Tree sections */
+        .nav-group { margin-bottom: 4px; }
+
+        .nav-group-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             color: var(--gray-4);
-            padding: 8px 0 4px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.15s var(--ease);
         }
 
-        .sidebar a {
+        .nav-group-header:hover { color: var(--gray-2); }
+
+        .nav-group-header .caret {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s var(--ease);
+            flex-shrink: 0;
+            opacity: 0.5;
+        }
+
+        .nav-group.open > .nav-group-header .caret {
+            transform: rotate(90deg);
+        }
+
+        .nav-group-items {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s var(--ease), opacity 0.2s var(--ease);
+            opacity: 0;
+        }
+
+        .nav-group.open > .nav-group-items {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .nav-group-items a {
             display: block;
-            padding: 6px 12px;
-            font-size: 14px;
+            padding: 5px 16px 5px 36px;
+            font-size: 13px;
             color: var(--gray-3);
             text-decoration: none;
-            border-radius: 6px;
-            transition: all 0.1s;
+            border-left: 2px solid transparent;
+            transition: all 0.15s var(--ease);
         }
 
-        .sidebar a:hover {
+        .nav-group-items a:hover {
             color: var(--gray-1);
             background: var(--gray-6);
         }
 
-        .sidebar a.active {
+        .nav-group-items a.active {
             color: var(--accent);
-            background: rgba(243, 93, 18, 0.1);
+            border-left-color: var(--accent);
+            background: var(--accent-dim);
             font-weight: 500;
         }
 
-        /* ── MAIN ── */
+        /* ═══ OVERLAY ═══ */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.25s var(--ease);
+        }
+
+        .overlay.open { display: block; opacity: 1; }
+
+        /* ═══ MAIN ═══ */
         .main {
             margin-left: var(--sidebar-w);
             padding-top: var(--nav-h);
+            min-height: 100vh;
         }
 
         .content {
-            max-width: 720px;
+            max-width: 740px;
             margin: 0 auto;
-            padding: 48px 32px 72px;
+            padding: 48px 40px 80px;
         }
 
         section {
-            margin-bottom: 52px;
-            scroll-margin-top: calc(var(--nav-h) + 20px);
+            margin-bottom: 56px;
+            scroll-margin-top: calc(var(--nav-h) + 24px);
+            opacity: 0;
+            transform: translateY(16px);
+            animation: fadeUp 0.5s var(--ease) forwards;
+        }
+
+        section:nth-child(1) { animation-delay: 0.05s; }
+        section:nth-child(2) { animation-delay: 0.1s; }
+        section:nth-child(3) { animation-delay: 0.15s; }
+        section:nth-child(4) { animation-delay: 0.2s; }
+        section:nth-child(5) { animation-delay: 0.25s; }
+        section:nth-child(6) { animation-delay: 0.3s; }
+        section:nth-child(7) { animation-delay: 0.35s; }
+        section:nth-child(8) { animation-delay: 0.4s; }
+        section:nth-child(9) { animation-delay: 0.45s; }
+        section:nth-child(10) { animation-delay: 0.5s; }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--gray-1);
+            margin-bottom: 12px;
         }
 
         h2 {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             color: var(--gray-1);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-5);
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-1);
+            margin: 20px 0 8px;
         }
 
         p { margin-bottom: 14px; }
@@ -187,29 +289,12 @@
         a { color: var(--accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
 
-        /* ── HERO ── */
+        /* ═══ HERO ═══ */
         .hero {
             padding: 48px 0 40px;
-            border-bottom: 1px solid var(--gray-5);
-            margin-bottom: 40px;
+            margin-bottom: 48px;
             text-align: center;
-        }
-
-        .hero h1 {
-            font-size: clamp(28px, 4vw, 44px);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            color: var(--gray-1);
-        }
-
-        .hero p {
-            font-size: 16px;
-            color: var(--gray-3);
-            margin-top: 12px;
-            max-width: 460px;
-            margin-left: auto;
-            margin-right: auto;
+            border-bottom: 1px solid var(--gray-5);
         }
 
         .hero .install {
@@ -224,7 +309,10 @@
             font-family: var(--mono);
             font-size: 14px;
             color: var(--accent);
+            transition: border-color 0.2s var(--ease);
         }
+
+        .hero .install:hover { border-color: var(--accent); }
 
         .hero .install span {
             color: var(--gray-4);
@@ -257,7 +345,7 @@
             font-weight: 500;
         }
 
-        /* ── CODE ── */
+        /* ═══ CODE ═══ */
         pre {
             background: var(--gray-6);
             border: 1px solid var(--gray-5);
@@ -266,27 +354,31 @@
             overflow-x: auto;
             font-family: var(--mono);
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.65;
             margin: 14px 0;
+            transition: border-color 0.2s var(--ease);
         }
+
+        pre:hover { border-color: var(--gray-4); }
 
         pre .p { color: #7ee787; user-select: none; }
         pre .c { color: var(--gray-4); }
         pre .s { color: #a5d6ff; }
         pre .k { color: #ff7b72; }
+        pre .fn { color: #d2a8ff; }
 
         code {
             font-family: var(--mono);
             font-size: 13px;
             background: var(--gray-6);
             border: 1px solid var(--gray-5);
-            padding: 2px 5px;
+            padding: 2px 6px;
             border-radius: 4px;
         }
 
         pre code { background: none; border: none; padding: 0; }
 
-        /* ── GRID ── */
+        /* ═══ GRID ═══ */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -301,7 +393,10 @@
         .grid .item {
             background: var(--bg);
             padding: 20px;
+            transition: background 0.15s var(--ease);
         }
+
+        .grid .item:hover { background: var(--gray-6); }
 
         .grid .item strong {
             display: block;
@@ -317,7 +412,7 @@
             line-height: 1.5;
         }
 
-        /* ── TABLE ── */
+        /* ═══ TABLE ═══ */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -328,23 +423,33 @@
         th {
             text-align: left;
             font-weight: 600;
-            padding: 8px 10px;
+            padding: 8px 12px;
             border-bottom: 2px solid var(--gray-1);
             color: var(--gray-1);
         }
 
         td {
-            padding: 8px 10px;
+            padding: 8px 12px;
             border-bottom: 1px solid var(--gray-6);
             color: var(--gray-3);
         }
 
-        hr {
-            border: none;
-            border-top: 1px solid var(--gray-5);
-            margin: 40px 0;
+        tr:hover td { color: var(--gray-2); }
+
+        /* ═══ CALLOUT ═══ */
+        .callout {
+            border-left: 3px solid var(--accent);
+            background: var(--accent-dim);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--gray-2);
         }
 
+        .callout strong { color: var(--accent); }
+
+        /* ═══ FOOTER ═══ */
         footer {
             border-top: 1px solid var(--gray-5);
             padding: 28px 24px;
@@ -356,36 +461,26 @@
         footer a {
             color: var(--gray-3);
             margin: 0 10px;
+            transition: color 0.15s var(--ease);
         }
 
-        /* ── OVERLAY ── */
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 40;
-        }
+        footer a:hover { color: var(--gray-1); }
 
-        /* ── MOBILE ── */
+        /* ═══ MOBILE ═══ */
         @media (max-width: 768px) {
-            .burger { display: block; }
+            .burger { display: flex; }
             nav .links { display: none; }
 
             .sidebar {
                 transform: translateX(-100%);
                 z-index: 60;
+                width: 280px;
+                transition: transform 0.3s var(--ease);
             }
 
-            .sidebar.open {
-                transform: translateX(0);
-            }
+            .sidebar.open { transform: translateX(0); }
 
-            .overlay.open { display: block; }
-
-            .main {
-                margin-left: 0;
-            }
+            .main { margin-left: 0; }
 
             .content {
                 padding: 32px 20px 60px;
@@ -398,87 +493,122 @@
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ═══ NAV ═══ -->
 <nav>
     <div class="inner">
         <div class="left">
-            <button class="burger" onclick="toggleMenu()" aria-label="Menu">
-                <svg class="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                <svg class="close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <button class="burger" id="burger" aria-label="Menu">
+                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             <a href="#" class="logo">genderfluid-tiny</a>
         </div>
         <div class="links">
             <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
             <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
-            <a href="https://github.com/MaxEdgar/genderfluid-tiny/blob/main/COMMERCIAL_LICENSE.md">Commercial</a>
+            <a class="nav-badge" href="https://github.com/MaxEdgar/genderfluid-tiny">Star</a>
         </div>
     </div>
 </nav>
 
-<!-- OVERLAY -->
-<div class="overlay" onclick="toggleMenu()"></div>
+<!-- ═══ OVERLAY ═══ -->
+<div class="overlay" id="overlay"></div>
 
-<!-- SIDEBAR -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
-    <div class="section">
-        <div class="section-title">Introduction</div>
-        <a href="#intro" class="active">Overview</a>
-        <a href="#quickstart">Quick start</a>
-        <a href="#install">Installation</a>
+
+    <div class="nav-group open">
+        <div class="nav-group-header" onclick="toggleGroup(this)">
+            <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            Introduction
+        </div>
+        <div class="nav-group-items">
+            <a href="#overview" class="active">Overview</a>
+            <a href="#installation">Installation</a>
+        </div>
     </div>
-    <div class="section">
-        <div class="section-title">Usage</div>
-        <a href="#python-api">Python API</a>
-        <a href="#cli">Command line</a>
-        <a href="#compare">Compare names</a>
+
+    <div class="nav-group open">
+        <div class="nav-group-header" onclick="toggleGroup(this)">
+            <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            Getting Started
+        </div>
+        <div class="nav-group-items">
+            <a href="#quickstart">Quick start</a>
+            <a href="#python-api">Python API</a>
+            <a href="#cli">Command line</a>
+        </div>
     </div>
-    <div class="section">
-        <div class="section-title">Reference</div>
-        <a href="#architecture">Architecture</a>
-        <a href="#features">Features</a>
-        <a href="#benchmark">Benchmark</a>
-        <a href="#more-cli">More CLI</a>
+
+    <div class="nav-group open">
+        <div class="nav-group-header" onclick="toggleGroup(this)">
+            <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            Guide
+        </div>
+        <div class="nav-group-items">
+            <a href="#compare">Compare names</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#features">Features</a>
+        </div>
     </div>
-    <div class="section">
-        <div class="section-title">Info</div>
-        <a href="#license">License</a>
-        <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
-        <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
+
+    <div class="nav-group open">
+        <div class="nav-group-header" onclick="toggleGroup(this)">
+            <svg class="caret" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            Reference
+        </div>
+        <div class="nav-group-items">
+            <a href="#benchmark">Benchmark</a>
+            <a href="#more-cli">CLI reference</a>
+            <a href="#training">Training</a>
+            <a href="#license">License</a>
+        </div>
     </div>
+
 </aside>
 
-<!-- MAIN -->
+<!-- ═══ MAIN ═══ -->
 <div class="main">
-    <div class="content">
+<div class="content">
 
-        <!-- HERO -->
-        <div class="hero" id="intro">
-            <h1>genderfluid-tiny</h1>
-            <p>Predict gender associations from names. Fully offline. 49KB model. No API key.</p>
-            <div class="install">
-                <span>$</span> pip install genderfluid-tiny
-            </div>
-            <div class="stats">
-                <div class="stat"><strong>49 KB</strong><span>Model</span></div>
-                <div class="stat"><strong>0.9 ms</strong><span>Prediction</span></div>
-                <div class="stat"><strong>102K</strong><span>Names trained</span></div>
-                <div class="stat"><strong>0</strong><span>API calls</span></div>
-            </div>
+    <!-- OVERVIEW -->
+    <section id="overview" class="hero">
+        <h1>genderfluid-tiny</h1>
+        <p>Offline Python classifier that predicts gender associations from names.
+        49KB model, CPU only, no API needed.</p>
+        <div class="install">
+            <span>$</span> pip install genderfluid-tiny
         </div>
+        <div class="stats">
+            <div class="stat"><strong>49 KB</strong><span>Model</span></div>
+            <div class="stat"><strong>0.9 ms</strong><span>Prediction</span></div>
+            <div class="stat"><strong>102K</strong><span>Names trained</span></div>
+            <div class="stat"><strong>0</strong><span>API calls</span></div>
+        </div>
+    </section>
 
-        <!-- QUICK START -->
-        <section id="quickstart">
-            <h2>Quick start</h2>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name
+    <!-- INSTALLATION -->
+    <section id="installation">
+        <h2>Installation</h2>
+<pre><code><span class="p">$</span> pip install genderfluid-tiny</code></pre>
+        <p>From source:</p>
+<pre><code><span class="p">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
+<span class="p">$</span> cd genderfluid-tiny
+<span class="p">$</span> pip install -e .</code></pre>
+    </section>
+
+    <!-- QUICK START -->
+    <section id="quickstart">
+        <h2>Quick start</h2>
+<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, name_probability
 
 classify_name(<span class="s">"Emma"</span>)      <span class="c"># "girl-associated"</span>
 classify_name(<span class="s">"James"</span>)     <span class="c"># "boy-associated"</span>
 classify_name(<span class="s">"Alex"</span>)      <span class="c"># "uncertain"</span>
 
-is_girl_name(<span class="s">"Emma"</span>)       <span class="c"># True</span></code></pre>
-
-            <p>Or from the command line:</p>
+is_girl_name(<span class="s">"Emma"</span>)       <span class="c"># True</span>
+name_probability(<span class="s">"Emma"</span>)   <span class="c"># 0.9731</span></code></pre>
+        <p>From the command line:</p>
 <pre><code><span class="p">$</span> genderfluid predict Emma
 
 Name: Emma
@@ -489,39 +619,43 @@ Uncertain:       2.2%
 
 Classification: girl-associated
 Confidence:     high</code></pre>
-        </section>
+    </section>
 
-        <!-- INSTALL -->
-        <section id="install">
-            <h2>Installation</h2>
-<pre><code><span class="p">$</span> pip install genderfluid-tiny</code></pre>
-            <p>From source:</p>
-<pre><code><span class="p">$</span> git clone https://github.com/MaxEdgar/genderfluid-tiny.git
-<span class="p">$</span> cd genderfluid-tiny
-<span class="p">$</span> pip install -e .</code></pre>
-        </section>
+    <!-- PYTHON API -->
+    <section id="python-api">
+        <h2>Python API</h2>
+        <h3>Simple functions</h3>
+<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> classify_name, is_girl_name, is_boy_name, name_probability
 
-        <!-- PYTHON API -->
-        <section id="python-api">
-            <h2>Python API</h2>
-<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names, GenderfluidModel
+classify_name(<span class="s">"Emma"</span>)       <span class="c"># "girl-associated"</span>
+is_girl_name(<span class="s">"Emma"</span>)        <span class="c"># True</span>
+is_boy_name(<span class="s">"James"</span>)        <span class="c"># True</span>
+name_probability(<span class="s">"Emma"</span>)    <span class="c"># 0.9731</span></code></pre>
 
-<span class="c"># Single prediction</span>
+        <h3>Full result</h3>
+<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> predict_name, predict_names
+
 result = predict_name(<span class="s">"Michelle Renatta Chan"</span>)
-print(result[<span class="s">"classification"</span>])  <span class="c"># "girl-associated"</span>
+<span class="c"># {"name": "Michelle Renatta Chan",</span>
+<span class="c">#  "girl_associated_probability": 0.8929,</span>
+<span class="c">#  "boy_associated_probability": 0.0486,</span>
+<span class="c">#  "uncertain_probability": 0.0585,</span>
+<span class="c">#  "classification": "girl-associated",</span>
+<span class="c">#  "confidence": "medium"}</span>
 
-<span class="c"># Batch</span>
-results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])
+results = predict_names([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre>
 
-<span class="c"># Model instance (cached)</span>
-model = GenderfluidModel()
+        <h3>Model instance</h3>
+<pre><code><span class="k">from</span> genderfluid <span class="k">import</span> GenderfluidModel
+
+model = GenderfluidModel()  <span class="c"># loads once, cached</span>
 model.predict(<span class="s">"Elva Retta"</span>)
 model.predict_batch([<span class="s">"Emma"</span>, <span class="s">"James"</span>, <span class="s">"Alex"</span>])</code></pre>
-        </section>
+    </section>
 
-        <!-- CLI -->
-        <section id="cli">
-            <h2>Command line</h2>
+    <!-- CLI -->
+    <section id="cli">
+        <h2>Command line</h2>
 <pre><code><span class="p">$</span> genderfluid predict Elva Retta
 
 Name: Elva Retta
@@ -532,11 +666,11 @@ Uncertain:       1.2%
 
 Classification: girl-associated
 Confidence:     high</code></pre>
-        </section>
+    </section>
 
-        <!-- COMPARE -->
-        <section id="compare">
-            <h2>Compare names</h2>
+    <!-- COMPARE -->
+    <section id="compare">
+        <h2>Compare names</h2>
 <pre><code><span class="p">$</span> genderfluid predict --compare Emma James Alex Max Taylor
 
 Name                      Classification         Girl    Boy Confidence
@@ -546,13 +680,13 @@ James                     boy-associated           8%    79% medium
 Alex                      uncertain               27%    59% low
 Max                       boy-associated           7%    77% medium
 Taylor                    uncertain               42%    17% low</code></pre>
-        </section>
+    </section>
 
-        <!-- ARCHITECTURE -->
-        <section id="architecture">
-            <h2>Architecture</h2>
-            <p>Character n-grams from normalized names feed into a logistic regression
-            trained on 102,927 names from SSA (1880-2020) and Census 2020.</p>
+    <!-- ARCHITECTURE -->
+    <section id="architecture">
+        <h2>Architecture</h2>
+        <p>Character n-grams from normalized names feed into a logistic regression
+        trained on 102,927 names from SSA (1880-2020) and Census 2020.</p>
 <pre><code>Input name
   |
 Unicode normalization + lowercase
@@ -566,91 +700,141 @@ Logistic regression (3 classes)
 Sigmoid calibration
   |
 Output: girl-associated / boy-associated / uncertain</code></pre>
-            <p>The model does not determine gender identity. It measures statistical
-            naming patterns from training data.</p>
-        </section>
 
-        <!-- FEATURES -->
-        <section id="features">
-            <h2>Features</h2>
-            <div class="grid">
-                <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
-                <div class="item"><strong>49 KB model</strong><span>Smaller than most profile pictures.</span></div>
-                <div class="item"><strong>Sub-millisecond</strong><span>0.93ms per prediction. 5,500 names/sec.</span></div>
-                <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
-                <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
-                <div class="item"><strong>Real data</strong><span>102,927 names from SSA and Census 2020.</span></div>
-            </div>
-        </section>
+        <div class="callout">
+            <strong>Note:</strong> This model does not determine gender identity.
+            It measures statistical naming patterns from training data.
+        </div>
+    </section>
 
-        <!-- BENCHMARK -->
-        <section id="benchmark">
-            <h2>Benchmark</h2>
-            <table>
-                <tr><th>Metric</th><th>Value</th></tr>
-                <tr><td>Model size</td><td>49 KB</td></tr>
-                <tr><td>Test accuracy</td><td>68.9%</td></tr>
-                <tr><td>Macro F1</td><td>0.629</td></tr>
-                <tr><td>Girl-associated F1</td><td>0.844</td></tr>
-                <tr><td>Boy-associated F1</td><td>0.664</td></tr>
-                <tr><td>Single prediction</td><td>0.93 ms</td></tr>
-                <tr><td>Batch (1000)</td><td>180 ms</td></tr>
-                <tr><td>Training data</td><td>102,927 names</td></tr>
-            </table>
-        </section>
+    <!-- FEATURES -->
+    <section id="features">
+        <h2>Features</h2>
+        <div class="grid">
+            <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
+            <div class="item"><strong>49 KB model</strong><span>Smaller than most profile pictures.</span></div>
+            <div class="item"><strong>Sub-millisecond</strong><span>0.93ms per prediction. 5,500 names/sec.</span></div>
+            <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
+            <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
+            <div class="item"><strong>Real data</strong><span>102,927 names from SSA and Census 2020.</span></div>
+        </div>
+    </section>
 
-        <!-- MORE CLI -->
-        <section id="more-cli">
-            <h2>More CLI</h2>
-<pre><code>genderfluid predict --json Michelle Renatta Chan
+    <!-- BENCHMARK -->
+    <section id="benchmark">
+        <h2>Benchmark</h2>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Model size</td><td>49 KB</td></tr>
+            <tr><td>Test accuracy</td><td>68.9%</td></tr>
+            <tr><td>Macro F1</td><td>0.629</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.844</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.664</td></tr>
+            <tr><td>Single prediction</td><td>0.93 ms</td></tr>
+            <tr><td>Batch (1000)</td><td>180 ms</td></tr>
+            <tr><td>Training data</td><td>102,927 names</td></tr>
+        </table>
+    </section>
+
+    <!-- MORE CLI -->
+    <section id="more-cli">
+        <h2>CLI reference</h2>
+<pre><code><span class="c"># Predict a name</span>
+genderfluid predict Elva Retta
+
+<span class="c"># JSON output</span>
+genderfluid predict --json Alex
+
+<span class="c"># Compare names</span>
+genderfluid predict --compare Emma James Alex
+
+<span class="c"># Batch from file</span>
 genderfluid predict --file names.txt
+
+<span class="c"># Interactive mode</span>
 genderfluid interactive
+
+<span class="c"># Model info</span>
 genderfluid stats
+
+<span class="c"># Benchmark</span>
 genderfluid benchmark</code></pre>
-        </section>
+    </section>
 
-        <!-- LICENSE -->
-        <section id="license">
-            <h2>License</h2>
-            <p>Polyform Noncommercial License 1.0.0. Free for personal, educational,
-            and noncommercial use. Commercial use requires a license.</p>
-            <p><a href="https://github.com/MaxEdgar/genderfluid-tiny/blob/main/COMMERCIAL_LICENSE.md">Commercial licensing</a></p>
-        </section>
+    <!-- TRAINING -->
+    <section id="training">
+        <h2>Training from source</h2>
+<pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download SSA + Census data</span>
+<span class="p">$</span> python prepare_data.py        <span class="c"># validate and split</span>
+<span class="p">$</span> python train.py               <span class="c"># train model</span>
+<span class="p">$</span> python evaluate.py            <span class="c"># evaluate</span></code></pre>
+        <h3>Dataset format</h3>
+<pre><code>{"name": "Emma", "label": "girl-associated"}
+{"name": "James", "label": "boy-associated"}
+{"name": "Alex", "label": "uncertain"}</code></pre>
+    </section>
 
-        <footer>
-            genderfluid-tiny v1.0.2 &nbsp;&middot;&nbsp;
-            <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
-            <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
-        </footer>
+    <!-- LICENSE -->
+    <section id="license">
+        <h2>License</h2>
+        <p>Polyform Noncommercial License 1.0.0. Free for personal, educational,
+        and noncommercial use. Commercial use requires a license.</p>
+        <p><a href="https://github.com/MaxEdgar/genderfluid-tiny/blob/main/COMMERCIAL_LICENSE.md">Commercial licensing</a> &middot;
+        <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a> &middot;
+        <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a></p>
+    </section>
 
-    </div>
+    <footer>
+        genderfluid-tiny v1.0.2 &nbsp;&middot;&nbsp;
+        <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
+        <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
+    </footer>
+
+</div>
 </div>
 
 <script>
+// Hamburger toggle
+const burger = document.getElementById('burger');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
 function toggleMenu() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.querySelector('.overlay').classList.toggle('open');
-    document.querySelector('.burger').classList.toggle('open');
+    burger.classList.toggle('open');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
 }
 
-// Active sidebar link on scroll
-const sections = document.querySelectorAll('section[id], .hero[id]');
-const links = document.querySelectorAll('.sidebar a[href^="#"]');
+burger.addEventListener('click', toggleMenu);
+overlay.addEventListener('click', toggleMenu);
+
+// Tree toggle
+function toggleGroup(header) {
+    header.parentElement.classList.toggle('open');
+}
+
+// Active link on scroll
+const sections = document.querySelectorAll('section[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            links.forEach(l => l.classList.remove('active'));
-            const id = entry.target.id;
-            const link = document.querySelector(`.sidebar a[href="#${id}"]`);
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            const link = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
             if (link) link.classList.add('active');
         }
     });
 }, { rootMargin: '-80px 0px -60% 0px' });
+
 sections.forEach(s => observer.observe(s));
 
 // Close menu on link click (mobile)
-links.forEach(l => l.addEventListener('click', () => {
-    if (window.innerWidth <= 768) toggleMenu();
+sidebarLinks.forEach(l => l.addEventListener('click', () => {
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+        toggleMenu();
+    }
 }));
 </script>
 
