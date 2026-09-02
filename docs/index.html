@@ -189,6 +189,13 @@
         [data-theme="light"] .theme-toggle .icon-moon { display: none; }
         [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
 
+        /* EASTER EGG */
+        .fall { animation: fall-down 1.5s ease-in forwards; }
+        @keyframes fall-down {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120vh) rotate(25deg); opacity: 0; }
+        }
+
         /* MOBILE */
         @media (max-width: 900px) {
             .sidebar { width: 280px; z-index: 60; }
@@ -329,8 +336,6 @@
         <div class="callout">
             <strong>102,927 names</strong> trained from U.S. Social Security Administration (1880-2020) and Census 2020 records.
         </div>
-        <p>The model was trained on 102,927 names from U.S. Social Security
-        Administration data (1880-2020) and Census 2020 records.</p>
     </section>
 
     <!-- QUICK START -->
@@ -606,6 +611,10 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a></p>
     </section>
 
+    <div class="easter-egg" id="easterEgg" style="text-align:center;padding:40px 0 20px;">
+        <button onclick="triggerGravity()" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:6px 16px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;transition:all 0.2s var(--ease);">Click me</button>
+    </div>
+
     <footer>
         genderfluid-tiny v1.0.2 &nbsp;&middot;&nbsp;
         <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
@@ -776,6 +785,16 @@ if (statsSection) {
         });
     }, { threshold: 0.5 });
     statsObserver.observe(statsSection);
+}
+
+// Easter egg: gravity
+function triggerGravity() {
+    var elements = document.querySelectorAll('section, footer, nav, .sidebar, .theme-toggle, .github-btn, .easter-egg');
+    elements.forEach(function(el, i) {
+        setTimeout(function() {
+            el.classList.add('fall');
+        }, i * 80);
+    });
 }
 </script>
 
