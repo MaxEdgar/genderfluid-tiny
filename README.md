@@ -87,7 +87,37 @@ Confidence:     high
 
 There are two ways to use the Python API.
 
-**Option 1: Model instance (recommended)**
+**Option 1: Simple one-liners**
+
+```python
+from genderfluid import classify_name, is_girl_name, is_boy_name, name_probability
+
+classify_name("Emma")        # "girl-associated"
+classify_name("James")       # "boy-associated"
+classify_name("Alex")        # "uncertain"
+
+is_girl_name("Emma")         # True
+is_boy_name("James")         # True
+
+name_probability("Emma")     # 0.9731
+name_probability("Alex")     # 0.2692
+```
+
+**Option 2: Full result dict**
+
+```python
+from genderfluid import predict_name, predict_names
+
+result = predict_name("Alex")
+print(result["classification"])  # "uncertain"
+print(result["girl_associated_probability"])  # 0.2692
+
+results = predict_names(["Emma", "James", "Alex"])
+for r in results:
+    print(f"{r['name']}: {r['classification']}")
+```
+
+**Option 3: Model instance (recommended for repeated use)**
 
 ```python
 from genderfluid import GenderfluidModel
@@ -104,19 +134,6 @@ for r in results:
 ```
 
 The model is loaded once and cached. Subsequent predictions are fast.
-
-**Option 2: Convenience functions**
-
-```python
-from genderfluid import predict_name, predict_names
-
-result = predict_name("Alex")
-print(result["classification"])  # "uncertain"
-
-results = predict_names(["Emma", "James"])
-for r in results:
-    print(f"{r['name']}: {r['classification']}")
-```
 
 **Prediction result format:**
 
