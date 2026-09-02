@@ -34,9 +34,9 @@
         nav .inner { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         nav .left { display: flex; align-items: center; gap: 14px; }
 
-        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
+        .burger { background: none; border: none; cursor: pointer; padding: 6px; color: var(--gray-2); border-radius: 6px; transition: background 0.15s var(--ease); display: none; align-items: center; justify-content: center; width: 36px; height: 36px; }
         .burger:hover { background: var(--gray-6); }
-        .burger svg { width: 20px; height: 20px; }
+        .burger svg { width: 22px; height: 22px; }
         .burger .close-icon { display: none; }
         .burger.open .menu-icon { display: none; }
         .burger.open .close-icon { display: block; }
@@ -49,7 +49,7 @@
         .nav-badge:hover { opacity: 0.85; }
 
         /* SIDEBAR */
-        .sidebar { position: fixed; top: var(--nav-h); left: 0; width: var(--sidebar-w); height: calc(100vh - var(--nav-h)); background: var(--bg); border-right: 1px solid var(--gray-5); overflow-y: auto; overflow-x: hidden; padding: 16px 0; z-index: 50; scrollbar-width: thin; scrollbar-color: var(--gray-5) transparent; transition: transform 0.25s var(--ease); }
+        .sidebar { position: fixed; top: var(--nav-h); left: 0; width: var(--sidebar-w); height: calc(100vh - var(--nav-h)); background: var(--bg); border-right: 1px solid var(--gray-5); overflow-y: auto; overflow-x: hidden; padding: 16px 0; z-index: 50; scrollbar-width: thin; scrollbar-color: var(--gray-5) transparent; transition: transform 0.3s var(--ease); }
         .sidebar::-webkit-scrollbar { width: 4px; }
         .sidebar::-webkit-scrollbar-thumb { background: var(--gray-5); border-radius: 4px; }
 
@@ -65,8 +65,8 @@
         .nav-group-items a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); font-weight: 500; }
 
         /* OVERLAY */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 40; }
-        .overlay.open { display: block; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 45; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease); }
+        .overlay.open { opacity: 1; pointer-events: auto; }
 
         /* MAIN */
         .main { margin-left: var(--sidebar-w); padding-top: var(--nav-h); min-height: 100vh; }
@@ -98,13 +98,13 @@
         ul, ol { padding-left: 20px; margin-bottom: 14px; }
         li { margin-bottom: 4px; }
 
-        .hero { padding: 48px 0 40px; margin-bottom: 48px; text-align: center; border-bottom: 1px solid var(--gray-5); }
+        .hero { padding: 48px 0 40px; margin-bottom: 48px; text-align: center; }
         .hero .install { margin-top: 24px; display: inline-flex; align-items: center; gap: 10px; background: var(--gray-6); border: 1px solid var(--gray-5); padding: 10px 18px; border-radius: 8px; font-family: var(--mono); font-size: 14px; color: var(--accent); transition: border-color 0.2s var(--ease); }
         .hero .install:hover { border-color: var(--accent); }
         .hero .install span { color: var(--gray-4); user-select: none; }
         .hero .stats { display: flex; justify-content: center; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
         .hero .stat { text-align: center; }
-        .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--gray-1); }
+        .hero .stat strong { display: block; font-size: 24px; font-weight: 700; color: var(--gray-1); font-variant-numeric: tabular-nums; }
         .hero .stat span { font-size: 11px; color: var(--gray-4); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
 
         pre { background: var(--gray-6); border: 1px solid var(--gray-5); border-radius: 8px; padding: 16px 20px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.65; margin: 14px 0; transition: border-color 0.2s var(--ease); }
@@ -134,16 +134,15 @@
         footer { border-top: 1px solid var(--gray-5); padding: 28px 24px; text-align: center; color: var(--gray-4); font-size: 13px; }
         footer a { color: var(--gray-3); margin: 0 10px; }
 
+        /* Mobile */
         @media (max-width: 900px) {
+            .burger { display: flex; }
             .sidebar { transform: translateX(-100%); width: 280px; z-index: 60; }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
             .content { padding: 32px 20px 60px; }
             .hero .stats { gap: 28px; }
             .grid { grid-template-columns: 1fr; }
-        }
-        @media (min-width: 901px) {
-            .sidebar { transform: none; }
         }
     </style>
 </head>
@@ -231,10 +230,10 @@
         49KB model, CPU only, no API needed.</p>
         <div class="install"><span>$</span> pip install genderfluid-tiny</div>
         <div class="stats">
-            <div class="stat"><strong>49 KB</strong><span>Model</span></div>
-            <div class="stat"><strong>0.9 ms</strong><span>Prediction</span></div>
-            <div class="stat"><strong>102K</strong><span>Names trained</span></div>
-            <div class="stat"><strong>0</strong><span>API calls</span></div>
+            <div class="stat"><strong data-count="49" data-suffix=" KB">0 KB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="0.9" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
+            <div class="stat"><strong data-count="102" data-suffix="K">0K</strong><span>Names trained</span></div>
+            <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
         </div>
     </section>
 
@@ -422,7 +421,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
             <div class="item"><strong>Real data</strong><span>102,927 names from SSA and Census 2020.</span></div>
             <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hyphens, apostrophes.</span></div>
-            <div class="item"><strong>MIT-free API</strong><span>Simple Python functions. No complex setup.</span></div>
+            <div class="item"><strong>Simple API</strong><span>One function call. No complex setup.</span></div>
         </div>
     </section>
 
@@ -550,40 +549,110 @@ const burger = document.getElementById('burger');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
 
-function toggleMenu() {
-    burger.classList.toggle('open');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('open');
-    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+function openMenu() {
+    burger.classList.add('open');
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
 }
 
-burger.addEventListener('click', toggleMenu);
-overlay.addEventListener('click', toggleMenu);
+function closeMenu() {
+    burger.classList.remove('open');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
 
+burger.addEventListener('click', function() {
+    if (sidebar.classList.contains('open')) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+});
+
+overlay.addEventListener('click', closeMenu);
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        closeMenu();
+    }
+});
+
+// Close sidebar on link click (mobile)
+sidebar.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+        if (window.innerWidth <= 900) {
+            closeMenu();
+        }
+    });
+});
+
+// Toggle sidebar groups
 function toggleGroup(header) {
     header.parentElement.classList.toggle('open');
 }
 
-const sections = document.querySelectorAll('section[id]');
-const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+// Scroll spy for active sidebar links
+var sections = document.querySelectorAll('section[id]');
+var sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
 
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-            sidebarLinks.forEach(l => l.classList.remove('active'));
-            const link = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+            sidebarLinks.forEach(function(l) { l.classList.remove('active'); });
+            var link = document.querySelector('.sidebar a[href="#' + entry.target.id + '"]');
             if (link) link.classList.add('active');
         }
     });
 }, { rootMargin: '-80px 0px -60% 0px' });
 
-sections.forEach(s => observer.observe(s));
+sections.forEach(function(s) { observer.observe(s); });
 
-sidebarLinks.forEach(l => l.addEventListener('click', () => {
-    if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
-        toggleMenu();
+// Animate counting numbers on scroll
+function animateCount(el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    var decimals = parseInt(el.getAttribute('data-decimal')) || 0;
+    var duration = 1200;
+    var start = null;
+
+    function step(timestamp) {
+        if (!start) start = timestamp;
+        var progress = Math.min((timestamp - start) / duration, 1);
+        // Ease out cubic
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = eased * target;
+
+        if (decimals > 0) {
+            el.textContent = current.toFixed(decimals) + suffix;
+        } else {
+            el.textContent = Math.round(current) + suffix;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        }
     }
-}));
+
+    requestAnimationFrame(step);
+}
+
+// Observe stats for counting animation
+var statsObserved = false;
+var statsSection = document.querySelector('.hero .stats');
+if (statsSection) {
+    var statsObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting && !statsObserved) {
+                statsObserved = true;
+                document.querySelectorAll('.hero .stat strong[data-count]').forEach(animateCount);
+            }
+        });
+    }, { threshold: 0.5 });
+    statsObserver.observe(statsSection);
+}
 </script>
 
 </body>
