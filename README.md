@@ -217,7 +217,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 ## Limitations
 
-- Estimates statistical patterns in training data, not gender identity
+- Predictions reflect naming conventions in the training data
 - U.S./English-centric training data
 - Name associations vary by culture, language, and generation
 - The `uncertain` category exists for genuinely ambiguous names
@@ -229,9 +229,9 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ## FAQ
 
-### Is this a gender identity detector?
+### How does it determine gender?
 
-No. genderfluid-tiny estimates statistical associations between names and gendered naming conventions in its training data. It does not determine or verify a person's gender identity.
+It predicts the most likely gender association for a name based on statistical patterns in its training data (102,927 names from U.S. SSA and Census records). The prediction is about the name itself, not the person using it.
 
 ### How accurate is it?
 
