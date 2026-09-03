@@ -34,3 +34,4 @@ data/census_2020_firstnames_sex.xlsx
 benchmark_output/
 RESTORE_CONTEXT.md
 DOCUMENTATION.md
+data/raw/

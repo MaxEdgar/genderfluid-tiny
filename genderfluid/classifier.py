@@ -1,6 +1,7 @@
 """Logistic regression classifier with lightweight probability calibration."""
 
 import numpy as np
+from scipy import sparse
 from sklearn.linear_model import LogisticRegression
 from typing import Optional
 
@@ -54,9 +55,16 @@ class NameClassifier:
 
         for cls in sorted(missing):
             n_pad = MIN_EXAMPLES_PER_CLASS
-            X_pad = rng.randn(n_pad, X.shape[1]).astype(np.float32) * 0.001
             y_pad = np.full(n_pad, cls, dtype=int)
-            X_train = np.vstack([X_train, X_pad])
+            if sparse.issparse(X_train):
+                # Keep the matrix sparse so large training sets stay in memory.
+                X_pad = sparse.csr_matrix(
+                    (rng.randn(n_pad, X.shape[1]) * 0.001).astype(np.float32)
+                )
+                X_train = sparse.vstack([X_train, X_pad])
+            else:
+                X_pad = rng.randn(n_pad, X.shape[1]).astype(np.float32) * 0.001
+                X_train = np.vstack([X_train, X_pad])
             y_train = np.concatenate([y_train, y_pad])
             if sw_train is not None:
                 w_pad = np.full(n_pad, 0.001)

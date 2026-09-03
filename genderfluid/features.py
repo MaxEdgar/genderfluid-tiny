@@ -1,6 +1,7 @@
 """Character n-gram feature extraction with hashing."""
 
 import numpy as np
+from scipy import sparse
 
 
 class FeatureExtractor:
@@ -37,22 +38,27 @@ class FeatureExtractor:
             h = h * 131 + ord(ch)
         return 1 if h % 2 == 0 else -1
 
-    def extract(self, name: str) -> np.ndarray:
-        """
-        Extract feature vector for a single normalized name.
-
-        Returns a sparse-like dense vector of shape (dimensions,).
-        """
-        features = np.zeros(self.dimensions, dtype=np.float32)
-
+    def _extract_raw(self, name: str) -> dict:
+        """Return {feature_index: signed_value} for a normalized name."""
+        features: dict = {}
         for n in range(self.min_ngram, self.max_ngram + 1):
-            # Pad with spaces for boundary n-grams
             padded = f"{' ' * (n - 1)}{name}{' ' * (n - 1)}"
             for i in range(len(padded) - n + 1):
                 ngram = padded[i : i + n]
                 idx = self._hash_ngram(ngram)
                 sign = self._sign_hash(ngram)
-                features[idx] += sign
+                features[idx] = features.get(idx, 0.0) + sign
+        return features
+
+    def extract(self, name: str) -> np.ndarray:
+        """
+        Extract feature vector for a single normalized name.
+
+        Returns a dense vector of shape (dimensions,).
+        """
+        features = np.zeros(self.dimensions, dtype=np.float32)
+        for idx, val in self._extract_raw(name).items():
+            features[idx] = val
 
         # L2 normalize
         norm = np.linalg.norm(features)
@@ -62,8 +68,33 @@ class FeatureExtractor:
         return features
 
     def extract_batch(self, names: list[str]) -> np.ndarray:
-        """Extract features for a batch of names."""
-        return np.array([self.extract(name) for name in names], dtype=np.float32)
+        """
+        Extract features for a batch of names.
+
+        Returns a scipy sparse CSR matrix of shape (len(names), dimensions)
+        so that datasets with millions of names fit in memory.
+        """
+        rows: list[int] = []
+        cols: list[int] = []
+        data: list[float] = []
+
+        for i, name in enumerate(names):
+            raw = self._extract_raw(name)
+            vals = list(raw.values())
+            norm = np.sqrt(sum(v * v for v in vals))
+            if norm <= 0:
+                continue
+            inv = 1.0 / norm
+            for idx, val in raw.items():
+                rows.append(i)
+                cols.append(idx)
+                data.append(val * inv)
+
+        return sparse.csr_matrix(
+            (data, (rows, cols)),
+            shape=(len(names), self.dimensions),
+            dtype=np.float32,
+        )
 
     def get_config(self) -> dict:
         """Return configuration dict."""

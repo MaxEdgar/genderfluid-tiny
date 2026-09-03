@@ -1,0 +1,26 @@
+{
+  "sources": {
+    "US_SSA": {
+      "unique_names": 100364
+    },
+    "US_CENSUS": {
+      "unique_names": 53616
+    },
+    "FR_INSEE": {
+      "unique_names": 48506
+    }
+  },
+  "unique_names_total": 138101,
+  "total_recorded_births": 911480225,
+  "label_counts": {
+    "girl-associated": 78823,
+    "boy-associated": 49691,
+    "uncertain": 9587
+  },
+  "split_sizes": {
+    "train": 116530,
+    "validation": 10774,
+    "test": 10797
+  },
+  "association_threshold": 0.85
+}
