@@ -13,15 +13,23 @@
 `python fetch_multinational_data.py`
 
 1. Downloads the INSEE parquet from data.gouv.fr (cached in `data/raw/`).
-2. Parses the local SSA and Census files.
-3. Normalizes names and merges per-name counts by sex across all sources.
-4. Labels by statistical association: >=85% of recorded births female ->
+2. Tries the full official SSA `names.zip` (all years, ~1M unique spellings;
+   cached in `data/raw/ssa_names.zip`). Falls back to the aggregated local
+   SSA file if the download fails.
+3. Parses the local Census file.
+4. Normalizes names and merges per-name counts by sex across all sources.
+5. Labels by statistical association: >=85% of recorded births female ->
    `girl-associated`, >=85% male -> `boy-associated`, otherwise `uncertain`.
-5. Weights rows by frequency (names with 10k+ records get full weight).
-6. Splits 80/10/10 partitioned by normalized name, so a name never appears
+6. Weights rows by frequency (names with 10k+ records get full weight).
+7. Splits 80/10/10 partitioned by normalized name, so a name never appears
    in two splits.
 
-The raw INSEE parquet is not committed; `data/raw/` is gitignored.
+The raw INSEE parquet and SSA zip are not committed; `data/raw/` is
+gitignored.
+
+In CI, the `prepare` job of `.github/workflows/train.yml` runs the fetcher
+on a GitHub runner before training, so the full official SSA national file
+is used whenever it is reachable from that network.
 
 ## Coverage limits
 

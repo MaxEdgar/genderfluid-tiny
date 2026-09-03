@@ -1,6 +1,6 @@
 model:
   name: "genderfluid-tiny"
-  version: "1.0.0"
+  version: "1.0.5"
   min_ngram: 2
   max_ngram: 5
   feature_dimensions: 4096
