@@ -1,6 +1,6 @@
 # genderfluid-tiny
 
-**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 49KB model, CPU only, no API needed.**
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 0.19 MB model, CPU only, no API needed.**
 
 `pip install genderfluid-tiny`
 
@@ -22,12 +22,12 @@
 
 genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 102,927 real names from U.S. Social Security Administration data (1880-2020) and Census 2020 records.
 
-Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 49KB.
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 0.19 MB.
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Model size | 49 KB (0.05 MB) |
+| Model size | 0.19 MB (193 KB) |
 | Training data | 102,927 names (SSA + Census) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
@@ -142,24 +142,23 @@ Tested on held-out test data (10,294 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 68.9% |
-| Macro F1 | 0.629 |
-| Girl-associated F1 | 0.844 |
-| Boy-associated F1 | 0.664 |
-| Uncertain F1 | 0.380 |
+| Accuracy | 77.7% |
+| Macro F1 | 0.713 |
+| Girl-associated F1 | 0.876 |
+| Boy-associated F1 | 0.796 |
+| Uncertain F1 | 0.466 |
 
 The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
 
 ## Benchmark
 
-Measured on Intel Celeron N4000 @ 1.10GHz:
+Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
-Model size:       49 KB
-Loading time:     0.3 ms
-Single name:      0.93 ms
-Batch (100):     18.7 ms   (5,335 names/sec)
-Batch (1000):   180.1 ms   (5,551 names/sec)
+Model size:       0.19 MB
+Single name:      1.8 ms
+Batch (10):       4.5 ms   (2,207 names/sec)
+Batch (100):     61.8 ms   (1,619 names/sec)
 ```
 
 Run `genderfluid benchmark` on your own hardware.
@@ -171,7 +170,7 @@ Run `genderfluid benchmark` on your own hardware.
 - **Research**: Analyze naming trends across datasets
 - **Privacy-sensitive applications**: Process names without sending data to external APIs
 - **Offline applications**: Works without internet connectivity
-- **Embedded systems**: 49KB model runs on low-resource devices
+- **Embedded systems**: 0.19 MB model runs on low-resource devices
 
 ## Training data
 
@@ -207,7 +206,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
-| Model size | 49 KB | 600 KB+ | 10 MB+ |
+| Model size | 0.19 MB | 600 KB+ | 10 MB+ |
 | License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
@@ -235,7 +234,7 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### How accurate is it?
 
-68.9% accuracy on held-out test data. Girl-associated names: 84% F1. Boy-associated names: 66% F1. Uncertain/ambiguous names: 38% F1.
+77.7% accuracy on held-out test data (macro F1 0.71). Girl-associated names: 88% F1. Boy-associated names: 80% F1. Uncertain/ambiguous names: 47% F1.
 
 ### Does it work offline?
 
