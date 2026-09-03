@@ -19,7 +19,7 @@ When changing the version number, update ALL of these files:
 
 1. `pyproject.toml` -- `version = "X.Y.Z"`
 2. `genderfluid/__init__.py` -- `__version__ = "X.Y.Z"`
-3. `genderfluid/cli.py` -- `version="genderfluid-tiny X.Y.Z"` (line in `_build_parser`)
+   (cli.py reads `__version__` dynamically -- no manual bump needed there)
 
 ---
 
@@ -70,8 +70,7 @@ Wait for GitHub Actions to publish to PyPI (check with `gh run list --workflow=r
 | File | What to update |
 |------|---------------|
 | `pyproject.toml` | version, description, URLs, keywords, license |
-| `genderfluid/__init__.py` | `__version__` |
-| `genderfluid/cli.py` | `--version` string |
+| `genderfluid/__init__.py` | `__version__` (cli.py reads it dynamically) |
 | `README.md` | license badge, property table, comparison table, footer |
 | `COMMERCIAL_LICENSE.md` | contact email |
 | `docs/index.html` | footer version |
