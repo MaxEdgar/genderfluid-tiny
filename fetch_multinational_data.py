@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Build a multinational name-gender association dataset from official sources.
 
-Sources (all official government statistics):
+Sources:
   America:
     - U.S. Social Security Administration baby names (data/ssa_alldata.txt)
     - U.S. Census Bureau 2020 first names (data/census_2020_firstnames_sex.xlsx)
   Europe:
     - INSEE France "Base prénoms" 1900-2024 (downloaded from data.gouv.fr)
+  Asia:
+    - Meiji Yasuda Life newborn name survey, Japan (downloaded JSON)
+    - Ministry of Public Security annual name reports, China (official
+      statistics embedded below, published via state media)
 
 Each source contributes per-name counts by sex. Names are merged across
 sources and labeled by statistical association: >=85% of recorded births
@@ -16,11 +20,12 @@ uncertain. Rows are weighted by frequency so common names dominate.
 Outputs data/names.jsonl plus 80/10/10 train/validation/test splits that
 are partitioned by normalized name (a name never appears in two splits).
 
-Note on Asia/Africa: official government agencies in most Asian and
-African countries do not publish per-name statistics broken down by sex
-(Taiwan and Israel do, but their portals block automated downloads).
-This script is structured so additional sources can be added as
-functions that return {name: (girl_count, boy_count)}.
+Japan and China publish associations rather than raw counts, so those
+sources use synthetic counts that preserve the reported association
+(100 for single-gender, 50/50 for mixed). Other Asian and African
+countries either do not publish gendered name statistics or block
+automated downloads; this script is structured so additional sources can
+be added as functions that return {name: (girl_count, boy_count)}.
 """
 
 import hashlib
@@ -37,6 +42,33 @@ VAL_FRACTION = 0.10
 
 INSEE_DATASET_API = "https://www.data.gouv.fr/api/1/datasets/base-prenoms-2024-insee/"
 SSA_ZIP_URL = "https://www.ssa.gov/oact/babynames/names.zip"
+MEIJI_INDEX_URL = "https://www.meijiyasuda.co.jp/enjoy/ranking/assets/json/index_name.json"
+
+# Official statistics from the Ministry of Public Security (China) annual
+# name reports, published via state media. Facts (name -> sex association)
+# from official government statistics; sources cited in data/README.md.
+CHINA_MPS_NAMES = {
+    # 2021 report: male newborns, top 10 (People's Daily, 2022-01-24)
+    "boy-associated": [
+        "沐宸", "浩宇", "沐辰", "茗泽", "奕辰", "宇泽", "浩然", "奕泽", "宇轩", "沐阳",
+        # 2020 report: male newborns, top 10 (China News, 2021-02-08)
+        "亦辰", "宇辰", "子墨", "宇航", "梓豪", "亦宸",
+        # 2021 report: single-char names used more by males
+        "伟", "杰", "勇", "涛", "军", "强",
+        # 2021 report: double-char names used more by males
+        "建华",
+    ],
+    "girl-associated": [
+        # 2021 report: female newborns, top 10
+        "若汐", "一诺", "艺涵", "依诺", "梓涵", "苡沫", "雨桐", "欣怡", "语桐", "语汐",
+        # 2020 report: female newborns, top 10
+        "欣妍", "可欣", "梦瑶",
+        # 2021 report: single-char names used more by females
+        "敏", "静", "丽", "艳",
+        # 2021 report: double-char names used more by females
+        "秀英", "桂英", "秀兰", "玉兰", "婷婷", "桂兰", "玉梅", "秀珍", "海燕",
+    ],
+}
 
 
 def _load_ssa(path: str, url: str = None) -> dict:
@@ -225,6 +257,81 @@ def _load_insee() -> dict:
     return counts
 
 
+def _load_meiji_yasuda() -> dict:
+    """
+    Download Japan's Meiji Yasuda newborn-name survey index.
+
+    Meiji Yasuda Life publishes an annual survey of the most popular
+    newborn names (kanji), each labeled male/female/mixed. This is the
+    standard public source for Japanese name-gender associations.
+
+    Returns {name: (girl_count, boy_count)} with synthetic counts that
+    preserve the survey's gender association (no raw counts are public).
+    """
+    print("Downloading Japan Meiji Yasuda name survey...")
+    req = urllib.request.Request(MEIJI_INDEX_URL, headers={
+        "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/126.0 Safari/537.36"),
+        "Accept": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"  WARNING: Meiji Yasuda download failed ({exc}); "
+              "skipping Japan source")
+        return {}
+
+    # Synthetic counts preserve the reported association. The survey does
+    # not publish raw counts; confident single-gender names get 100, mixed
+    # get 50/50 (which the association threshold maps to "uncertain").
+    counts: dict = {}
+    for name, entry in data.items():
+        normalized = normalize_name(name)
+        if not normalized or len(entry) < 3:
+            continue
+        genders = entry[2]  # e.g. ["m"], ["f"], ["m", "f"]
+        male = "m" in genders
+        female = "f" in genders
+        if male and female:
+            bucket = counts.setdefault(normalized, [0, 0])
+            bucket[0] += 50
+            bucket[1] += 50
+        elif male:
+            bucket = counts.setdefault(normalized, [0, 0])
+            bucket[1] += 100
+        elif female:
+            bucket = counts.setdefault(normalized, [0, 0])
+            bucket[0] += 100
+    print(f"  Meiji Yasuda: {len(counts):,} unique kanji names")
+    return counts
+
+
+def _load_china_mps() -> dict:
+    """
+    Official Chinese name statistics from MPS annual name reports.
+
+    The Ministry of Public Security publishes annual reports with the
+    most popular newborn names by sex (state media: People's Daily,
+    China News). Names are embedded as official statistics; synthetic
+    counts preserve the reported sex association.
+    """
+    counts: dict = {}
+    for label, names in CHINA_MPS_NAMES.items():
+        for name in names:
+            normalized = normalize_name(name)
+            if not normalized:
+                continue
+            bucket = counts.setdefault(normalized, [0, 0])
+            if label == "girl-associated":
+                bucket[0] += 100
+            else:
+                bucket[1] += 100
+    print(f"  China MPS reports: {len(counts):,} unique names")
+    return counts
+
+
 def _weight_for(total: int) -> float:
     """Weight by frequency: names with 10k+ records get full weight."""
     w = min(1.0, max(0.05, (total + 1) ** 0.25 / 10.0))
@@ -240,6 +347,8 @@ def main():
                              url=SSA_ZIP_URL),
         "US_CENSUS": _load_census_xlsx(
             os.path.join(data_dir, "census_2020_firstnames_sex.xlsx")),
+        "JP_MEIJI": _load_meiji_yasuda(),
+        "CN_MPS": _load_china_mps(),
     }
     sources["FR_INSEE"] = _load_insee()
 

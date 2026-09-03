@@ -27,8 +27,10 @@ def normalize_name(name: str) -> str:
     if not name or not name.strip():
         return ""
 
-    # Unicode normalize
-    name = unicodedata.normalize("NFC", name.strip())
+    # Unicode normalize. NFKC also folds fullwidth Latin (Ａ -> a) and
+    # compatibility characters that CJK input methods commonly produce,
+    # while preserving meaningful hanzi, kana, and accented letters.
+    name = unicodedata.normalize("NFKC", name.strip())
 
     # Lowercase
     name = name.lower()

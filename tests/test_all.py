@@ -44,6 +44,19 @@ class TestPreprocessing:
         result = normalize_name("Søren")
         assert "ø" in result
 
+    def test_hanzi_preservation(self):
+        # CJK names must pass through normalization untouched.
+        assert normalize_name("王芳") == "王芳"
+        assert normalize_name("李伟") == "李伟"
+        assert normalize_name("沐宸") == "沐宸"
+        assert normalize_name("若汐") == "若汐"
+        assert normalize_name("  张伟  ") == "张伟"
+
+    def test_hanzi_fullwidth_latin(self):
+        # Fullwidth Latin (e.g. Ａlex) normalizes to ASCII via NFC+lower.
+        result = normalize_name("Ａlex")
+        assert result == "alex"
+
     def test_empty_input(self):
         assert normalize_name("") == ""
         assert normalize_name("   ") == ""
@@ -101,6 +114,28 @@ class TestFeatures:
         assert fe2.min_ngram == 3
         assert fe2.max_ngram == 6
         assert fe2.dimensions == 2048
+
+    def test_hanzi_features(self):
+        fe = FeatureExtractor(min_ngram=2, max_ngram=6, dimensions=4096)
+        for name in ["王芳", "李伟", "沐宸", "若汐", "张伟", "陈静"]:
+            v = fe.extract(name)
+            assert v.shape == (4096,)
+            assert abs(np.linalg.norm(v) - 1.0) < 1e-5
+
+    def test_hanzi_different_names_different_features(self):
+        fe = FeatureExtractor(min_ngram=2, max_ngram=6, dimensions=4096)
+        f1 = fe.extract("王芳")
+        f2 = fe.extract("李伟")
+        assert not np.allclose(f1, f2)
+
+    def test_hanzi_batch(self):
+        fe = FeatureExtractor(min_ngram=2, max_ngram=6, dimensions=1024)
+        features = fe.extract_batch(["王芳", "李伟", "若汐"])
+        assert features.shape == (3, 1024)
+        # Each row must carry nonzero signal (L2-normalized sparse vectors).
+        assert features.nnz > 0
+        norms = np.sqrt(features.multiply(features).sum(axis=1))
+        assert np.allclose(np.asarray(norms).ravel(), 1.0, atol=1e-5)
 
 
 # ==================== CLASSIFIER TESTS ====================
@@ -266,6 +301,23 @@ class TestInference:
         result = predict_name("Ñoño")
         assert isinstance(result, dict)
         assert "classification" in result
+
+    def test_predict_hanzi_name(self):
+        # CJK names must not crash and must return valid probabilities.
+        for name in ["王芳", "李伟", "沐宸", "若汐"]:
+            result = predict_name(name)
+            assert isinstance(result, dict)
+            assert result["classification"] in LABELS
+            total = (result["girl_associated_probability"] +
+                     result["boy_associated_probability"] +
+                     result["uncertain_probability"])
+            assert abs(total - 1.0) < 0.01
+
+    def test_predict_fullwidth_latin(self):
+        # Fullwidth input from CJK IMEs normalizes to ASCII.
+        result = predict_name("Ａlex")
+        assert result["name"] == "Ａlex"
+        assert result["classification"] in LABELS
 
     def test_predict_multiple_word_name(self):
         result = predict_name("Michelle Renatta Chan")

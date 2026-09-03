@@ -72,9 +72,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dims: [65536, 131072, 262144]
+        dims: [131072, 262144, 524288]
         ngram: ["2-6", "3-6"]
-        c: [10.0, 20.0]
+        c: [10.0, 20.0, 40.0]
 
     steps:
       - name: Checkout
