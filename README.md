@@ -1,6 +1,6 @@
 # genderfluid-tiny
 
-**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 0.19 MB model, CPU only, no API needed.**
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 1.5 MB model, CPU only, no API needed.**
 
 `pip install genderfluid-tiny`
 
@@ -20,15 +20,15 @@
 
 ## What is genderfluid-tiny?
 
-genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 102,927 real names from U.S. Social Security Administration data (1880-2020) and Census 2020 records.
+genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 138,101 real names from U.S. Social Security Administration data (1880-2023), U.S. Census 2020, and French INSEE first-name statistics (1900-2024) - 911 million recorded births in total.
 
-Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 0.19 MB.
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 1.5 MB.
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Model size | 0.19 MB (193 KB) |
-| Training data | 102,927 names (SSA + Census) |
+| Model size | 1.5 MB |
+| Training data | 138,101 names (SSA + Census + INSEE France) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
 | License | Polyform Noncommercial |
@@ -142,11 +142,11 @@ Tested on held-out test data (10,294 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 77.7% |
-| Macro F1 | 0.713 |
-| Girl-associated F1 | 0.876 |
-| Boy-associated F1 | 0.796 |
-| Uncertain F1 | 0.466 |
+| Accuracy | 79.1% |
+| Macro F1 | 0.676 |
+| Girl-associated F1 | 0.885 |
+| Boy-associated F1 | 0.812 |
+| Uncertain F1 | 0.331 |
 
 The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
 
@@ -155,10 +155,10 @@ The model is trained on U.S./English naming conventions. Accuracy varies by cult
 Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
-Model size:       0.19 MB
-Single name:      1.8 ms
-Batch (10):       4.5 ms   (2,207 names/sec)
-Batch (100):     61.8 ms   (1,619 names/sec)
+Model size:       1.50 MB
+Single name:      2.4 ms
+Batch (10):       7.3 ms   (1,377 names/sec)
+Batch (100):     19.2 ms   (5,214 names/sec)
 ```
 
 Run `genderfluid benchmark` on your own hardware.
@@ -170,7 +170,7 @@ Run `genderfluid benchmark` on your own hardware.
 - **Research**: Analyze naming trends across datasets
 - **Privacy-sensitive applications**: Process names without sending data to external APIs
 - **Offline applications**: Works without internet connectivity
-- **Embedded systems**: 0.19 MB model runs on low-resource devices
+- **Embedded systems**: 1.5 MB model runs on low-resource devices
 
 ## Training data
 
@@ -179,7 +179,7 @@ Built from real public data:
 1. **U.S. Social Security Administration** baby names (1880-2020): 100,364 unique names
 2. **U.S. Census Bureau** 2020 Census first names: 53,616 unique names
 
-Combined: 102,927 names with 50+ occurrences. Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
+Combined: 138,101 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
 
 ## Training from source
 
@@ -198,7 +198,7 @@ test split, and commits the model. Trigger it under
 Actions > Train Model > Run workflow, or run the two steps locally:
 
 ```bash
-python train_config.py 16384 3-5 5.0 lbfgs   # one configuration
+python train_config.py 131072 2-6 20.0 lbfgs   # one configuration
 python train_finalize.py                      # pick best, evaluate, save
 ```
 
@@ -218,7 +218,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
-| Model size | 0.19 MB | 600 KB+ | 10 MB+ |
+| Model size | 1.5 MB | 600 KB+ | 10 MB+ |
 | License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
@@ -242,11 +242,11 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### What data is it trained on?
 
-102,927 names from U.S. Social Security Administration baby names (1880-2020) and Census 2020 records.
+138,101 unique names from U.S. SSA baby names (1880-2023), U.S. Census 2020, and French INSEE first names (1900-2024) - 911 million recorded births.
 
 ### How accurate is it?
 
-77.7% accuracy on held-out test data (macro F1 0.71). Girl-associated names: 88% F1. Boy-associated names: 80% F1. Uncertain/ambiguous names: 47% F1.
+79.1% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 81% F1. Uncertain/ambiguous names: 33% F1.
 
 ### Does it work offline?
 

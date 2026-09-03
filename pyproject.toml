@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genderfluid-tiny"
-version = "1.0.3"
-description = "Tiny offline Python name-gender classifier. Predicts gender associations from names. 0.19 MB model, CPU only, no API."
+version = "1.0.4"
+description = "Tiny offline Python name-gender classifier. Predicts gender associations from names. 1.5 MB model, CPU only, no API."
 readme = "README.md"
 license = "PolyForm-Noncommercial-1.0.0"
 requires-python = ">=3.10"

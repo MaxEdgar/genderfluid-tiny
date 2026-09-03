@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docs | genderfluid-tiny</title>
-    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 0.19 MB model, CPU only, no API.">
+    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 1.5 MB model, CPU only, no API.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
     <section id="overview" class="hero">
         <h1 class="rainbow">genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
-        0.19 MB model, CPU only, no API needed.</p>
+        1.5 MB model, CPU only, no API needed.</p>
         <div class="install-wrap">
             <div class="install-cmd"><span>$</span> pip install genderfluid-tiny</div>
             <button class="install-copy" id="copyBtn" aria-label="Copy to clipboard" title="Copy to clipboard">
@@ -311,9 +311,9 @@
             </button>
         </div>
         <div class="stats">
-            <div class="stat"><strong data-count="193" data-suffix=" KB">0 KB</strong><span>Model</span></div>
-            <div class="stat"><strong data-count="1.8" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
-            <div class="stat"><strong data-count="102" data-suffix="K">0K</strong><span>Names trained</span></div>
+            <div class="stat"><strong data-count="1.5" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="2.4" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
+            <div class="stat"><strong data-count="138" data-suffix="K">0K</strong><span>Names trained</span></div>
             <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
         </div>
     </section>
@@ -336,7 +336,7 @@
         associated with feminine or masculine naming conventions. It outputs
         <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
         <div class="callout">
-            <strong>102,927 names</strong> trained from U.S. Social Security Administration (1880-2020) and Census 2020 records.
+            <strong>138,101 names</strong> trained from U.S. Social Security Administration (1880-2023), Census 2020 and French INSEE records (911M births).
         </div>
     </section>
 
@@ -493,11 +493,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <h2>Features</h2>
         <div class="grid">
             <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
-            <div class="item"><strong>0.19 MB model</strong><span>Fits in less than a 240p photo.</span></div>
-            <div class="item"><strong>Millisecond-fast</strong><span>1.8 ms per name on a 2-core CPU.</span></div>
+            <div class="item"><strong>1.5 MB model</strong><span>Still smaller than a low-res image.</span></div>
+            <div class="item"><strong>Millisecond-fast</strong><span>2.4 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
-            <div class="item"><strong>Real data</strong><span>102,927 names from SSA and Census 2020.</span></div>
+            <div class="item"><strong>Real data</strong><span>138,101 names from SSA, Census and INSEE France.</span></div>
             <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hyphens, apostrophes.</span></div>
             <div class="item"><strong>Simple API</strong><span>One function call. No complex setup.</span></div>
         </div>
@@ -509,11 +509,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Measured on a 2-core x86_64 Linux machine. Results vary by hardware.</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Model size</td><td>0.19 MB</td></tr>
-            <tr><td>Single prediction</td><td>1.8 ms</td></tr>
-            <tr><td>Batch (10 names)</td><td>4.5 ms</td></tr>
-            <tr><td>Batch (100 names)</td><td>61.8 ms</td></tr>
-            <tr><td>Peak RSS</td><td>174 MB</td></tr>
+            <tr><td>Model size</td><td>1.50 MB</td></tr>
+            <tr><td>Single prediction</td><td>2.4 ms</td></tr>
+            <tr><td>Batch (10 names)</td><td>7.3 ms</td></tr>
+            <tr><td>Batch (100 names)</td><td>19.2 ms</td></tr>
+            <tr><td>Peak RSS</td><td>215 MB</td></tr>
         </table>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
@@ -524,12 +524,12 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Tested on held-out test data (10,294 names):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>77.7%</td></tr>
-            <tr><td>Macro F1</td><td>0.713</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.876</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.796</td></tr>
-            <tr><td>Uncertain F1</td><td>0.466</td></tr>
-            <tr><td>Calibration error</td><td>0.038</td></tr>
+            <tr><td>Accuracy</td><td>79.1%</td></tr>
+            <tr><td>Macro F1</td><td>0.676</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.885</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.812</td></tr>
+            <tr><td>Uncertain F1</td><td>0.331</td></tr>
+            <tr><td>Calibration error</td><td>0.066</td></tr>
         </table>
         <p>The model is trained on U.S./English naming conventions. Accuracy
         varies by cultural context.</p>
