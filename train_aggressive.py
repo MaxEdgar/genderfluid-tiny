@@ -315,7 +315,9 @@ def main():
         "C": best["C"],
         "solver": best["solver"],
         "sweep_total": total,
-        "sweep_best_rank": results.index(best) + 1,
+        "sweep_best_rank": next(i for i, r in enumerate(results)
+                                 if (r["dims"], r["ngram"], r["C"], r["solver"])
+                                 == (best["dims"], best["ngram"], best["C"], best["solver"])) + 1,
         "validation_f1": best["f1"],
         "validation_accuracy": best["acc"],
         "validation_ece": best["ece"],
@@ -337,7 +339,10 @@ def main():
     print(f"  Test F1:      {test_metrics['macro_f1']:.4f}")
     print(f"  Test Acc:     {test_metrics['accuracy']:.4f}")
     print(f"  Configs swept: {total}")
-    print(f"  Best rank:    #{results.index(best) + 1}")
+    best_rank = next(i for i, r in enumerate(results)
+                     if (r["dims"], r["ngram"], r["C"], r["solver"])
+                     == (best["dims"], best["ngram"], best["C"], best["solver"])) + 1
+    print(f"  Best rank:    #{best_rank}")
     print()
     print(f"  50 MB limit:  {'PASS' if size_mb < 50 else 'FAIL'}")
     print(f"  F1 target:    {'PASS' if test_metrics['macro_f1'] >= MIN_MACRO_F1_TARGET else 'BELOW TARGET'}")
