@@ -15,15 +15,26 @@ on:
       - "data/validation.jsonl"
       - "data/test.jsonl"
       - "train_aggressive.py"
+      - "train_config.py"
+      - "train_finalize.py"
       - "genderfluid/features.py"
       - "genderfluid/classifier.py"
       - "genderfluid/calibration.py"
       - "config.yaml"
 
 jobs:
-  train:
+  # Each matrix cell trains one configuration in parallel (~1-3 min each)
+  # instead of running all 18 sequentially (~35 min).
+  sweep:
+    name: "train ${{ matrix.dims }} ${{ matrix.ngram }} C=${{ matrix.c }}"
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        dims: [4096, 8192, 16384]
+        ngram: ["2-5", "3-5"]
+        c: [0.5, 1.0, 5.0]
 
     steps:
       - name: Checkout
@@ -41,33 +52,71 @@ jobs:
 
       - name: Verify training data exists
         run: |
-          for f in data/train.jsonl data/validation.jsonl data/test.jsonl; do
+          for f in data/train.jsonl data/validation.jsonl; do
             if [ ! -f "$f" ]; then
               echo "ERROR: $f not found"
               exit 1
             fi
-            lines=$(wc -l < "$f")
-            echo "$f: $lines lines"
+            echo "$f: $(wc -l < "$f") lines"
           done
 
-      - name: Run aggressive training
-        run: python train_aggressive.py
-        timeout-minutes: 40
+      - name: Train configuration
+        run: python train_config.py ${{ matrix.dims }} ${{ matrix.ngram }} ${{ matrix.c }} lbfgs
+
+      - name: Upload config artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweep-${{ matrix.dims }}-${{ matrix.ngram }}-${{ matrix.c }}
+          path: out/
+          if-no-files-found: error
+          retention-days: 14
+
+  # Collects all configs, picks the best by validation F1, evaluates it on
+  # the held-out test set, writes the final model, and commits it.
+  finalize:
+    needs: sweep
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt pytest
+
+      - name: Download sweep artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sweep-*
+          path: sweep/
+          merge-multiple: true
+
+      - name: Select best config and evaluate on test
+        run: python train_finalize.py
 
       - name: Verify model
         run: |
-          MODEL="models/genderfluid-tiny.bin"
-          if [ ! -f "$MODEL" ]; then
-            echo "ERROR: Model not found at $MODEL"
-            exit 1
-          fi
-          SIZE=$(stat --format='%s' "$MODEL")
-          SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc)
-          echo "Model size: $SIZE_MB MB ($SIZE bytes)"
-          if [ $(echo "$SIZE_MB > 50" | bc) -eq 1 ]; then
-            echo "ERROR: Model exceeds 50MB limit"
-            exit 1
-          fi
+          for f in models/genderfluid-tiny.bin genderfluid/models/genderfluid-tiny.bin; do
+            if [ ! -f "$f" ]; then
+              echo "ERROR: $f not found"
+              exit 1
+            fi
+            SIZE=$(stat --format='%s' "$f")
+            SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc)
+            echo "$f: $SIZE_MB MB ($SIZE bytes)"
+            if [ $(echo "$SIZE_MB > 50" | bc) -eq 1 ]; then
+              echo "ERROR: model exceeds 50MB limit"
+              exit 1
+            fi
+          done
           echo "Size check: PASS"
 
       - name: Run tests
@@ -92,11 +141,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Keep the packaged model (genderfluid/models) in sync with the
-          # artifact copy (models/); inference and the wheel read the former.
-          cp models/genderfluid-tiny.bin genderfluid/models/genderfluid-tiny.bin
           git add models/genderfluid-tiny.bin models/sweep_results.json genderfluid/models/genderfluid-tiny.bin
-          git diff --cached --quiet || git commit -m "train: update model from aggressive sweep [skip ci]"
+          git diff --cached --quiet || git commit -m "train: update model from matrix sweep [skip ci]"
           # Main may have advanced while this run was training; rebase first.
           git pull --rebase origin main
           git push
