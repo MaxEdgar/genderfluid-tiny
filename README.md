@@ -190,6 +190,18 @@ python train.py               # train and save model
 python evaluate.py            # evaluate on validation/test splits
 ```
 
+**Sweep training on GitHub Actions** (recommended for retraining): the
+`Train Model` workflow runs all 18 configurations in parallel on GitHub
+runners (one job per config, ~5 minutes total instead of ~35) and a
+`finalize` job picks the best config by validation F1, evaluates it on the
+test split, and commits the model. Trigger it under
+Actions > Train Model > Run workflow, or run the two steps locally:
+
+```bash
+python train_config.py 16384 3-5 5.0 lbfgs   # one configuration
+python train_finalize.py                      # pick best, evaluate, save
+```
+
 ## Dataset format
 
 JSONL, one entry per line:
