@@ -35,9 +35,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dims: [16384, 32768, 65536]
-        ngram: ["2-5", "3-5"]
-        c: [1.0, 5.0, 10.0]
+        dims: [32768, 65536, 131072]
+        ngram: ["2-6", "3-5"]
+        c: [10.0, 20.0]
 
     steps:
       - name: Checkout
