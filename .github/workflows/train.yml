@@ -92,6 +92,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add models/genderfluid-tiny.bin models/sweep_results.json
+          # Keep the packaged model (genderfluid/models) in sync with the
+          # artifact copy (models/); inference and the wheel read the former.
+          cp models/genderfluid-tiny.bin genderfluid/models/genderfluid-tiny.bin
+          git add models/genderfluid-tiny.bin models/sweep_results.json genderfluid/models/genderfluid-tiny.bin
           git diff --cached --quiet || git commit -m "train: update model from aggressive sweep [skip ci]"
+          # Main may have advanced while this run was training; rebase first.
+          git pull --rebase origin main
           git push
