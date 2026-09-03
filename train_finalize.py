@@ -81,9 +81,21 @@ def main():
     # Rebuild the final model with full metadata.
     train_size = len(load_split(os.path.join(data_dir, "train.jsonl"))[0])
     val_size = len(load_split(os.path.join(data_dir, "validation.jsonl"))[0])
+    # Read the configured version so model metadata tracks the package.
+    # Plain-text parse to avoid a yaml dependency in CI.
+    model_version = "1.0.0"
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "config.yaml"), encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith("version:"):
+                    model_version = line.split(":", 1)[1].strip().strip("\"'")
+                    break
+    except Exception:
+        pass
     metadata = {
         "model_name": "genderfluid-tiny",
-        "version": "1.0.0",
+        "version": model_version,
         "seed": 42,
         "training_date": time.strftime("%Y-%m-%d %H:%M:%S"),
         "training_mode": "matrix_sweep",

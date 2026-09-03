@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docs | genderfluid-tiny</title>
-    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 1.5 MB model, CPU only, no API.">
+    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 3 MB model, CPU only, no API.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
     <section id="overview" class="hero">
         <h1 class="rainbow">genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
-        1.5 MB model, CPU only, no API needed.</p>
+        3 MB model, CPU only, no API needed.</p>
         <div class="install-wrap">
             <div class="install-cmd"><span>$</span> pip install genderfluid-tiny</div>
             <button class="install-copy" id="copyBtn" aria-label="Copy to clipboard" title="Copy to clipboard">
@@ -311,7 +311,7 @@
             </button>
         </div>
         <div class="stats">
-            <div class="stat"><strong data-count="1.5" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="3.0" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
             <div class="stat"><strong data-count="2.4" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
             <div class="stat"><strong data-count="138" data-suffix="K">0K</strong><span>Names trained</span></div>
             <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
@@ -493,7 +493,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <h2>Features</h2>
         <div class="grid">
             <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
-            <div class="item"><strong>1.5 MB model</strong><span>Still smaller than a low-res image.</span></div>
+            <div class="item"><strong>3 MB model</strong><span>Still smaller than a low-res image.</span></div>
             <div class="item"><strong>Millisecond-fast</strong><span>2.4 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
@@ -521,14 +521,14 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     <!-- ACCURACY -->
     <section id="accuracy">
         <h2>Accuracy</h2>
-        <p>Tested on held-out test data (10,294 names):</p>
+        <p>Tested on held-out test data (10,797 names):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>79.1%</td></tr>
-            <tr><td>Macro F1</td><td>0.676</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.885</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.812</td></tr>
-            <tr><td>Uncertain F1</td><td>0.331</td></tr>
+            <tr><td>Accuracy</td><td>79.7%</td></tr>
+            <tr><td>Macro F1</td><td>0.680</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.888</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.818</td></tr>
+            <tr><td>Uncertain F1</td><td>0.335</td></tr>
             <tr><td>Calibration error</td><td>0.066</td></tr>
         </table>
         <p>The model is trained on U.S./English naming conventions. Accuracy
@@ -612,7 +612,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     </section>
 
     <footer>
-        genderfluid-tiny v1.0.2 &nbsp;&middot;&nbsp;
+        genderfluid-tiny v1.0.5 &nbsp;&middot;&nbsp;
         <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
         <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
         &nbsp;&middot;&nbsp; Created by <a href="https://github.com/MaxEdgar" target="_blank" rel="noopener">MaxEdgar</a>

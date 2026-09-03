@@ -1,6 +1,6 @@
 # genderfluid-tiny
 
-**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 1.5 MB model, CPU only, no API needed.**
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 3 MB model, CPU only, no API needed.**
 
 `pip install genderfluid-tiny`
 
@@ -22,12 +22,12 @@
 
 genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 138,101 real names from U.S. Social Security Administration data (1880-2023), U.S. Census 2020, and French INSEE first-name statistics (1900-2024) - 911 million recorded births in total.
 
-Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 1.5 MB.
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 3 MB.
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Model size | 1.5 MB |
+| Model size | 3 MB |
 | Training data | 138,101 names (SSA + Census + INSEE France) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
@@ -138,15 +138,15 @@ The classifier extracts character-level patterns from names. Names ending in `-a
 
 ## Accuracy
 
-Tested on held-out test data (10,294 names):
+Tested on held-out test data (10,797 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 79.1% |
-| Macro F1 | 0.676 |
-| Girl-associated F1 | 0.885 |
-| Boy-associated F1 | 0.812 |
-| Uncertain F1 | 0.331 |
+| Accuracy | 79.7% |
+| Macro F1 | 0.680 |
+| Girl-associated F1 | 0.888 |
+| Boy-associated F1 | 0.818 |
+| Uncertain F1 | 0.335 |
 
 The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
 
@@ -170,7 +170,7 @@ Run `genderfluid benchmark` on your own hardware.
 - **Research**: Analyze naming trends across datasets
 - **Privacy-sensitive applications**: Process names without sending data to external APIs
 - **Offline applications**: Works without internet connectivity
-- **Embedded systems**: 1.5 MB model runs on low-resource devices
+- **Embedded systems**: 3 MB model runs on low-resource devices
 
 ## Training data
 
@@ -191,14 +191,14 @@ python evaluate.py            # evaluate on validation/test splits
 ```
 
 **Sweep training on GitHub Actions** (recommended for retraining): the
-`Train Model` workflow runs all 18 configurations in parallel on GitHub
-runners (one job per config, ~5 minutes total instead of ~35) and a
-`finalize` job picks the best config by validation F1, evaluates it on the
-test split, and commits the model. Trigger it under
-Actions > Train Model > Run workflow, or run the two steps locally:
+`Train Model` workflow runs all 12 configurations in parallel on GitHub
+runners (one job per config, ~4 minutes total) and a `finalize` job picks
+the best config by validation F1, evaluates it on the test split, and
+commits the model. Trigger it under Actions > Train Model > Run workflow,
+or run the two steps locally:
 
 ```bash
-python train_config.py 131072 2-6 20.0 lbfgs   # one configuration
+python train_config.py 262144 2-6 20.0 lbfgs   # one configuration
 python train_finalize.py                      # pick best, evaluate, save
 ```
 
@@ -218,7 +218,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
-| Model size | 1.5 MB | 600 KB+ | 10 MB+ |
+| Model size | 3 MB | 600 KB+ | 10 MB+ |
 | License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
@@ -246,7 +246,7 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### How accurate is it?
 
-79.1% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 81% F1. Uncertain/ambiguous names: 33% F1.
+79.7% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
 
 ### Does it work offline?
 
