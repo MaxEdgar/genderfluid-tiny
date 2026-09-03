@@ -442,6 +442,8 @@ def _build_parser():
             "  genderfluid predict --file names.txt\n"
             "  genderfluid benchmark\n"
             "  genderfluid stats\n"
+            "\n"
+            "run 'genderfluid <command> --help' for that command's options\n"
         ),
     )
     parser.add_argument("--version", action="version",
@@ -454,7 +456,8 @@ def _build_parser():
     sub = parser.add_subparsers(dest="command", metavar="{predict,stats,benchmark,interactive}")
 
     p_predict = sub.add_parser(
-        "predict", help="predict gender association for a name",
+        "predict",
+        help="predict gender association for a name (--compare, --file, --json)",
         description=(
             "Predict the statistical association between a name and gendered\n"
             "naming conventions in the training data.\n"
@@ -480,7 +483,7 @@ def _build_parser():
     p_predict.add_argument("--model", "-m", metavar="PATH", help="path to a custom model file")
 
     p_stats = sub.add_parser(
-        "stats", help="show model statistics",
+        "stats", help="show model statistics (--json)",
         description="Show what model is installed, its size, and its training metrics.",
         formatter_class=_HelpFormatter,
     )
@@ -488,7 +491,7 @@ def _build_parser():
     p_stats.add_argument("--json", "-j", action="store_true", help="JSON output")
 
     p_bench = sub.add_parser(
-        "benchmark", help="run inference benchmark",
+        "benchmark", help="run inference benchmark (--quick, --json)",
         description="Measure model load time, single-name latency, and batch throughput.",
         epilog=(
             "examples:\n"
