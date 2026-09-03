@@ -142,10 +142,10 @@ Tested on held-out test data (10,797 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 79.7% |
+| Accuracy | 79.6% |
 | Macro F1 | 0.680 |
-| Girl-associated F1 | 0.888 |
-| Boy-associated F1 | 0.818 |
+| Girl-associated F1 | 0.887 |
+| Boy-associated F1 | 0.816 |
 | Uncertain F1 | 0.335 |
 
 The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
@@ -246,7 +246,7 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### How accurate is it?
 
-79.7% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
+79.6% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
 
 ### Does it work offline?
 
