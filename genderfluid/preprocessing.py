@@ -16,7 +16,14 @@ def normalize_name(name: str) -> str:
     - Extra spaces
 
     Preserves meaningful Unicode characters (e.g., accented letters).
+
+    Raises TypeError if name is not a string.
     """
+    if not isinstance(name, str):
+        raise TypeError(
+            f"name must be a string, got {type(name).__name__} "
+            f"({name!r}). Pass a name string such as 'Olivia'."
+        )
     if not name or not name.strip():
         return ""
 

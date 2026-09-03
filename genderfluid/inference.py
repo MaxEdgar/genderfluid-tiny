@@ -98,7 +98,14 @@ class GenderfluidModel:
 
         More efficient than calling predict() in a loop
         because the model is loaded once and features are batched.
+
+        Raises TypeError if names is not a list of strings.
         """
+        if isinstance(names, str):
+            raise TypeError(
+                "names must be a list of strings, got a single string. "
+                "Use predict_name() for one name, or pass [name]."
+            )
         normalized = [normalize_name(n) for n in names]
 
         results = [None] * len(names)

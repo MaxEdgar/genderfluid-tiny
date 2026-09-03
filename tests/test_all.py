@@ -222,16 +222,15 @@ class TestInference:
         save_model(fe, clf, {}, self.model_path)
 
         import genderfluid.inference as inf
-        inf._model_cache = None
-        inf._model_path_cache = None
         self._orig_default = inf.DEFAULT_MODEL_PATH
+        self._orig_cached = inf._default_model
+        inf._default_model = None
         inf.DEFAULT_MODEL_PATH = self.model_path
 
         yield
 
         inf.DEFAULT_MODEL_PATH = self._orig_default
-        inf._model_cache = None
-        inf._model_path_cache = None
+        inf._default_model = self._orig_cached
         if os.path.exists(self.model_path):
             os.unlink(self.model_path)
 
@@ -286,6 +285,22 @@ class TestInference:
     def test_country_context_warning(self):
         result = predict_name("Alex", country="US")
         assert "context_warning" in result
+
+    def test_predict_non_string_raises_type_error(self):
+        with pytest.raises(TypeError):
+            predict_name(42)
+        with pytest.raises(TypeError):
+            predict_name(None)
+        with pytest.raises(TypeError):
+            predict_name(["Emma"])
+
+    def test_predict_names_rejects_single_string(self):
+        with pytest.raises(TypeError):
+            predict_names("Emma")
+
+    def test_batch_rejects_non_string_element(self):
+        with pytest.raises(TypeError):
+            predict_names(["Emma", 42])
 
 
 if __name__ == "__main__":
