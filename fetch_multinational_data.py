@@ -50,6 +50,10 @@ VAL_FRACTION = 0.10
 
 INSEE_DATASET_API = "https://www.data.gouv.fr/api/1/datasets/base-prenoms-2024-insee/"
 SSA_ZIP_URL = "https://www.ssa.gov/oact/babynames/names.zip"
+# ssa.gov blocks automated downloads (Akamai, 403 for datacenter IPs). The
+# file is public domain, so fall back to the Internet Archive's snapshot of
+# the official names.zip when the live host refuses the connection.
+SSA_ZIP_MIRROR = "https://web.archive.org/web/2026/https://www.ssa.gov/oact/babynames/names.zip"
 MEIJI_INDEX_URL = "https://www.meijiyasuda.co.jp/enjoy/ranking/assets/json/index_name.json"
 
 # Spain: INE "Nombres y apellidos mas frecuentes" - Padron-based frequency of
@@ -125,20 +129,30 @@ def _load_ssa(path: str, url: str = None) -> dict:
         try:
             import zipfile
             if not os.path.exists(cache_zip) or os.path.getsize(cache_zip) == 0:
-                print("  Downloading SSA national data (names.zip)...")
-                req = urllib.request.Request(url, headers={
-                    "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
-                                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                    "Chrome/126.0 Safari/537.36"),
-                    "Accept": "*/*",
-                })
-                with urllib.request.urlopen(req, timeout=600) as resp, \
-                        open(cache_zip, "wb") as out:
-                    while True:
-                        chunk = resp.read(1024 * 1024)
-                        if not chunk:
-                            break
-                        out.write(chunk)
+                candidates = [url]
+                if SSA_ZIP_MIRROR:
+                    candidates.append(SSA_ZIP_MIRROR)
+                for cand in candidates:
+                    print(f"  Downloading SSA national data ({cand})...")
+                    req = urllib.request.Request(cand, headers={
+                        "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
+                                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                        "Chrome/126.0 Safari/537.36"),
+                        "Accept": "*/*",
+                    })
+                    try:
+                        with urllib.request.urlopen(req, timeout=600) as resp, \
+                                open(cache_zip, "wb") as out:
+                            while True:
+                                chunk = resp.read(1024 * 1024)
+                                if not chunk:
+                                    break
+                                out.write(chunk)
+                        break
+                    except Exception:
+                        print(f"  WARNING: download failed for {cand}; "
+                              f"trying next candidate")
+                        continue
             counts: dict = {}
             with zipfile.ZipFile(cache_zip) as zf:
                 for member in zf.namelist():

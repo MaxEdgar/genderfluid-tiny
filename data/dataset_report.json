@@ -1,7 +1,7 @@
 {
   "sources": {
     "US_SSA": {
-      "unique_names": 100364
+      "unique_names": 105966
     },
     "US_CENSUS": {
       "unique_names": 53616
@@ -19,23 +19,23 @@
       "unique_names": 62444
     },
     "SE_ISOFF": {
-      "unique_names": 0
+      "unique_names": 224
     },
     "PL_PESEL": {
       "unique_names": 58106
     }
   },
-  "unique_names_total": 204223,
-  "total_recorded_births": 1000218008,
+  "unique_names_total": 209015,
+  "total_recorded_births": 1017252231,
   "label_counts": {
-    "girl-associated": 108704,
-    "boy-associated": 85309,
-    "uncertain": 10210
+    "girl-associated": 111262,
+    "boy-associated": 87352,
+    "uncertain": 10401
   },
   "split_sizes": {
-    "train": 172324,
-    "validation": 15923,
-    "test": 15976
+    "train": 176346,
+    "validation": 16315,
+    "test": 16354
   },
   "association_threshold": 0.85
 }
