@@ -20,7 +20,7 @@
 
 ## What is genderfluid-tiny?
 
-genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 140,547 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births in total.
+genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 186,734 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Spanish INE name statistics, Swedish official name lists, Japanese newborn surveys, and Chinese government name reports - 957 million recorded births in total.
 
 Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 14 MB (6 MB of weights plus an 8 MB vocabulary filter used to flag out-of-vocabulary names as `uncertain`).
 
@@ -28,7 +28,7 @@ Unlike API-based gender detection services, genderfluid-tiny runs entirely offli
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
 | Model size | 14 MB |
-| Training data | 140,547 names (SSA + Census + INSEE + Japan + China) |
+| Training data | 186,734 names (SSA + Census + INSEE + Spain + Sweden + Japan + China) |
 | Inference | CPU only, numpy only (no sklearn/scipy) |
 | Internet | Not required |
 | License | Polyform Noncommercial |
@@ -138,15 +138,15 @@ The classifier extracts character-level patterns from names. Names ending in `-a
 
 ## Accuracy
 
-Tested on held-out test data (10,987 names):
+Tested on held-out test data (14,587 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 83.1% |
-| Macro F1 | 0.704 |
-| Girl-associated F1 | 0.903 |
-| Boy-associated F1 | 0.838 |
-| Uncertain F1 | 0.370 |
+| Accuracy | 85.5% |
+| Macro F1 | 0.709 |
+| Girl-associated F1 | 0.918 |
+| Boy-associated F1 | 0.873 |
+| Uncertain F1 | 0.335 |
 
 Primarily U.S./European training data with growing Asian (Japanese/Chinese) coverage. Accuracy varies by cultural context.
 
@@ -156,11 +156,11 @@ Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
 Model size:      14.00 MB
-Single name:      3.45 ms
-Batch (10):        2.4 ms   (4,199 names/sec)
-Batch (100):      18.5 ms   (5,393 names/sec)
-Batch (1000):    144.8 ms   (6,906 names/sec)
-Peak RSS:        47 MB
+Single name:      3.47 ms
+Batch (10):        2.9 ms   (3,460 names/sec)
+Batch (100):      19.6 ms   (5,093 names/sec)
+Batch (1000):    182.0 ms   (5,495 names/sec)
+Peak RSS:        73 MB
 Cold start:      ~0.4 s (CLI to first prediction)
 ```
 
@@ -182,10 +182,12 @@ Built from real public data:
 1. **U.S. Social Security Administration** baby names (1880-2020): 100,364 unique names
 2. **U.S. Census Bureau** 2020 Census first names: 53,616 unique names
 3. **France INSEE** first names (1900-2024): 48,506 unique names
-4. **Japan** Meiji Yasuda newborn-name surveys: 2,387 unique kanji names
-5. **China** Ministry of Public Security name reports: 49 official given names
+4. **Spain INE** first names by birth decade: 62,444 unique names
+5. **Japan** Meiji Yasuda newborn-name surveys: 2,387 unique kanji names
+6. **China** Ministry of Public Security name reports: 60 official given names
+7. **Sweden** official name statistics (isoF): 224 unique names
 
-Combined: 140,547 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
+Combined: 186,734 unique names (957 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
 
 ## Training from source
 
@@ -255,11 +257,11 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### What data is it trained on?
 
-140,547 unique names from U.S. SSA baby names (1880-2020), U.S. Census 2020, French INSEE first names (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births.
+186,734 unique names from U.S. SSA baby names (1880-2020), U.S. Census 2020, French INSEE first names (1900-2024), Spanish INE name statistics, Swedish official name lists, Japanese newborn surveys, and Chinese government name reports - 957 million recorded births.
 
 ### How accurate is it?
 
-83.1% accuracy on held-out test data (macro F1 0.704). Girl-associated names: 90% F1. Boy-associated names: 84% F1. Uncertain/ambiguous names: 37% F1.
+85.5% accuracy on held-out test data (macro F1 0.709). Girl-associated names: 92% F1. Boy-associated names: 87% F1. Uncertain/ambiguous names: 34% F1.
 
 ### Does it work offline?
 

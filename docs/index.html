@@ -336,7 +336,7 @@
         associated with feminine or masculine naming conventions. It outputs
         <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
         <div class="callout">
-            <strong>140,547 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Japanese newborn surveys and Chinese government reports (911M births).
+            <strong>186,734 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Spanish INE, Swedish official name lists, Japanese newborn surveys and Chinese government reports (957M births).
         </div>
     </section>
 
@@ -498,7 +498,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <div class="item"><strong>Millisecond-fast</strong><span>3.5 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
-            <div class="item"><strong>Real data</strong><span>140,547 names from SSA, Census, INSEE, Japan and China.</span></div>
+            <div class="item"><strong>Real data</strong><span>186,734 names from SSA, Census, INSEE, Spain, Sweden, Japan and China.</span></div>
             <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hanzi, hyphens, apostrophes.</span></div>
             <div class="item"><strong>Simple API</strong><span>One function call. No complex setup.</span></div>
         </div>
@@ -511,11 +511,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
             <tr><td>Model size</td><td>14.00 MB</td></tr>
-            <tr><td>Single prediction</td><td>3.45 ms</td></tr>
-            <tr><td>Batch (10 names)</td><td>2.4 ms (4,199 names/s)</td></tr>
-            <tr><td>Batch (100 names)</td><td>18.5 ms (5,393 names/s)</td></tr>
-            <tr><td>Batch (1000 names)</td><td>144.8 ms (6,906 names/s)</td></tr>
-            <tr><td>Peak RSS</td><td>47 MB</td></tr>
+            <tr><td>Single prediction</td><td>3.47 ms</td></tr>
+            <tr><td>Batch (10 names)</td><td>2.9 ms (3,460 names/s)</td></tr>
+            <tr><td>Batch (100 names)</td><td>19.6 ms (5,093 names/s)</td></tr>
+            <tr><td>Batch (1000 names)</td><td>182.0 ms (5,495 names/s)</td></tr>
+            <tr><td>Peak RSS</td><td>73 MB</td></tr>
             <tr><td>Cold start</td><td>~0.4 s (CLI to first prediction)</td></tr>
         </table>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
@@ -524,15 +524,15 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     <!-- ACCURACY -->
     <section id="accuracy">
         <h2>Accuracy</h2>
-        <p>Tested on held-out test data (10,987 names):</p>
+        <p>Tested on held-out test data (14,587 names):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>83.1%</td></tr>
-            <tr><td>Macro F1</td><td>0.704</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.903</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.838</td></tr>
-            <tr><td>Uncertain F1</td><td>0.370</td></tr>
-            <tr><td>Calibration error</td><td>0.080</td></tr>
+            <tr><td>Accuracy</td><td>85.5%</td></tr>
+            <tr><td>Macro F1</td><td>0.709</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.918</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.873</td></tr>
+            <tr><td>Uncertain F1</td><td>0.335</td></tr>
+            <tr><td>Calibration error</td><td>0.072</td></tr>
         </table>
         <p>Primarily U.S./European training data with growing Asian coverage.
         Accuracy varies by cultural context.</p>
@@ -584,10 +584,12 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <li>U.S. Social Security Administration baby names (1880-2020): 100,364 unique names</li>
             <li>U.S. Census Bureau 2020 Census first names: 53,616 unique names</li>
             <li>France INSEE first names (1900-2024): 48,506 unique names</li>
+            <li>Spain INE first names by birth decade: 62,444 unique names</li>
             <li>Japan Meiji Yasuda newborn-name surveys: 2,387 unique kanji names</li>
-            <li>China Ministry of Public Security name reports: 49 official given names</li>
+            <li>China Ministry of Public Security name reports: 60 official given names</li>
+            <li>Sweden official name statistics (isoF): 224 unique names</li>
         </ul>
-        <p>Combined: 140,547 unique names across all sources.</p>
+        <p>Combined: 186,734 unique names across all sources.</p>
         <p>Names with 85%+ statistical association are labeled
         <code>girl-associated</code> or <code>boy-associated</code>.
         Below that threshold: <code>uncertain</code>.</p>
