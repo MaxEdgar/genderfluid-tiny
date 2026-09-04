@@ -163,7 +163,7 @@ def main():
     test_path = os.path.join(data_dir, "test.jsonl")
 
     if not os.path.exists(train_path):
-        print("ERROR: No training data found. Run: python prepare_data.py")
+        print("ERROR: No training data found. Run: python fetch_multinational_data.py")
         sys.exit(1)
 
     print("Loading datasets...")

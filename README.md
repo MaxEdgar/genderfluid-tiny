@@ -191,8 +191,7 @@ Combined: 140,547 unique names (911 million recorded births). Names with 85%+ st
 
 ```bash
 python fetch_multinational_data.py  # build dataset from official sources, write splits
-python train.py                     # train and save model
-python evaluate.py                  # evaluate on validation/test splits
+python train_aggressive.py          # sweep configurations, save the best model
 ```
 
 **Sweep training on GitHub Actions** (recommended for retraining): the

@@ -33,10 +33,10 @@ class GenderfluidModel:
         if not os.path.exists(path):
             raise FileNotFoundError(
                 f"No model found at {path}\n\n"
-                "Train a model first:\n"
-                "  python process_real_data.py\n"
-                "  python prepare_data.py\n"
-                "  python train.py"
+                "Build the model first:\n"
+                "  python fetch_multinational_data.py\n"
+                "  python train_aggressive.py\n"
+                "(or trigger the Train Model GitHub Actions workflow)"
             )
         self._fe, self._clf, self._metadata = load_model(path)
         self._model_path = path

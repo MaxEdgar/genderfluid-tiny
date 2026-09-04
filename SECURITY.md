@@ -17,10 +17,10 @@ The inference library runs entirely locally. It does not:
 - Handle authentication
 - Process sensitive information beyond names you provide to it
 
-The repository also contains optional data-fetching scripts
-(`fetch_multinational_data.py`, `process_real_data.py`) used only when
-retraining the model; those make outbound requests to official
-government dataset sources at training time.
+The repository also contains an optional data-fetching script
+(`fetch_multinational_data.py`) used only when retraining the model;
+it makes outbound requests to official government dataset sources at
+training time.
 
 ## Model safety
 
