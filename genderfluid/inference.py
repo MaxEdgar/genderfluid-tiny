@@ -3,7 +3,11 @@
 import os
 from typing import Optional
 
-from genderfluid.preprocessing import normalize_name, has_supported_script
+from genderfluid.preprocessing import (
+    fold_accents,
+    has_supported_script,
+    normalize_name,
+)
 from genderfluid.classifier import LABELS
 from genderfluid.features import iter_ngram_strings
 from genderfluid.model_io import load_model
@@ -188,6 +192,17 @@ class GenderfluidModel:
                     # token ("Emma Watson" full names lean on the surname; the
                     # README recommends passing the given name for those).
                     result = primary_result
+
+        if result is None:
+            # Accent-fold fallback: the merge stored many accented names under
+            # their plain spelling (Mar\u00eda -> "maria"), so accented input can
+            # look out-of-vocabulary while the plain form was trained. Retry
+            # the diacritic-free spelling before giving up.
+            folded = fold_accents(normalized)
+            if folded and folded != normalized:
+                folded_result = self._classify_candidate(folded)
+                if folded_result is not None:
+                    result = folded_result
 
         if result is None:
             return self._unknown_result(name)

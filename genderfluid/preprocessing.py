@@ -47,6 +47,18 @@ def normalize_name(name: str) -> str:
     return name
 
 
+def fold_accents(name: str) -> str:
+    """Strip combining diacritics (NFKD decompose + remove marks).
+
+    The multinational data merge stores names under a single spelling key
+    (Mar\u00eda became \"maria\"), so accented input can be out-of-vocabulary
+    even when the plain form was trained. Folding gives the classifier a
+    second chance on the form the data actually used.
+    """
+    decomposed = unicodedata.normalize("NFKD", name)
+    return "".join(c for c in decomposed if unicodedata.category(c) != "Mn")
+
+
 def extract_given_names(name: str) -> list[str]:
     """
     Extract individual name parts from a full name.

@@ -480,6 +480,21 @@ class TestRealModelGuards:
     def test_unknown_script_still_uncertain(self):
         assert self.model.predict("Иван")["classification"] == "uncertain"
 
+    def test_accent_fold_rescue(self):
+        # The merge stored Mar\u00eda under the plain spelling "maria", so
+        # accented input must reach the same verdict as its plain form.
+        res = self.model.predict("Mar\u00eda")
+        plain = self.model.predict("Maria")
+        assert res["classification"] == plain["classification"] == "girl-associated"
+        assert res["confidence"] == "high"
+        assert res["girl_associated_probability"] > 0.9
+
+    def test_accent_fold_does_not_rescue_unknown(self):
+        # Folding is a second chance on the plain spelling, not a
+        # pass-through: unseen patterns must stay uncertain.
+        res = self.model.predict("Fjkwo\u00ed")
+        assert res["classification"] == "uncertain"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
