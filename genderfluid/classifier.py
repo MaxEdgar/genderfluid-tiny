@@ -48,6 +48,9 @@ class NameClassifier:
         # Per-class sigmoid calibration parameters: A, B for sigmoid(A*raw + B)
         self.calib_A: Optional[np.ndarray] = None
         self.calib_B: Optional[np.ndarray] = None
+        # Optional bloom filter of n-grams seen in training (set by loaders or
+        # trainers) so inference can detect out-of-vocabulary names.
+        self.bloom = None
 
     def train(
         self,

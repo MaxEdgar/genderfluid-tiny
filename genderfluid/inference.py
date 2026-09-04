@@ -3,14 +3,27 @@
 import os
 from typing import Optional
 
-from genderfluid.preprocessing import normalize_name
+from genderfluid.preprocessing import normalize_name, has_supported_script
 from genderfluid.classifier import LABELS
+from genderfluid.features import iter_ngram_strings
 from genderfluid.model_io import load_model
 
 
 DEFAULT_MODEL_PATH = os.path.join(
     os.path.dirname(__file__), "models", "genderfluid-tiny.bin"
 )
+
+# A normalized name whose discriminative character n-grams (pure-letter
+# 4-grams and longer) were mostly NOT seen during training is treated as
+# out-of-vocabulary: the model has no learned signal for it and should say
+# ``uncertain`` rather than guess. Absent a bloom filter (older model
+# files), every name passes.
+OOV_MIN_COVERAGE = 0.50
+
+# Probability split used for inputs the model cannot judge at all: empty
+# strings, names in scripts never seen in training, or out-of-vocabulary
+# patterns. Kept deliberately flat so callers cannot mistake it for a guess.
+_UNKNOWN_PROB = (0.05, 0.05, 0.90)
 
 
 class GenderfluidModel:
@@ -69,6 +82,117 @@ class GenderfluidModel:
             "confidence": confidence,
         }
 
+    # -- guard helpers ---------------------------------------------------
+
+    @staticmethod
+    def _unknown_result(display_name: str) -> dict:
+        """Flat uncertain result for inputs the model cannot judge."""
+        return {
+            "name": display_name,
+            "girl_associated_probability": _UNKNOWN_PROB[0],
+            "boy_associated_probability": _UNKNOWN_PROB[1],
+            "uncertain_probability": _UNKNOWN_PROB[2],
+            "classification": "uncertain",
+            "confidence": "low",
+        }
+
+    def _is_oov(self, normalized: str) -> bool:
+        """True when most of the name's discriminative n-grams were unseen in
+        training.
+
+        Uses internal (non-padded) n-grams of each whitespace token: padded
+        boundary grams appear inside almost every real name and cannot
+        separate real patterns from gibberish. Latin tokens need 4+ grams
+        ("fjkwo" shares "jkwo" with the real name "jkwon", but not "fjkw"
+        or "fjkwo"); CJK tokens are 1-3 characters, so they fall back to
+        2+ gram evidence ("甜兔" is never seen, "若汐" always is). Names
+        too short to yield any such gram bypass the check.
+        """
+        bloom = getattr(self._clf, "bloom", None)
+        if bloom is None:
+            return False
+        grams = []
+        for token in normalized.split():
+            if len(token) < 2:
+                continue
+            if any(ord(c) > 0x2FFF for c in token):
+                min_len = 2  # CJK / kana / hangul token
+            else:
+                min_len = 4  # Latin token
+            top = min(len(token), self._fe.max_ngram)
+            for n in range(min_len, top + 1):
+                for i in range(len(token) - n + 1):
+                    grams.append(token[i : i + n])
+        if not grams:
+            return False
+        return bloom.coverage(grams) < OOV_MIN_COVERAGE
+
+    @staticmethod
+    def _primary_candidate(name: str, normalized: str) -> Optional[str]:
+        """Given-name candidate for multi-word names.
+
+        Returns the normalized first word when the raw input has 2+ words
+        separated by spaces AND that first word is not hyphen/apostrophe
+        joined ("Jean-Luc" / "O'Brien" are single given names, not given +
+        surname), and the candidate differs from the full normalized name.
+        """
+        words = name.strip().split()
+        if len(words) < 2:
+            return None
+        first = words[0]
+        if any(c in first for c in ("-", "'", "\u2019")):
+            return None
+        primary = normalize_name(first)
+        if not primary or primary == normalized:
+            return None
+        return primary
+
+    def _classify_candidate(self, normalized: str) -> Optional[dict]:
+        """Classify an already-normalized name. Returns None when the name is
+        out-of-vocabulary (no bloom -> never None)."""
+        if self._is_oov(normalized):
+            return None
+        features = self._fe.extract(normalized).reshape(1, -1)
+        class_idx, proba = self._clf.predict(features)
+        return self._format_result(normalized, int(class_idx[0]), proba)
+
+    def _decide(self, name: str) -> dict:
+        """Full decision pipeline for one input name (name not yet attached)."""
+        normalized = normalize_name(name)
+        if not normalized:
+            return self._unknown_result(name)
+        if not has_supported_script(normalized):
+            return self._unknown_result(name)
+
+        result = self._classify_candidate(normalized)
+
+        primary = self._primary_candidate(name, normalized)
+        if primary is not None:
+            primary_result = self._classify_candidate(primary)
+            if primary_result is not None:
+                if result is None:
+                    # Surname/full-string pattern unseen, given name is known:
+                    # fall back to the given name instead of guessing.
+                    result = primary_result
+                elif (
+                    result["classification"] == "uncertain"
+                    and result["confidence"] in ("low", "medium")
+                    and primary_result["confidence"] != "low"
+                ):
+                    # The whole string left the model genuinely undecided, but
+                    # the given name alone is decisive: use the given name.
+                    # Deliberately conservative - in the training distribution
+                    # two-word names are usually compound GIVEN names
+                    # ("si mohamed", "alex anne"), so a confident whole-string
+                    # verdict is kept even when it disagrees with the first
+                    # token ("Emma Watson" full names lean on the surname; the
+                    # README recommends passing the given name for those).
+                    result = primary_result
+
+        if result is None:
+            return self._unknown_result(name)
+        return result
+
     def predict(self, name: str) -> dict:
         """
         Predict gender association for a single name.
@@ -76,21 +200,18 @@ class GenderfluidModel:
         Returns dict with keys: name, girl_associated_probability,
         boy_associated_probability, uncertain_probability,
         classification, confidence.
-        """
-        normalized = normalize_name(name)
-        if not normalized:
-            return {
-                "name": name,
-                "girl_associated_probability": 0.33,
-                "boy_associated_probability": 0.33,
-                "uncertain_probability": 0.34,
-                "classification": "uncertain",
-                "confidence": "low",
-            }
 
-        features = self._fe.extract(normalized).reshape(1, -1)
-        class_idx, proba = self._clf.predict(features)
-        return self._format_result(name, int(class_idx[0]), proba)
+        Full names are classified as a whole (the training data's two-word
+        names are compound given names, so a confident whole-string verdict
+        is kept); if the whole string leaves the model undecided but the
+        given name alone is decisive, the given-name result is used.
+        Names in scripts never seen in training (Cyrillic, Arabic, ...),
+        strings without letters, and out-of-vocabulary patterns return
+        ``uncertain`` instead of a confident guess.
+        """
+        result = self._decide(name)
+        result["name"] = name
+        return result
 
     def predict_batch(self, names: list[str]) -> list[dict]:
         """
@@ -108,30 +229,46 @@ class GenderfluidModel:
             )
         normalized = [normalize_name(n) for n in names]
 
-        results = [None] * len(names)
-        valid = [(i, normalized[i]) for i in range(len(names)) if normalized[i]]
+        # Bucket inputs: simple names go through the fast CSR batch path;
+        # empty / unsupported-script / OOV / given-name-override cases are
+        # handled per name afterwards.
+        batch_idx = []
+        batch_norm = []
+        per_name = []  # (index, name) handled individually
 
-        if valid:
-            valid_names = [n for _, n in valid]
-            # Numpy-only CSR arrays keep scipy/sklearn off the inference path.
-            features = self._fe.extract_batch_arrays(valid_names)
+        for i, name in enumerate(names):
+            n = normalized[i]
+            if not n or not has_supported_script(n):
+                per_name.append(i)
+                continue
+            # Multi-word names eligible for given-name override (or whose
+            # full string may be OOV while the given name is known) are
+            # decided per name for clarity.
+            if self._primary_candidate(name, n) is not None:
+                per_name.append(i)
+                continue
+            if self._is_oov(n):
+                per_name.append(i)
+                continue
+            batch_idx.append(i)
+            batch_norm.append(n)
+
+        results: list = [None] * len(names)
+
+        if batch_norm:
+            features = self._fe.extract_batch_arrays(batch_norm)
             class_indices, probas = self._clf.predict(features)
-
-            for j, (orig_idx, _) in enumerate(valid):
+            for j, orig_idx in enumerate(batch_idx):
                 results[orig_idx] = self._format_result(
-                    names[orig_idx], int(class_indices[j]), probas[j:j+1]
+                    names[orig_idx], int(class_indices[j]), probas[j:j + 1]
                 )
+
+        for i in per_name:
+            results[i] = self.predict(names[i])
 
         for i, name in enumerate(names):
             if results[i] is None:
-                results[i] = {
-                    "name": name,
-                    "girl_associated_probability": 0.33,
-                    "boy_associated_probability": 0.33,
-                    "uncertain_probability": 0.34,
-                    "classification": "uncertain",
-                    "confidence": "low",
-                }
+                results[i] = self._unknown_result(name)
 
         return results
 

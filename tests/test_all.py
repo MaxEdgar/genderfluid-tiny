@@ -10,8 +10,13 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from genderfluid.preprocessing import normalize_name, extract_given_names, get_primary_name
-from genderfluid.features import FeatureExtractor
+from genderfluid.preprocessing import (
+    normalize_name,
+    extract_given_names,
+    get_primary_name,
+    has_supported_script,
+)
+from genderfluid.features import FeatureExtractor, BloomFilter, build_bloom, iter_ngram_strings
 from genderfluid.classifier import NameClassifier, LABELS
 from genderfluid.calibration import calibration_error
 from genderfluid.model_io import save_model, load_model
@@ -353,6 +358,127 @@ class TestInference:
     def test_batch_rejects_non_string_element(self):
         with pytest.raises(TypeError):
             predict_names(["Emma", 42])
+
+
+# ==================== BLOOM FILTER / OOV GUARD TESTS ====================
+
+class TestBloomFilter:
+    def test_add_and_contains(self):
+        bf = BloomFilter(nbits=4096, k=3)
+        bf.add("emma")
+        assert bf.contains("emma")
+        assert not bf.contains("zzzz")
+
+    def test_no_false_negatives_on_added(self):
+        bf = BloomFilter(nbits=1 << 20, k=6)
+        words = [f"name{i}" for i in range(500)]
+        for w in words:
+            bf.add(w)
+        for w in words:
+            assert bf.contains(w)
+
+    def test_serialization_roundtrip(self):
+        bf = BloomFilter(nbits=1 << 16, k=4)
+        for w in ["olivia", "james", "若汐"]:
+            bf.add(w)
+        raw = bf.to_bytes()
+        bf2 = BloomFilter.from_bytes(bf.nbits, bf.k, bf.seed, raw)
+        assert bf2.contains("olivia")
+        assert bf2.contains("若汐")
+        assert not bf2.contains("zzzzzzzz")
+
+    def test_coverage(self):
+        bf = BloomFilter(nbits=1 << 16, k=4)
+        for w in ["emma", "emily", "emmeline"]:
+            bf.add(w)
+        assert bf.coverage(["emma"]) == 1.0
+        assert bf.coverage(["zzz"]) == 0.0
+        assert 0.0 < bf.coverage(["emma", "zzz"]) < 1.0
+
+    def test_build_bloom_covers_names(self):
+        names = ["emma", "olivia", "若汐"]
+        bf = build_bloom(names, min_ngram=2, max_ngram=6, nbits=1 << 16)
+        for n in names:
+            grams = list(iter_ngram_strings(n, 2, 6))
+            assert bf.coverage(grams) > 0.9
+        gibberish = list(iter_ngram_strings("qzxwmnnb", 2, 6))
+        assert bf.coverage(gibberish) < 0.5
+
+    def test_model_save_load_preserves_bloom(self):
+        fe = FeatureExtractor(min_ngram=2, max_ngram=5, dimensions=256)
+        clf = NameClassifier()
+        clf.coef_ = np.zeros((3, 256), dtype=np.float32)
+        clf.intercept_ = np.zeros(3, dtype=np.float32)
+        clf.bloom = build_bloom(["emma", "olivia"], 2, 6, nbits=1 << 16)
+
+        with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as f:
+            path = f.name
+        try:
+            save_model(fe, clf, {"test": True}, path)
+            _, clf2, _ = load_model(path)
+            assert clf2.bloom is not None
+            assert clf2.bloom.contains("emma")
+            assert not clf2.bloom.contains("zzzzzz")
+        finally:
+            os.unlink(path)
+
+
+class TestInputGuards:
+    """Script guard and OOV guard (run against the small fixture model; the
+    bloom-dependent guard is exercised on the real packaged model below)."""
+
+    def test_supported_script_checks(self):
+        assert has_supported_script("emma")
+        assert has_supported_script("若汐")
+        assert not has_supported_script("123")
+        assert not has_supported_script("Иван")  # Cyrillic never trained
+        assert not has_supported_script("")
+
+    def test_digits_return_uncertain(self):
+        result = predict_name("123")
+        assert result["classification"] == "uncertain"
+        assert result["confidence"] == "low"
+
+    def test_unsupported_script_returns_uncertain(self):
+        for name in ["Иван", "محمد", "Αλέξανδρος"]:
+            result = predict_name(name)
+            assert result["classification"] == "uncertain"
+            assert result["confidence"] == "low"
+
+
+REAL_MODEL = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "genderfluid", "models", "genderfluid-tiny.bin",
+)
+
+
+@pytest.mark.skipif(not os.path.exists(REAL_MODEL), reason="packaged model missing")
+class TestRealModelGuards:
+    """Guards verified against the packaged production model (has the bloom
+    filter of the training vocabulary)."""
+
+    @pytest.fixture(autouse=True)
+    def load_real(self):
+        from genderfluid.inference import GenderfluidModel
+        self.model = GenderfluidModel(REAL_MODEL)
+
+    def test_gibberish_returns_uncertain(self):
+        for name in ["Fjkwo", "zzzq", "Qzxwmnnb", "mnbvcxzlkjh"]:
+            result = self.model.predict(name)
+            assert result["classification"] == "uncertain"
+            assert result["uncertain_probability"] > 0.5
+
+    def test_novel_hanzi_returns_uncertain(self):
+        result = self.model.predict("甜兔")  # not in any official source
+        assert result["classification"] == "uncertain"
+
+    def test_known_names_still_classify(self):
+        assert self.model.predict("Emma")["classification"] == "girl-associated"
+        assert self.model.predict("James")["classification"] == "boy-associated"
+        assert self.model.predict("若汐")["classification"] == "girl-associated"
+
+    def test_unknown_script_still_uncertain(self):
+        assert self.model.predict("Иван")["classification"] == "uncertain"
 
 
 if __name__ == "__main__":

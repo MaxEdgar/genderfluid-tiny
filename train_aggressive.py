@@ -328,6 +328,14 @@ def main():
         "class_weights_used": True,
     }
 
+    # Attach an n-gram bloom filter of the dataset vocabulary (each unique
+    # name lives in exactly one split, so all splits are included) so
+    # inference can return "uncertain" for out-of-vocabulary names instead
+    # of guessing.
+    from genderfluid.features import build_bloom
+    bloom_names = list(train_names) + list(val_names) + list(test_names)
+    clf.bloom = build_bloom(bloom_names, fe.min_ngram, fe.max_ngram)
+
     size = save_model(fe, clf, metadata, bin_path)
     size_mb = size / (1024 * 1024)
 

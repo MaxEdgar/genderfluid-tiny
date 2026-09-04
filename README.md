@@ -1,6 +1,6 @@
 # genderfluid-tiny
 
-**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 6 MB model, CPU only, no API needed.**
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 14 MB model, CPU only, no API needed.**
 
 `pip install genderfluid-tiny`
 
@@ -22,12 +22,12 @@
 
 genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 140,547 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births in total.
 
-Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 6 MB.
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 14 MB (6 MB of weights plus an 8 MB vocabulary filter used to flag out-of-vocabulary names as `uncertain`).
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Model size | 6 MB |
+| Model size | 14 MB |
 | Training data | 140,547 names (SSA + Census + INSEE + Japan + China) |
 | Inference | CPU only, numpy only (no sklearn/scipy) |
 | Internet | Not required |
@@ -155,7 +155,7 @@ Primarily U.S./European training data with growing Asian (Japanese/Chinese) cove
 Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
-Model size:       6.00 MB
+Model size:      14.00 MB
 Single name:      3.45 ms
 Batch (10):        2.4 ms   (4,199 names/sec)
 Batch (100):      18.5 ms   (5,393 names/sec)
@@ -173,7 +173,7 @@ Run `genderfluid benchmark` on your own hardware.
 - **Research**: Analyze naming trends across datasets
 - **Privacy-sensitive applications**: Process names without sending data to external APIs
 - **Offline applications**: Works without internet connectivity
-- **Embedded systems**: 6 MB model runs on low-resource devices
+- **Embedded systems**: 14 MB model runs on low-resource devices
 
 ## Training data
 
@@ -222,7 +222,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
-| Model size | 6 MB | 600 KB+ | 10 MB+ |
+| Model size | 14 MB | 600 KB+ | 10 MB+ |
 | License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
@@ -238,6 +238,14 @@ Optional fields: `weight`, `country`, `language`, `year`.
 - Name associations vary by culture, language, and generation
 - The `uncertain` category exists for genuinely ambiguous names
 - Not suitable for high-stakes decisions
+
+Unknown inputs are handled conservatively: names in scripts never seen in
+training (Cyrillic, Arabic, Greek, ...), strings without letters, and
+out-of-vocabulary patterns (novel hanzi, keyboard-mash gibberish) return
+`uncertain` instead of a confident guess. Two-word full names are classified
+as a whole because the training data's two-word names are compound given
+names ("si mohamed"); a surname can therefore influence the result - pass
+just the given name (``predict_name("Emma")``) for the strongest signal.
 
 ## Privacy
 

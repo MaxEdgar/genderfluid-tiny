@@ -5,17 +5,19 @@ import struct
 import os
 import numpy as np
 
-from genderfluid.features import FeatureExtractor
+from genderfluid.features import FeatureExtractor, BloomFilter
 from genderfluid.classifier import NameClassifier, NUM_CLASSES
 
 
-# Binary format v2:
+# Binary format v2 (with optional trailing bloom section):
 # Header: 4 bytes magic "GFT\0", 4 bytes version (2)
 # Config JSON length (4 bytes), Config JSON bytes
 # Classifier coef shape (2x int32), coef as float32
 # Classifier intercept shape (1x int32), intercept as float32
 # Class prior (3x float32)
 # Calibration A (3x float32), Calibration B (3x float32)
+# Optional bloom section: uint32 payload length (0 = none), then payload:
+#   nbits (uint32), seed (uint64), k (uint8), filter bytes
 
 MAGIC = b"GFT\x00"
 FORMAT_VERSION = 2
@@ -86,6 +88,20 @@ def save_model(
         f.write(calib_A.astype(np.float32).tobytes())
         f.write(calib_B.astype(np.float32).tobytes())
 
+        # Optional bloom filter of seen character n-grams, used at inference
+        # to detect out-of-vocabulary names. Attach it to the classifier
+        # (classifier.bloom) before saving to include it.
+        bloom = getattr(classifier, "bloom", None)
+        if bloom is not None:
+            payload = (
+                struct.pack("<IQB", bloom.nbits, bloom.seed, bloom.k)
+                + bloom.to_bytes()
+            )
+            f.write(struct.pack("<I", len(payload)))
+            f.write(payload)
+        else:
+            f.write(struct.pack("<I", 0))
+
     return os.path.getsize(output_path)
 
 
@@ -151,6 +167,18 @@ def load_model(
         classifier.class_prior_ = priors if len(priors) == 3 else None
         classifier.calib_A = calib_A
         classifier.calib_B = calib_B
+        classifier.bloom = None
+
+        # Optional trailing bloom section. Older files simply end after the
+        # calibration block; a short read means no bloom is present.
+        head = f.read(4)
+        if len(head) == 4:
+            plen = struct.unpack("<I", head)[0]
+            if plen > 0:
+                payload = f.read(plen)
+                nbits, seed, k = struct.unpack("<IQB", payload[:13])
+                raw = payload[13:]
+                classifier.bloom = BloomFilter.from_bytes(nbits, k, seed, raw)
 
         metadata = config.get("metadata", {})
 

@@ -124,6 +124,17 @@ def main():
         print(f"\nFinal model written to: {model_out} (smoke mode)")
         return
 
+    # Build an n-gram bloom filter over the whole dataset (each unique name
+    # lives in exactly one split, so training alone would miss valid names in
+    # the other splits) so inference can return "uncertain" for genuinely
+    # out-of-vocabulary names instead of guessing.
+    from genderfluid.features import build_bloom
+    all_names = []
+    for split in ("train", "validation", "test"):
+        split_names, _, _ = load_split(os.path.join(data_dir, f"{split}.jsonl"))
+        all_names.extend(split_names)
+    clf.bloom = build_bloom(all_names, fe.min_ngram, fe.max_ngram)
+
     model_dir = os.path.join(base, "models")
     os.makedirs(model_dir, exist_ok=True)
     bin_path = os.path.join(model_dir, "genderfluid-tiny.bin")

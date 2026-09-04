@@ -64,3 +64,41 @@ def get_primary_name(full_name: str) -> str:
     """Get the primary (first) given name from a full name."""
     parts = extract_given_names(full_name)
     return parts[0] if parts else ""
+
+
+# Character ranges the model was trained on: basic/extended Latin letters,
+# CJK ideographs, Japanese kana, and Hangul. Accented Latin (e.g. e, o)
+# is inside Latin-1 Supplement / Latin Extended and covered by the ranges
+# below; the model also sees punctuation folded to spaces.
+_SUPPORTED_LETTER_RANGES = (
+    # basic latin (a-z after lowercasing; ranges used only for classification)
+    (0x0041, 0x007A),
+    # latin-1 supplement (accents, oe, eth, thorn, etc.)
+    (0x00C0, 0x024F),
+    # latin extended additional + phonetic-ish letters used in names
+    (0x1E00, 0x1EFF),
+    # CJK unified ideographs + extension A
+    (0x3400, 0x4DBF),
+    (0x4E00, 0x9FFF),
+    # hiragana / katakana
+    (0x3040, 0x30FF),
+    # hangul syllables + jamo
+    (0xAC00, 0xD7AF),
+    (0x1100, 0x11FF),
+)
+
+
+def has_supported_script(name: str) -> bool:
+    """Return True if the (normalized) name contains at least one character in
+    a script the model was trained on.
+
+    Guards against confidently classifying digits, symbols, or names written
+    in scripts never seen in training (Cyrillic, Arabic, Greek, Devanagari,
+    ...), which currently can only collide with unrelated features.
+    """
+    for ch in name:
+        o = ord(ch)
+        for lo, hi in _SUPPORTED_LETTER_RANGES:
+            if lo <= o <= hi:
+                return True
+    return False

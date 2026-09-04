@@ -3,6 +3,133 @@
 import numpy as np
 
 
+def iter_ngram_strings(name: str, min_ngram: int, max_ngram: int):
+    """Yield every character n-gram string of a normalized name, matching the
+    padded windowing used by ``FeatureExtractor`` (space padding on both sides)."""
+    for n in range(min_ngram, max_ngram + 1):
+        padded = f"{' ' * (n - 1)}{name}{' ' * (n - 1)}"
+        for i in range(len(padded) - n + 1):
+            yield padded[i : i + n]
+
+
+class BloomFilter:
+    """Stable in-memory bloom filter over character n-grams.
+
+    Used to detect whether a name's patterns were seen during training, so
+    out-of-vocabulary gibberish can return ``uncertain`` instead of a
+    confident guess. Pure Python (no numpy/scipy) so it stays off the heavy
+    import path; the filter is a single big integer.
+
+    Hash functions are two stable 64-bit hashes (same inputs always produce
+    the same indexes across processes/versions -- unlike ``hash()`` on str).
+    """
+
+    def __init__(self, nbits: int, k: int = 6, seed: int = 42, bits: int = 0):
+        self.nbits = int(nbits)
+        self.k = int(k)
+        self.seed = seed
+        self._ba = bytearray((self.nbits + 7) // 8)
+        if bits:
+            raw = int(bits).to_bytes((self.nbits + 7) // 8, "little")
+            self._ba = bytearray(raw)
+
+    # -- hashing -------------------------------------------------------
+
+    _MASK = 0xFFFFFFFFFFFFFFFF
+
+    @staticmethod
+    def _mix64(x: int) -> int:
+        """SplitMix64 finalizer: avalanches a hash so nearby inputs map to
+        unrelated 64-bit values (raw FNV hashes cluster for similar strings,
+        which ruins bloom bit spreading)."""
+        x &= BloomFilter._MASK
+        x ^= x >> 30
+        x = (x * 0xBF58476D1CE4E5B9) & BloomFilter._MASK
+        x ^= x >> 27
+        x = (x * 0x94D049BB133111EB) & BloomFilter._MASK
+        x ^= x >> 31
+        return x
+
+    @classmethod
+    def _hashes(cls, text: str) -> tuple:
+        """Return two stable, well-mixed 64-bit hashes for a string."""
+        h1 = 0xCBF29CE484222325
+        h2 = 0x9E3779B97F4A7C15
+        for ch in text:
+            o = ord(ch)
+            h1 ^= o
+            h1 = (h1 * 0x100000001B3) & cls._MASK
+            h2 ^= o
+            h2 = (h2 * 0xBF58476D1CE4E5B9) & cls._MASK
+        return cls._mix64(h1), cls._mix64(h2)
+
+    def _indexes(self, text: str):
+        h1, h2 = self._hashes(text)
+        if h2 == 0:
+            h2 = 1
+        out = []
+        for i in range(self.k):
+            out.append((h1 + i * h2) % self.nbits)
+        return out
+
+    # -- mutations -----------------------------------------------------
+
+    def add(self, text: str) -> None:
+        ba = self._ba
+        for idx in self._indexes(text):
+            ba[idx >> 3] |= 1 << (idx & 7)
+
+    def contains(self, text: str) -> bool:
+        ba = self._ba
+        for idx in self._indexes(text):
+            if not (ba[idx >> 3] >> (idx & 7)) & 1:
+                return False
+        return True
+
+    def coverage(self, texts) -> float:
+        """Fraction of texts present in the filter (1.0 = all seen)."""
+        texts = list(texts)
+        if not texts:
+            return 0.0
+        return sum(1 for t in texts if self.contains(t)) / len(texts)
+
+    # -- serialization -------------------------------------------------
+
+    def to_bytes(self) -> bytes:
+        return bytes(self._ba)
+
+    @classmethod
+    def from_bytes(cls, nbits: int, k: int, seed: int, raw: bytes) -> "BloomFilter":
+        bf = cls(nbits=nbits, k=k, seed=seed)
+        bf._ba = bytearray(raw[: (nbits + 7) // 8])
+        return bf
+
+    def get_config(self) -> dict:
+        return {"nbits": self.nbits, "k": self.k, "seed": self.seed}
+
+
+def build_bloom(
+    names,
+    min_ngram: int,
+    max_ngram: int,
+    nbits: int = 1 << 26,
+    k: int = 6,
+) -> BloomFilter:
+    """Build a bloom filter over every character n-gram of normalized names.
+
+    ``names`` must already be normalized (lowercased, spaces collapsed), as
+    produced by the dataset splits. The filter lets inference detect names
+    whose patterns never appeared in training.
+    """
+    bloom = BloomFilter(nbits=nbits, k=k)
+    for name in names:
+        if not name:
+            continue
+        for gram in iter_ngram_strings(name, min_ngram, max_ngram):
+            bloom.add(gram)
+    return bloom
+
+
 class FeatureExtractor:
     """
     Extract character n-gram features using hashing trick.

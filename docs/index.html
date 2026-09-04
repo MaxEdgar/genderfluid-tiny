@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docs | genderfluid-tiny</title>
-    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 6 MB model, CPU only, no API.">
+    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 14 MB model, CPU only, no API.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
     <section id="overview" class="hero">
         <h1 class="rainbow">genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
-        6 MB model, CPU only, no API needed.</p>
+        14 MB model, CPU only, no API needed.</p>
         <div class="install-wrap">
             <div class="install-cmd"><span>$</span> pip install genderfluid-tiny</div>
             <button class="install-copy" id="copyBtn" aria-label="Copy to clipboard" title="Copy to clipboard">
@@ -311,7 +311,7 @@
             </button>
         </div>
         <div class="stats">
-            <div class="stat"><strong data-count="6.0" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="14.0" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
             <div class="stat"><strong data-count="4.4" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
             <div class="stat"><strong data-count="140" data-suffix="K">0K</strong><span>Names trained</span></div>
             <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
@@ -494,7 +494,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <h2>Features</h2>
         <div class="grid">
             <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
-            <div class="item"><strong>6 MB model</strong><span>Still smaller than a low-res image.</span></div>
+            <div class="item"><strong>14 MB model</strong><span>Still smaller than a low-res image.</span></div>
             <div class="item"><strong>Millisecond-fast</strong><span>3.5 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
@@ -510,7 +510,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Measured on a 2-core x86_64 Linux machine. Results vary by hardware.</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Model size</td><td>6.00 MB</td></tr>
+            <tr><td>Model size</td><td>14.00 MB</td></tr>
             <tr><td>Single prediction</td><td>3.45 ms</td></tr>
             <tr><td>Batch (10 names)</td><td>2.4 ms (4,199 names/s)</td></tr>
             <tr><td>Batch (100 names)</td><td>18.5 ms (5,393 names/s)</td></tr>
@@ -601,6 +601,8 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <li>Primarily U.S./European data; Chinese/Japanese coverage limited (~2,400 names) and growing</li>
             <li>Name associations vary by culture, language, and generation</li>
             <li>The <code>uncertain</code> category exists for genuinely ambiguous names</li>
+            <li>Unknown inputs return <code>uncertain</code>: scripts never seen in training (Cyrillic, Arabic, Greek), strings without letters, and out-of-vocabulary patterns (novel hanzi, gibberish)</li>
+            <li>Two-word full names are classified as a whole (the data's two-word names are compound given names); a surname can influence the result, so pass just the given name for the strongest signal</li>
             <li>Not suitable for high-stakes decisions</li>
             <li>The classifier can be wrong</li>
         </ul>
