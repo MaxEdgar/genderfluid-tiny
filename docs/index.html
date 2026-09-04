@@ -511,11 +511,12 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
             <tr><td>Model size</td><td>6.00 MB</td></tr>
-            <tr><td>Single prediction</td><td>4.42 ms</td></tr>
-            <tr><td>Batch (10 names)</td><td>18.9 ms (529 names/s)</td></tr>
-            <tr><td>Batch (100 names)</td><td>29.5 ms (3,390 names/s)</td></tr>
-            <tr><td>Batch (1000 names)</td><td>160.0 ms (6,251 names/s)</td></tr>
-            <tr><td>Peak RSS</td><td>209 MB</td></tr>
+            <tr><td>Single prediction</td><td>3.45 ms</td></tr>
+            <tr><td>Batch (10 names)</td><td>2.4 ms (4,199 names/s)</td></tr>
+            <tr><td>Batch (100 names)</td><td>18.5 ms (5,393 names/s)</td></tr>
+            <tr><td>Batch (1000 names)</td><td>144.8 ms (6,906 names/s)</td></tr>
+            <tr><td>Peak RSS</td><td>47 MB</td></tr>
+            <tr><td>Cold start</td><td>~0.4 s (CLI to first prediction)</td></tr>
         </table>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
@@ -617,7 +618,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     </section>
 
     <footer>
-        genderfluid-tiny v1.0.7 &nbsp;&middot;&nbsp;
+        genderfluid-tiny v1.0.8 &nbsp;&middot;&nbsp;
         <a href="https://github.com/MaxEdgar/genderfluid-tiny">GitHub</a>
         <a href="https://pypi.org/project/genderfluid-tiny/">PyPI</a>
         &nbsp;&middot;&nbsp; Created by <a href="https://github.com/MaxEdgar" target="_blank" rel="noopener">MaxEdgar</a>

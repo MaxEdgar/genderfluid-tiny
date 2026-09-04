@@ -54,6 +54,17 @@ def save_model(
         if classifier.model is not None:
             coef = classifier.model.coef_.astype(np.float32)
             intercept = classifier.model.intercept_.astype(np.float32)
+            prior = getattr(classifier.model, "class_prior_", None)
+        elif classifier.coef_ is not None:
+            coef = np.asarray(classifier.coef_, dtype=np.float32)
+            intercept = np.asarray(classifier.intercept_, dtype=np.float32)
+            prior = classifier.class_prior_
+        else:
+            coef = None
+            intercept = None
+            prior = None
+
+        if coef is not None:
             f.write(struct.pack("<ii", *coef.shape))
             f.write(coef.tobytes())
             f.write(struct.pack("<i", intercept.shape[0]))
@@ -63,8 +74,8 @@ def save_model(
             f.write(struct.pack("<i", 0))
 
         # Class prior
-        if hasattr(classifier.model, "class_prior_") and classifier.model is not None:
-            priors = classifier.model.class_prior_.astype(np.float32)
+        if prior is not None:
+            priors = np.asarray(prior, dtype=np.float32)
         else:
             priors = np.zeros(NUM_CLASSES, dtype=np.float32)
         f.write(priors.tobytes())
@@ -131,23 +142,13 @@ def load_model(
             calib_A = np.ones(NUM_CLASSES, dtype=np.float32)
             calib_B = np.zeros(NUM_CLASSES, dtype=np.float32)
 
-        # Reconstruct classifier
+        # Reconstruct classifier with numpy weights (no sklearn needed).
         clf_config = config.get("classifier", {})
         classifier = NameClassifier.from_config(clf_config)
-
-        from sklearn.linear_model import LogisticRegression
-        model = LogisticRegression(
-            C=clf_config.get("C", 1.0),
-            max_iter=clf_config.get("max_iter", 1000),
-            solver="lbfgs",
-            random_state=42,
-        )
-        model.coef_ = coef
-        model.intercept_ = intercept
-        model.classes_ = np.array([0, 1, 2])
-        if len(priors) == 3:
-            model.class_prior_ = priors
-        classifier.model = model
+        classifier.coef_ = coef
+        classifier.intercept_ = intercept
+        classifier.classes_ = np.array([0, 1, 2])
+        classifier.class_prior_ = priors if len(priors) == 3 else None
         classifier.calib_A = calib_A
         classifier.calib_B = calib_B
 

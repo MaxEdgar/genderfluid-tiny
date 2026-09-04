@@ -1,8 +1,12 @@
-"""Logistic regression classifier with lightweight probability calibration."""
+"""Logistic regression classifier with lightweight probability calibration.
+
+The module keeps sklearn/scipy imports inside ``train()`` so that loading a
+model and running inference never imports sklearn or scipy. Inference only
+needs the stored coefficients: ``softmax(X @ coef_.T + intercept_)`` followed
+by per-class sigmoid calibration, all of which is plain numpy.
+"""
 
 import numpy as np
-from scipy import sparse
-from sklearn.linear_model import LogisticRegression
 from typing import Optional
 
 
@@ -33,7 +37,14 @@ class NameClassifier:
         self.C = C
         self.max_iter = max_iter
         self.min_confidence = min_confidence
-        self.model: Optional[LogisticRegression] = None
+        # sklearn model, set only while training (kept for introspection/tests).
+        # Inference never touches it; scores come from the numpy arrays below.
+        self.model: Optional[object] = None
+        # Numpy weights used for inference: coef_ shape (NUM_CLASSES, dims).
+        self.coef_: Optional[np.ndarray] = None
+        self.intercept_: Optional[np.ndarray] = None
+        self.classes_: Optional[np.ndarray] = None
+        self.class_prior_: Optional[np.ndarray] = None
         # Per-class sigmoid calibration parameters: A, B for sigmoid(A*raw + B)
         self.calib_A: Optional[np.ndarray] = None
         self.calib_B: Optional[np.ndarray] = None
@@ -44,7 +55,13 @@ class NameClassifier:
         y: np.ndarray,
         sample_weight: Optional[np.ndarray] = None,
     ) -> None:
-        """Train the classifier with all 3 classes guaranteed."""
+        """Train the classifier with all 3 classes guaranteed.
+
+        sklearn/scipy are imported here so they never load on the inference path.
+        """
+        from scipy import sparse
+        from sklearn.linear_model import LogisticRegression
+
         rng = np.random.RandomState(42)
         unique_classes = set(y.tolist())
         missing = set(range(NUM_CLASSES)) - unique_classes
@@ -83,6 +100,13 @@ class NameClassifier:
         )
         self.model.fit(X_train, y_train, sample_weight=sw_train)
 
+        # Copy weights to numpy for sklearn-free inference.
+        self.coef_ = self.model.coef_.astype(np.float32)
+        self.intercept_ = self.model.intercept_.astype(np.float32)
+        self.classes_ = np.asarray(self.model.classes_)
+        prior = getattr(self.model, "class_prior_", None)
+        self.class_prior_ = None if prior is None else np.asarray(prior, dtype=np.float32)
+
         # Lightweight Platt scaling calibration on a holdout from training data
         n = len(y_train)
         cal_size = min(2000, n // 5)
@@ -120,6 +144,38 @@ class NameClassifier:
         import gc
         gc.collect()
 
+    # ------------------------------------------------------------------
+    # Inference (numpy only; no sklearn/scipy)
+    # ------------------------------------------------------------------
+
+    def _decision_scores(self, X):
+        """Raw decision scores of shape (n_rows, NUM_CLASSES).
+
+        Accepts a dense ndarray, a scipy CSR matrix (duck-typed via .indptr),
+        or a numpy CSR tuple ``(data, cols, indptr, n_rows)`` produced by
+        ``FeatureExtractor.extract_batch_arrays``.
+        """
+        if isinstance(X, tuple):
+            data, cols, indptr, n_rows = X
+            return self._sparse_scores(data, cols, indptr, n_rows)
+        if hasattr(X, "indptr"):
+            return self._sparse_scores(X.data, X.indices, X.indptr, X.shape[0])
+        return (X @ self.coef_.T + self.intercept_).astype(np.float32)
+
+    def _sparse_scores(self, data, cols, indptr, n_rows):
+        """Sparse matrix multiply in pure numpy: X @ coef_.T + intercept_."""
+        coefT = self.coef_.T  # (dims, NUM_CLASSES)
+        nnz = len(data)
+        if nnz == 0:
+            return np.tile(self.intercept_, (n_rows, 1)).astype(np.float32)
+        seg_lens = np.diff(indptr)
+        row_idx = np.repeat(np.arange(n_rows), seg_lens)
+        sub = coefT[cols] * data[:, None]  # (nnz, NUM_CLASSES)
+        scores = np.zeros((n_rows, NUM_CLASSES), dtype=np.float32)
+        np.add.at(scores, row_idx, sub)
+        scores += self.intercept_
+        return scores
+
     def _calibrate_proba(self, raw_proba: np.ndarray) -> np.ndarray:
         """Apply sigmoid calibration to raw probabilities."""
         if self.calib_A is None:
@@ -139,24 +195,17 @@ class NameClassifier:
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Get calibrated probabilities. Always returns shape (n, 3)."""
-        if self.model is None:
+        if self.coef_ is None:
             raise RuntimeError("Model not trained. Call train() first.")
 
-        raw_proba = self.model.predict_proba(X)
+        scores = self._decision_scores(X)
+        # Stable softmax (matches sklearn lbfgs multinomial to float precision).
+        shifted = scores - scores.max(axis=1, keepdims=True)
+        exp_scores = np.exp(shifted)
+        raw_proba = exp_scores / exp_scores.sum(axis=1, keepdims=True)
+        raw_proba = raw_proba.astype(np.float32)
 
-        # Ensure 3-column output
-        if raw_proba.shape[1] < NUM_CLASSES:
-            full = np.zeros((raw_proba.shape[0], NUM_CLASSES), dtype=np.float32)
-            for i, c in enumerate(self.model.classes_):
-                full[:, c] = raw_proba[:, i]
-            for c in range(NUM_CLASSES):
-                if c not in self.model.classes_:
-                    full[:, c] = 1.0 / NUM_CLASSES
-            row_sums = full.sum(axis=1, keepdims=True)
-            full /= np.maximum(row_sums, 1e-10)
-            raw_proba = full
-
-        return self._calibrate_proba(raw_proba.astype(np.float32))
+        return self._calibrate_proba(raw_proba)
 
     def predict(self, X: np.ndarray) -> tuple:
         """

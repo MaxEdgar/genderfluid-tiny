@@ -1,7 +1,6 @@
 """Character n-gram feature extraction with hashing."""
 
 import numpy as np
-from scipy import sparse
 
 
 class FeatureExtractor:
@@ -67,13 +66,8 @@ class FeatureExtractor:
 
         return features
 
-    def extract_batch(self, names: list[str]) -> np.ndarray:
-        """
-        Extract features for a batch of names.
-
-        Returns a scipy sparse CSR matrix of shape (len(names), dimensions)
-        so that datasets with millions of names fit in memory.
-        """
+    def _extract_batch_entries(self, names: list[str]) -> tuple:
+        """Return (rows, cols, vals) arrays of L2-normalized nonzero entries."""
         rows: list[int] = []
         cols: list[int] = []
         data: list[float] = []
@@ -90,11 +84,43 @@ class FeatureExtractor:
                 cols.append(idx)
                 data.append(val * inv)
 
+        return (
+            np.asarray(rows, dtype=np.int64),
+            np.asarray(cols, dtype=np.int64),
+            np.asarray(data, dtype=np.float32),
+        )
+
+    def extract_batch(self, names: list[str]) -> np.ndarray:
+        """
+        Extract features for a batch of names.
+
+        Returns a scipy sparse CSR matrix of shape (len(names), dimensions)
+        so that datasets with millions of names fit in memory. Used by the
+        training/evaluation pipeline (scipy is imported lazily here so the
+        inference path never loads it).
+        """
+        from scipy import sparse
+
+        rows, cols, data = self._extract_batch_entries(names)
         return sparse.csr_matrix(
             (data, (rows, cols)),
             shape=(len(names), self.dimensions),
             dtype=np.float32,
         )
+
+    def extract_batch_arrays(self, names: list[str]) -> tuple:
+        """
+        Numpy-only CSR extraction for inference: no scipy import required.
+
+        Returns (data, cols, indptr, n_rows) matching scipy CSR semantics so
+        ``NameClassifier`` can do the sparse matrix multiply with pure numpy.
+        """
+        rows, cols, data = self._extract_batch_entries(names)
+        n_rows = len(names)
+        indptr = np.zeros(n_rows + 1, dtype=np.int64)
+        np.add.at(indptr, rows + 1, 1)
+        indptr = np.cumsum(indptr)
+        return data, cols, indptr, n_rows
 
     def get_config(self) -> dict:
         """Return configuration dict."""

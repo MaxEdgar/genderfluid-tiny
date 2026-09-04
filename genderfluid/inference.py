@@ -113,7 +113,8 @@ class GenderfluidModel:
 
         if valid:
             valid_names = [n for _, n in valid]
-            features = self._fe.extract_batch(valid_names)
+            # Numpy-only CSR arrays keep scipy/sklearn off the inference path.
+            features = self._fe.extract_batch_arrays(valid_names)
             class_indices, probas = self._clf.predict(features)
 
             for j, (orig_idx, _) in enumerate(valid):

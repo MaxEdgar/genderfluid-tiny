@@ -10,7 +10,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-39%20passed-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/license-Polyform%20NC-gray.svg)](LICENSE)
-[![Model size](https://img.shields.io/badge/model-3.0%20MB-brightgreen.svg)](models/)
+[![Model size](https://img.shields.io/badge/model-6.0%20MB-brightgreen.svg)](models/)
 
 ---
 
@@ -29,7 +29,7 @@ Unlike API-based gender detection services, genderfluid-tiny runs entirely offli
 | Architecture | Character n-gram + logistic regression |
 | Model size | 6 MB |
 | Training data | 140,547 names (SSA + Census + INSEE + Japan + China) |
-| Inference | CPU only, no GPU needed |
+| Inference | CPU only, numpy only (no sklearn/scipy) |
 | Internet | Not required |
 | License | Polyform Noncommercial |
 | Python | 3.10+ |
@@ -156,11 +156,12 @@ Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
 Model size:       6.00 MB
-Single name:      4.42 ms
-Batch (10):       18.9 ms   (529 names/sec)
-Batch (100):      29.5 ms   (3,390 names/sec)
-Batch (1000):    160.0 ms   (6,251 names/sec)
-Peak RSS:        209 MB
+Single name:      3.45 ms
+Batch (10):        2.4 ms   (4,199 names/sec)
+Batch (100):      18.5 ms   (5,393 names/sec)
+Batch (1000):    144.8 ms   (6,906 names/sec)
+Peak RSS:        47 MB
+Cold start:      ~0.4 s (CLI to first prediction)
 ```
 
 Run `genderfluid benchmark` on your own hardware.

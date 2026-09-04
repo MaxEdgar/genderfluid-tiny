@@ -234,8 +234,8 @@ class TestModelIO:
             f1 = fe.extract(test_name).reshape(1, -1)
             f2 = fe2.extract(test_name).reshape(1, -1)
 
-            p1 = clf.model.predict_proba(f1)[0]
-            p2 = clf2.model.predict_proba(f2)[0]
+            p1 = clf.predict_proba(f1)[0]
+            p2 = clf2.predict_proba(f2)[0]
             np.testing.assert_allclose(p1, p2, atol=1e-4)
         finally:
             os.unlink(path)
