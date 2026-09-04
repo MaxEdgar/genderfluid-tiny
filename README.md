@@ -20,7 +20,7 @@
 
 ## What is genderfluid-tiny?
 
-genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 138,101 real names from U.S. Social Security Administration data (1880-2023), U.S. Census 2020, and French INSEE first-name statistics (1900-2024) - 911 million recorded births in total.
+genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 140,536 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births in total.
 
 Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 3 MB.
 
@@ -28,7 +28,7 @@ Unlike API-based gender detection services, genderfluid-tiny runs entirely offli
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
 | Model size | 3 MB |
-| Training data | 138,101 names (SSA + Census + INSEE France) |
+| Training data | 140,536 names (SSA + Census + INSEE + Japan + China) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
 | License | Polyform Noncommercial |
@@ -51,12 +51,12 @@ genderfluid predict "Emma"
 ```
 Name: Emma
 
-Girl-associated: 97.5%
-Boy-associated:  0.0%
-Uncertain:       2.5%
+  girl-associated  100.0%
+  boy-associated     0.0%
+  uncertain          0.0%
 
-Classification: girl-associated
-Confidence:     high
+  Classification: girl-associated
+  Confidence:     high
 ```
 
 ## Python API
@@ -68,12 +68,12 @@ from genderfluid import classify_name, is_girl_name, is_boy_name, name_probabili
 
 classify_name("Emma")       # "girl-associated"
 classify_name("James")      # "boy-associated"
-classify_name("Alex")       # "uncertain"
+classify_name("Robin")      # "uncertain"
 
 is_girl_name("Emma")        # True
 is_boy_name("James")        # True
 
-name_probability("Emma")    # 0.9731
+name_probability("Emma")    # 0.9998
 ```
 
 ### Full result dict
@@ -83,13 +83,13 @@ from genderfluid import predict_name, predict_names
 
 result = predict_name("Isabella")
 # {"name": "Isabella",
-#  "girl_associated_probability": 0.8929,
-#  "boy_associated_probability": 0.0486,
-#  "uncertain_probability": 0.0585,
+#  "girl_associated_probability": 1.0,
+#  "boy_associated_probability": 0.0,
+#  "uncertain_probability": 0.0,
 #  "classification": "girl-associated",
-#  "confidence": "medium"}
+#  "confidence": "high"}
 
-results = predict_names(["Emma", "James", "Alex"])
+results = predict_names(["Emma", "James", "Robin"])
 for r in results:
     print(f"{r['name']}: {r['classification']}")
 ```
@@ -101,7 +101,7 @@ from genderfluid import GenderfluidModel
 
 model = GenderfluidModel()  # loads once, cached
 model.predict("Olivia")
-model.predict_batch(["Emma", "James", "Alex", "Max", "Taylor"])
+model.predict_batch(["Emma", "James", "Robin", "Max", "Taylor"])
 ```
 
 ## CLI
@@ -123,9 +123,9 @@ Input name
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (2-5 grams)
+Character n-gram extraction (2-6 grams)
   |
-Hashing trick (4096-dim feature vector)
+Hashing trick (262,144-dim feature vector)
   |
 Logistic regression (3 classes)
   |
@@ -138,15 +138,15 @@ The classifier extracts character-level patterns from names. Names ending in `-a
 
 ## Accuracy
 
-Tested on held-out test data (10,797 names):
+Tested on held-out test data (10,987 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 79.6% |
-| Macro F1 | 0.680 |
-| Girl-associated F1 | 0.887 |
-| Boy-associated F1 | 0.816 |
-| Uncertain F1 | 0.335 |
+| Accuracy | 81.0% |
+| Macro F1 | 0.686 |
+| Girl-associated F1 | 0.896 |
+| Boy-associated F1 | 0.823 |
+| Uncertain F1 | 0.338 |
 
 The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
 
@@ -155,10 +155,11 @@ The model is trained on U.S./English naming conventions. Accuracy varies by cult
 Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
-Model size:       1.50 MB
-Single name:      2.4 ms
-Batch (10):       7.3 ms   (1,377 names/sec)
-Batch (100):     19.2 ms   (5,214 names/sec)
+Model size:       3.00 MB
+Single name:      2.68 ms
+Batch (10):       11.9 ms   (844 names/sec)
+Batch (100):      23.4 ms   (4,274 names/sec)
+Batch (1000):    149.9 ms   (6,672 names/sec)
 ```
 
 Run `genderfluid benchmark` on your own hardware.
@@ -178,8 +179,11 @@ Built from real public data:
 
 1. **U.S. Social Security Administration** baby names (1880-2020): 100,364 unique names
 2. **U.S. Census Bureau** 2020 Census first names: 53,616 unique names
+3. **France INSEE** first names (1900-2024): 48,506 unique names
+4. **Japan** Meiji Yasuda newborn-name surveys: 2,387 unique kanji names
+5. **China** Ministry of Public Security name reports: 49 official given names
 
-Combined: 138,101 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
+Combined: 140,536 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
 
 ## Training from source
 
@@ -191,7 +195,7 @@ python evaluate.py            # evaluate on validation/test splits
 ```
 
 **Sweep training on GitHub Actions** (recommended for retraining): the
-`Train Model` workflow runs all 12 configurations in parallel on GitHub
+`Train Model` workflow runs all 18 configurations in parallel on GitHub
 runners (one job per config, ~4 minutes total) and a `finalize` job picks
 the best config by validation F1, evaluates it on the test split, and
 commits the model. Trigger it under Actions > Train Model > Run workflow,
@@ -229,7 +233,8 @@ Optional fields: `weight`, `country`, `language`, `year`.
 ## Limitations
 
 - Works with full names: first, middle, and last
-- U.S./English-centric training data
+- Primarily U.S./European training data; accuracy varies by cultural context
+- Chinese/Japanese coverage is limited (roughly 2,400 names) and still growing
 - Name associations vary by culture, language, and generation
 - The `uncertain` category exists for genuinely ambiguous names
 - Not suitable for high-stakes decisions
@@ -242,11 +247,11 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### What data is it trained on?
 
-138,101 unique names from U.S. SSA baby names (1880-2023), U.S. Census 2020, and French INSEE first names (1900-2024) - 911 million recorded births.
+140,536 unique names from U.S. SSA baby names (1880-2020), U.S. Census 2020, French INSEE first names (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births.
 
 ### How accurate is it?
 
-79.6% accuracy on held-out test data (macro F1 0.68). Girl-associated names: 89% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
+81.0% accuracy on held-out test data (macro F1 0.686). Girl-associated names: 90% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
 
 ### Does it work offline?
 
@@ -262,7 +267,7 @@ Yes. See the Training from source section above. The training pipeline is includ
 
 ### Does it work with non-English names?
 
-The model is trained on U.S./English naming data. It may not work well for names from other cultural contexts. The preprocessing preserves Unicode characters, so names with accents and special characters are handled.
+The model is trained mostly on U.S./European data with growing Asian coverage. The preprocessing preserves Unicode characters, so names with accents, hanzi, and other scripts are handled - but accuracy outside the trained cultures is lower and often returns `uncertain`.
 
 ## Repository structure
 
@@ -279,7 +284,7 @@ genderfluid-tiny/
 ├── data/                 # Training dataset
 ├── models/               # Trained model
 ├── native/               # C++ inference (optional)
-├── tests/                # 29 tests
+├── tests/                # 39 tests
 ├── pyproject.toml        # Package config
 └── README.md
 ```

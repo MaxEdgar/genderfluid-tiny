@@ -4,7 +4,7 @@
 
 | Source | Country | Coverage | License/terms |
 |--------|---------|----------|---------------|
-| U.S. Social Security Administration baby names | United States | 1880-2023, names with 5+ occurrences | Public domain (U.S. government work) |
+| U.S. Social Security Administration baby names | United States | 1880-2020, names with 5+ occurrences | Public domain (U.S. government work) |
 | U.S. Census Bureau 2020 first names | United States | 2020, frequently occurring first names by sex | Public domain (U.S. government work) |
 | INSEE "Base prénoms" | France | 1900-2024 | Open License 2.0 (Etalab) |
 | Meiji Yasuda Life newborn name survey | Japan | 2025 edition, kanji names labeled male/female/mixed | Public website; survey facts used, no raw counts published |
