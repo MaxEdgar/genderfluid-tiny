@@ -11,6 +11,8 @@ Sources:
       names with >=20 holders, by sex, official xlsx)
     - Institute for Language and Folklore (Sweden) newborn top-name tables
       2023-2025 with real counts (official xlsx)
+    - PESEL register, Poland (full list of living people's first names
+      with counts, official Ministry of Digitisation CSV)
   Asia:
     - Meiji Yasuda Life newborn name survey, Japan (downloaded JSON)
     - Ministry of Public Security annual name reports, China (official
@@ -61,6 +63,16 @@ SE_ISOF_FILES = [
     (2025, "https://www.isof.se/download/18.331a790519cc9cca613dd136/1773161563268/Statistik%20babynamn%202025%20ny.xlsx"),
     (2024, "https://www.isof.se/download/18.359aef78194d854194abcde2/1740489507331/Statistik%20babynamn%202024.xlsx"),
     (2023, "https://www.isof.se/download/18.7ada16dc193deb67224b7be6/1736421128822/Tilltalsnamn%20nyf%C3%B6dda%202023.xlsx"),
+]
+
+# Poland: full PESEL register snapshot (19.01.2024) - every first name of
+# living people with occurrence counts, by legal sex. Published by the
+# Ministry of Digitisation on the official open-data portal (dane.gov.pl,
+# dataset 1667 "Lista imion wystepujacych w rejestrze PESEL"). Names with
+# single occurrences and deceased persons are excluded by the publisher.
+PL_PESEL_FILES = [
+    ("male", "https://api.dane.gov.pl/media/resources/20240126/8_-_Wykaz_imion_m%C4%99skich_os%C3%B3b_%C5%BCyj%C4%85cych_wg_pola_imi%C4%99_pierwsze_wyst%C4%99puj%C4%85cych_w_rejestrze_PESEL_bez_zgon%C3%B3w.csv"),
+    ("female", "https://api.dane.gov.pl/media/resources/20240126/8_-_Wykaz_imion_%C5%BCe%C5%84skich_os%C3%B3b_%C5%BCyj%C4%85cych_wg_pola_imi%C4%99_pierwsze_wyst%C4%99puj%C4%85cych_w_rejestrze_PESEL_bez_zgon%C3%B3w.csv"),
 ]
 
 # Official statistics from the Ministry of Public Security (China) annual
@@ -501,6 +513,51 @@ def _load_sweden_isof() -> dict:
     return counts
 
 
+def _load_poland_pesel() -> dict:
+    """Poland: full PESEL register of living people's first names.
+
+    Returns {name: (girl_count, boy_count)}. CSV columns are
+    [first name, sex, occurrence count]; the sex column is redundant
+    because male and female lists are separate files.
+    """
+    import csv
+
+    counts: dict = {}
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "raw")
+    for sex, url in PL_PESEL_FILES:
+        dest = os.path.join(base, f"pl_pesel_{sex}.csv")
+        if not _download_to(url, dest):
+            continue
+        try:
+            with open(dest, encoding="utf-8-sig", newline="") as fh:
+                reader = csv.reader(fh)
+                header = next(reader, None)
+                if not header:
+                    continue
+                for row in reader:
+                    if len(row) < 3:
+                        continue
+                    raw = (row[0] or "").strip()
+                    if not raw:
+                        continue
+                    try:
+                        cnt = int(row[2].strip())
+                    except (TypeError, ValueError):
+                        continue
+                    norm = normalize_name(raw)
+                    if not norm or cnt <= 0:
+                        continue
+                    bucket = counts.setdefault(norm, [0, 0])
+                    if sex == "female":
+                        bucket[0] += cnt
+                    else:
+                        bucket[1] += cnt
+        except Exception as e:
+            print(f"WARNING: cannot read Poland PESEL {sex} file: {e}")
+            continue
+    return counts
+
+
 def _weight_for(total: int) -> float:
     """Weight by frequency: names with 10k+ records get full weight."""
     w = min(1.0, max(0.05, (total + 1) ** 0.25 / 10.0))
@@ -522,6 +579,7 @@ def main():
     sources["FR_INSEE"] = _load_insee()
     sources["ES_INE"] = _load_spain_ine()
     sources["SE_ISOFF"] = _load_sweden_isof()
+    sources["PL_PESEL"] = _load_poland_pesel()
 
     for source, counts in sources.items():
         total_records = sum(g + b for g, b in counts.values())

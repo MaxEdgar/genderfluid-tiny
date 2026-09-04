@@ -1,6 +1,6 @@
 """genderfluid-tiny: Ultra-tiny name-gender association classifier."""
 
-__version__ = "1.0.10"
+__version__ = "2.0.0"
 
 
 def classify_name(name: str) -> str:

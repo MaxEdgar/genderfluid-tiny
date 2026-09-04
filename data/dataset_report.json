@@ -20,19 +20,22 @@
     },
     "SE_ISOFF": {
       "unique_names": 224
+    },
+    "PL_PESEL": {
+      "unique_names": 58106
     }
   },
-  "unique_names_total": 186734,
-  "total_recorded_births": 956724057,
+  "unique_names_total": 204234,
+  "total_recorded_births": 1000370353,
   "label_counts": {
-    "girl-associated": 103109,
-    "boy-associated": 73908,
-    "uncertain": 9717
+    "girl-associated": 108709,
+    "boy-associated": 85317,
+    "uncertain": 10208
   },
   "split_sizes": {
-    "train": 157583,
-    "validation": 14564,
-    "test": 14587
+    "train": 172332,
+    "validation": 15925,
+    "test": 15977
   },
   "association_threshold": 0.85
 }
