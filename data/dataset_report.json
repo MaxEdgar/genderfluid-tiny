@@ -10,22 +10,22 @@
       "unique_names": 2387
     },
     "CN_MPS": {
-      "unique_names": 49
+      "unique_names": 60
     },
     "FR_INSEE": {
       "unique_names": 48506
     }
   },
-  "unique_names_total": 140536,
-  "total_recorded_births": 911723925,
+  "unique_names_total": 140547,
+  "total_recorded_births": 911725025,
   "label_counts": {
-    "girl-associated": 79993,
-    "boy-associated": 50901,
+    "girl-associated": 79998,
+    "boy-associated": 50907,
     "uncertain": 9642
   },
   "split_sizes": {
-    "train": 118571,
-    "validation": 10978,
+    "train": 118581,
+    "validation": 10979,
     "test": 10987
   },
   "association_threshold": 0.85

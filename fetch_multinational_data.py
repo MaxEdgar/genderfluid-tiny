@@ -53,6 +53,10 @@ CHINA_MPS_NAMES = {
         "沐宸", "浩宇", "沐辰", "茗泽", "奕辰", "宇泽", "浩然", "奕泽", "宇轩", "沐阳",
         # 2020 report: male newborns, top 10 (China News, 2021-02-08)
         "亦辰", "宇辰", "子墨", "宇航", "梓豪", "亦宸",
+        # 2019 report: male newborns, top 10 (Xinhua, 2020-01-21)
+        "铭泽", "子睿", "子轩", "梓睿",
+        # 2018 report: male newborns, top 10 (China Daily, 2019-01-30)
+        "浩轩", "子豪",
         # 2021 report: single-char names used more by males
         "伟", "杰", "勇", "涛", "军", "强",
         # 2021 report: double-char names used more by males
@@ -63,6 +67,10 @@ CHINA_MPS_NAMES = {
         "若汐", "一诺", "艺涵", "依诺", "梓涵", "苡沫", "雨桐", "欣怡", "语桐", "语汐",
         # 2020 report: female newborns, top 10
         "欣妍", "可欣", "梦瑶",
+        # 2019 report: female newborns, top 10 (Xinhua, 2020-01-21)
+        "诗涵", "佳怡", "佳琪", "梓萱",
+        # 2018 report: female newborns, top 10 (China Daily, 2019-01-30)
+        "可馨",
         # 2021 report: single-char names used more by females
         "敏", "静", "丽", "艳",
         # 2021 report: double-char names used more by females

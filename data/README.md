@@ -8,7 +8,7 @@
 | U.S. Census Bureau 2020 first names | United States | 2020, frequently occurring first names by sex | Public domain (U.S. government work) |
 | INSEE "Base prénoms" | France | 1900-2024 | Open License 2.0 (Etalab) |
 | Meiji Yasuda Life newborn name survey | Japan | 2025 edition, kanji names labeled male/female/mixed | Public website; survey facts used, no raw counts published |
-| Ministry of Public Security annual name reports | China | 2020-2021, top newborn names by sex | Official government statistics via state media (People's Daily, China News) |
+| Ministry of Public Security annual name reports | China | 2018-2021, top newborn names by sex (all four published reports) | Official government statistics via state media (People's Daily, China News, Xinhua, China Daily) |
 
 ## How the dataset is built
 

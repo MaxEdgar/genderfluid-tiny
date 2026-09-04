@@ -8598,6 +8598,7 @@
 {"name": "彩伽", "label": "girl-associated", "weight": 0.317, "girl_count": 100, "boy_count": 0, "total_records": 100, "countries": "JP_MEIJI"}
 {"name": "沐辰", "label": "boy-associated", "weight": 0.317, "girl_count": 0, "boy_count": 100, "total_records": 100, "countries": "CN_MPS"}
 {"name": "沐阳", "label": "boy-associated", "weight": 0.317, "girl_count": 0, "boy_count": 100, "total_records": 100, "countries": "CN_MPS"}
+{"name": "铭泽", "label": "boy-associated", "weight": 0.317, "girl_count": 0, "boy_count": 100, "total_records": 100, "countries": "CN_MPS"}
 {"name": "涛", "label": "boy-associated", "weight": 0.317, "girl_count": 0, "boy_count": 100, "total_records": 100, "countries": "CN_MPS"}
 {"name": "梓涵", "label": "girl-associated", "weight": 0.317, "girl_count": 100, "boy_count": 0, "total_records": 100, "countries": "CN_MPS"}
 {"name": "语汐", "label": "girl-associated", "weight": 0.317, "girl_count": 100, "boy_count": 0, "total_records": 100, "countries": "CN_MPS"}
