@@ -2,18 +2,25 @@
 
 ## Reporting vulnerabilities
 
-If you discover a security vulnerability, please report it privately by
-opening a GitHub issue with the "security" label. Do not disclose
-vulnerabilities publicly until a fix is available.
+If you discover a security vulnerability, report it privately through
+GitHub's private vulnerability reporting
+(https://github.com/MaxEdgar/genderfluid-tiny/security/advisories/new).
+Do not open a public issue for unfixed vulnerabilities, and do not
+disclose them publicly until a fix is available.
 
 ## Scope
 
-This project is a name classification library. It does not:
+The inference library runs entirely locally. It does not:
 
 - Store or transmit user data
-- Make network requests
+- Make network requests during inference
 - Handle authentication
 - Process sensitive information beyond names you provide to it
+
+The repository also contains optional data-fetching scripts
+(`fetch_multinational_data.py`, `process_real_data.py`) used only when
+retraining the model; those make outbound requests to official
+government dataset sources at training time.
 
 ## Model safety
 

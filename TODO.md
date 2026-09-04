@@ -2,8 +2,11 @@
 
 ## Future goals
 
-- Expand training dataset to 1M names
-- Improve accuracy beyond 68.9%
+- Expand training dataset to 1M names (currently 140,536)
+- Improve uncertain-class F1 (0.338) -- the weakest class
+- Add more Asian sources: Korea, Taiwan, Singapore, Indonesia (APIs blocked scripted access so far)
+- Add CLI test coverage (compare/file/json/exit codes currently untested)
+- Push overall accuracy beyond 81.0%
 
 ---
 
@@ -20,6 +23,8 @@ When changing the version number, update ALL of these files:
 1. `pyproject.toml` -- `version = "X.Y.Z"`
 2. `genderfluid/__init__.py` -- `__version__ = "X.Y.Z"`
    (cli.py reads `__version__` dynamically -- no manual bump needed there)
+3. `config.yaml` -- `model.version: "X.Y.Z"` (baked into model metadata by train_finalize.py)
+4. `docs/index.html` -- footer `genderfluid-tiny vX.Y.Z`
 
 ---
 
@@ -50,8 +55,12 @@ git add -A
 git commit -m "release: vX.Y.Z"
 git tag -a vX.Y.Z -m "vX.Y.Z"
 git push && git push --tags
-gh release create vX.Y.Z --title "X.Y.Z" --generate-notes
+gh release create vX.Y.Z --title "vX.Y.Z" --generate-notes
 ```
+
+IMPORTANT: the release title must keep the leading `v` ("vX.Y.Z", not
+"X.Y.Z"). Releases v1.0.3 and v1.0.4 were published without it and had
+to be renamed after the fact.
 
 Wait for GitHub Actions to publish to PyPI (check with `gh run list --workflow=release.yml`).
 
@@ -71,7 +80,8 @@ Wait for GitHub Actions to publish to PyPI (check with `gh run list --workflow=r
 |------|---------------|
 | `pyproject.toml` | version, description, URLs, keywords, license |
 | `genderfluid/__init__.py` | `__version__` (cli.py reads it dynamically) |
-| `README.md` | license badge, property table, comparison table, footer |
+| `config.yaml` | `model.version` (model metadata) |
+| `README.md` | badges, property table, comparison table |
 | `COMMERCIAL_LICENSE.md` | contact email |
-| `docs/index.html` | footer version |
+| `docs/index.html` | footer version + hero/feature stats if they change |
 | `.github/workflows/release.yml` | should match current structure |

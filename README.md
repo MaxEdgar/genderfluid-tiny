@@ -293,3 +293,4 @@ genderfluid-tiny/
 
 Polyform Noncommercial License 1.0.0. Free for personal, educational, and noncommercial use.
 Commercial use requires a license. See [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md).
+Contributing: see [CONTRIBUTING.md](CONTRIBUTING.md). Security: see [SECURITY.md](SECURITY.md).

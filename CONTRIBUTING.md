@@ -19,7 +19,7 @@ pip install pytest
 pytest tests/ -v
 ```
 
-All 29 tests must pass before submitting a PR.
+All 39 tests must pass before submitting a PR.
 
 ## Code style
 
