@@ -426,15 +426,15 @@ Name: Olivia
         <h2>Compare names</h2>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid predict --compare Emma James Robin Max Taylor
 
-Name                      Classification         Girl    Boy Confidence
-----------------------------------------------------------------------
-Emma                      girl-associated        100%     0% high
-James                     boy-associated           0%   100% high
-Robin                     uncertain                0%     0% high
-Max                       boy-associated           0%   100% high
-Taylor                    uncertain                1%     0% high
+Name                      Classification       Girl    Boy    Unc Confidence
+----------------------------------------------------------------------------
+Emma                      girl-associated      100%     0%     0% high      
+James                     boy-associated         0%   100%     0% high      
+Robin                     uncertain              0%     0%   100% high      
+Max                       boy-associated         0%   100%     0% high      
+Taylor                    uncertain              1%     0%    99% high      
 
-5 names in 30.5 ms</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
+5 names in 44.0 ms</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
 
     <!-- BATCH -->
@@ -473,9 +473,9 @@ Isabella</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (2-5 grams)
+Character n-gram extraction (2-6 grams)
   |
-Hashing trick (4096-dim feature vector)
+Hashing trick (262,144-dim feature vector)
   |
 Logistic regression (3 classes)
   |
@@ -511,10 +511,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
             <tr><td>Model size</td><td>3.00 MB</td></tr>
-            <tr><td>Single prediction</td><td>2.68 ms</td></tr>
-            <tr><td>Batch (10 names)</td><td>11.9 ms</td></tr>
-            <tr><td>Batch (100 names)</td><td>23.4 ms</td></tr>
-            <tr><td>Peak RSS</td><td>196 MB</td></tr>
+            <tr><td>Single prediction</td><td>2.76 ms</td></tr>
+            <tr><td>Batch (10 names)</td><td>11.9 ms (840 names/s)</td></tr>
+            <tr><td>Batch (100 names)</td><td>22.1 ms (4,516 names/s)</td></tr>
+            <tr><td>Batch (1000 names)</td><td>147.3 ms (6,788 names/s)</td></tr>
+            <tr><td>Peak RSS</td><td>200 MB</td></tr>
         </table>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
@@ -545,9 +546,9 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <tr><td><code>genderfluid predict --json &lt;name&gt;</code></td><td>JSON output</td></tr>
             <tr><td><code>genderfluid predict --compare &lt;names&gt;</code></td><td>Compare multiple names</td></tr>
             <tr><td><code>genderfluid predict --file &lt;file&gt;</code></td><td>Batch from file (JSONL output)</td></tr>
-            <tr><td><code>genderfluid predict --info</code></td><td>Show model metadata</td></tr>
+            <tr><td><code>genderfluid predict --model &lt;path&gt;</code></td><td>Use a custom model file</td></tr>
             <tr><td><code>genderfluid interactive</code></td><td>Interactive prediction mode</td></tr>
-            <tr><td><code>genderfluid stats</code></td><td>Model statistics</td></tr>
+            <tr><td><code>genderfluid stats</code></td><td>Show model metadata</td></tr>
             <tr><td><code>genderfluid benchmark</code></td><td>Run inference benchmark</td></tr>
             <tr><td><code>genderfluid --version</code></td><td>Show version</td></tr>
             <tr><td><code>genderfluid --help</code></td><td>Show help</td></tr>
@@ -557,8 +558,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     <!-- TRAINING -->
     <section id="training">
         <h2>Training from source</h2>
-<div class="code-wrap"><pre><code><span class="p">$</span> python process_real_data.py   <span class="c"># download and process SSA + Census data</span>
-<span class="p">$</span> python prepare_data.py        <span class="c"># validate and split data</span>
+<div class="code-wrap"><pre><code><span class="p">$</span> python fetch_multinational_data.py  <span class="c"># build dataset from official sources, write splits</span>
 <span class="p">$</span> python train.py               <span class="c"># train model</span>
 <span class="p">$</span> python evaluate.py            <span class="c"># evaluate on test set</span></code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
         <p>The training script:</p>
@@ -583,7 +583,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <ul>
             <li>U.S. Social Security Administration baby names (1880-2020): 100,364 unique names</li>
             <li>U.S. Census Bureau 2020 Census first names: 53,616 unique names</li>
+            <li>France INSEE first names (1900-2024): 48,506 unique names</li>
+            <li>Japan Meiji Yasuda newborn-name surveys: 2,387 unique kanji names</li>
+            <li>China Ministry of Public Security name reports: 49 official given names</li>
         </ul>
+        <p>Combined: 140,536 unique names across all sources.</p>
         <p>Names with 85%+ statistical association are labeled
         <code>girl-associated</code> or <code>boy-associated</code>.
         Below that threshold: <code>uncertain</code>.</p>
@@ -594,7 +598,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <h2>Limitations</h2>
         <ul>
             <li>Works with full names: first, middle, and last</li>
-            <li>U.S./English-centric training data</li>
+            <li>Primarily U.S./European data; Chinese/Japanese coverage limited (~2,400 names) and growing</li>
             <li>Name associations vary by culture, language, and generation</li>
             <li>The <code>uncertain</code> category exists for genuinely ambiguous names</li>
             <li>Not suitable for high-stakes decisions</li>

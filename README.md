@@ -148,7 +148,7 @@ Tested on held-out test data (10,987 names):
 | Boy-associated F1 | 0.823 |
 | Uncertain F1 | 0.338 |
 
-The model is trained on U.S./English naming conventions. Accuracy varies by cultural context.
+Primarily U.S./European training data with growing Asian (Japanese/Chinese) coverage. Accuracy varies by cultural context.
 
 ## Benchmark
 
@@ -156,10 +156,11 @@ Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
 Model size:       3.00 MB
-Single name:      2.68 ms
-Batch (10):       11.9 ms   (844 names/sec)
-Batch (100):      23.4 ms   (4,274 names/sec)
-Batch (1000):    149.9 ms   (6,672 names/sec)
+Single name:      2.76 ms
+Batch (10):       11.9 ms   (840 names/sec)
+Batch (100):      22.1 ms   (4,516 names/sec)
+Batch (1000):    147.3 ms   (6,788 names/sec)
+Peak RSS:        200 MB
 ```
 
 Run `genderfluid benchmark` on your own hardware.
@@ -188,10 +189,9 @@ Combined: 140,536 unique names (911 million recorded births). Names with 85%+ st
 ## Training from source
 
 ```bash
-python process_real_data.py   # download and process SSA + Census data
-python prepare_data.py        # validate and split data
-python train.py               # train and save model
-python evaluate.py            # evaluate on validation/test splits
+python fetch_multinational_data.py  # build dataset from official sources, write splits
+python train.py                     # train and save model
+python evaluate.py                  # evaluate on validation/test splits
 ```
 
 **Sweep training on GitHub Actions** (recommended for retraining): the
