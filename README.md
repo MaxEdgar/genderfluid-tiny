@@ -8,9 +8,9 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/genderfluid-tiny.svg)](https://pypi.org/project/genderfluid-tiny/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-29%20passed-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-39%20passed-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/license-Polyform%20NC-gray.svg)](LICENSE)
-[![Model size](https://img.shields.io/badge/model-49%20KB-brightgreen.svg)](models/)
+[![Model size](https://img.shields.io/badge/model-3.0%20MB-brightgreen.svg)](models/)
 
 ---
 
