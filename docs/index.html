@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docs | genderfluid-tiny</title>
-    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 3 MB model, CPU only, no API.">
+    <meta name="description" content="Offline Python classifier that predicts gender associations from names. 6 MB model, CPU only, no API.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -302,7 +302,7 @@
     <section id="overview" class="hero">
         <h1 class="rainbow">genderfluid-tiny</h1>
         <p>Offline Python classifier that predicts gender associations from names.
-        3 MB model, CPU only, no API needed.</p>
+        6 MB model, CPU only, no API needed.</p>
         <div class="install-wrap">
             <div class="install-cmd"><span>$</span> pip install genderfluid-tiny</div>
             <button class="install-copy" id="copyBtn" aria-label="Copy to clipboard" title="Copy to clipboard">
@@ -311,8 +311,8 @@
             </button>
         </div>
         <div class="stats">
-            <div class="stat"><strong data-count="3.0" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
-            <div class="stat"><strong data-count="2.7" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
+            <div class="stat"><strong data-count="6.0" data-suffix=" MB" data-decimal="1">0 MB</strong><span>Model</span></div>
+            <div class="stat"><strong data-count="4.4" data-suffix=" ms" data-decimal="1">0 ms</strong><span>Prediction</span></div>
             <div class="stat"><strong data-count="140" data-suffix="K">0K</strong><span>Names trained</span></div>
             <div class="stat"><strong data-count="0" data-suffix="">0</strong><span>API calls</span></div>
         </div>
@@ -336,7 +336,7 @@
         associated with feminine or masculine naming conventions. It outputs
         <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
         <div class="callout">
-            <strong>140,536 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Japanese newborn surveys and Chinese government reports (911M births).
+            <strong>140,547 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Japanese newborn surveys and Chinese government reports (911M births).
         </div>
     </section>
 
@@ -473,9 +473,9 @@ Isabella</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (2-6 grams)
+Character n-gram extraction (1-6 grams)
   |
-Hashing trick (262,144-dim feature vector)
+Hashing trick (524,288-dim feature vector)
   |
 Logistic regression (3 classes)
   |
@@ -494,11 +494,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <h2>Features</h2>
         <div class="grid">
             <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
-            <div class="item"><strong>3 MB model</strong><span>Still smaller than a low-res image.</span></div>
-            <div class="item"><strong>Millisecond-fast</strong><span>2.7 ms per name on a 2-core CPU.</span></div>
+            <div class="item"><strong>6 MB model</strong><span>Still smaller than a low-res image.</span></div>
+            <div class="item"><strong>Millisecond-fast</strong><span>4.4 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
-            <div class="item"><strong>Real data</strong><span>140,536 names from SSA, Census, INSEE, Japan and China.</span></div>
+            <div class="item"><strong>Real data</strong><span>140,547 names from SSA, Census, INSEE, Japan and China.</span></div>
             <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hanzi, hyphens, apostrophes.</span></div>
             <div class="item"><strong>Simple API</strong><span>One function call. No complex setup.</span></div>
         </div>
@@ -510,12 +510,12 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Measured on a 2-core x86_64 Linux machine. Results vary by hardware.</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Model size</td><td>3.00 MB</td></tr>
-            <tr><td>Single prediction</td><td>2.76 ms</td></tr>
-            <tr><td>Batch (10 names)</td><td>11.9 ms (840 names/s)</td></tr>
-            <tr><td>Batch (100 names)</td><td>22.1 ms (4,516 names/s)</td></tr>
-            <tr><td>Batch (1000 names)</td><td>147.3 ms (6,788 names/s)</td></tr>
-            <tr><td>Peak RSS</td><td>200 MB</td></tr>
+            <tr><td>Model size</td><td>6.00 MB</td></tr>
+            <tr><td>Single prediction</td><td>4.42 ms</td></tr>
+            <tr><td>Batch (10 names)</td><td>18.9 ms (529 names/s)</td></tr>
+            <tr><td>Batch (100 names)</td><td>29.5 ms (3,390 names/s)</td></tr>
+            <tr><td>Batch (1000 names)</td><td>160.0 ms (6,251 names/s)</td></tr>
+            <tr><td>Peak RSS</td><td>209 MB</td></tr>
         </table>
 <div class="code-wrap"><pre><code><span class="p">$</span> genderfluid benchmark</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>
     </section>
@@ -526,11 +526,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Tested on held-out test data (10,987 names):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>81.0%</td></tr>
-            <tr><td>Macro F1</td><td>0.686</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.896</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.823</td></tr>
-            <tr><td>Uncertain F1</td><td>0.338</td></tr>
+            <tr><td>Accuracy</td><td>82.5%</td></tr>
+            <tr><td>Macro F1</td><td>0.699</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.902</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.834</td></tr>
+            <tr><td>Uncertain F1</td><td>0.360</td></tr>
             <tr><td>Calibration error</td><td>0.080</td></tr>
         </table>
         <p>Primarily U.S./European training data with growing Asian coverage.
@@ -587,7 +587,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <li>Japan Meiji Yasuda newborn-name surveys: 2,387 unique kanji names</li>
             <li>China Ministry of Public Security name reports: 49 official given names</li>
         </ul>
-        <p>Combined: 140,536 unique names across all sources.</p>
+        <p>Combined: 140,547 unique names across all sources.</p>
         <p>Names with 85%+ statistical association are labeled
         <code>girl-associated</code> or <code>boy-associated</code>.
         Below that threshold: <code>uncertain</code>.</p>

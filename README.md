@@ -1,6 +1,6 @@
 # genderfluid-tiny
 
-**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 3 MB model, CPU only, no API needed.**
+**Tiny offline Python name-gender classifier. Predicts gender associations from names using ML. 6 MB model, CPU only, no API needed.**
 
 `pip install genderfluid-tiny`
 
@@ -20,15 +20,15 @@
 
 ## What is genderfluid-tiny?
 
-genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 140,536 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births in total.
+genderfluid-tiny is a lightweight Python library that predicts whether a name is statistically associated with feminine or masculine naming conventions. It uses a character n-gram classifier trained on 140,547 real names from U.S. Social Security Administration data (1880-2020), U.S. Census 2020, French INSEE first-name statistics (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births in total.
 
-Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 3 MB.
+Unlike API-based gender detection services, genderfluid-tiny runs entirely offline. No data leaves your machine. No API key required. The entire model is 6 MB.
 
 | Property | Value |
 |----------|-------|
 | Architecture | Character n-gram + logistic regression |
-| Model size | 3 MB |
-| Training data | 140,536 names (SSA + Census + INSEE + Japan + China) |
+| Model size | 6 MB |
+| Training data | 140,547 names (SSA + Census + INSEE + Japan + China) |
 | Inference | CPU only, no GPU needed |
 | Internet | Not required |
 | License | Polyform Noncommercial |
@@ -123,9 +123,9 @@ Input name
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (2-6 grams)
+Character n-gram extraction (1-6 grams)
   |
-Hashing trick (262,144-dim feature vector)
+Hashing trick (524,288-dim feature vector)
   |
 Logistic regression (3 classes)
   |
@@ -142,11 +142,11 @@ Tested on held-out test data (10,987 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 81.0% |
-| Macro F1 | 0.686 |
-| Girl-associated F1 | 0.896 |
-| Boy-associated F1 | 0.823 |
-| Uncertain F1 | 0.338 |
+| Accuracy | 82.5% |
+| Macro F1 | 0.699 |
+| Girl-associated F1 | 0.902 |
+| Boy-associated F1 | 0.834 |
+| Uncertain F1 | 0.360 |
 
 Primarily U.S./European training data with growing Asian (Japanese/Chinese) coverage. Accuracy varies by cultural context.
 
@@ -155,12 +155,12 @@ Primarily U.S./European training data with growing Asian (Japanese/Chinese) cove
 Measured on a 2-core x86_64 Linux machine. Results vary by hardware.
 
 ```
-Model size:       3.00 MB
-Single name:      2.76 ms
-Batch (10):       11.9 ms   (840 names/sec)
-Batch (100):      22.1 ms   (4,516 names/sec)
-Batch (1000):    147.3 ms   (6,788 names/sec)
-Peak RSS:        200 MB
+Model size:       6.00 MB
+Single name:      4.42 ms
+Batch (10):       18.9 ms   (529 names/sec)
+Batch (100):      29.5 ms   (3,390 names/sec)
+Batch (1000):    160.0 ms   (6,251 names/sec)
+Peak RSS:        209 MB
 ```
 
 Run `genderfluid benchmark` on your own hardware.
@@ -172,7 +172,7 @@ Run `genderfluid benchmark` on your own hardware.
 - **Research**: Analyze naming trends across datasets
 - **Privacy-sensitive applications**: Process names without sending data to external APIs
 - **Offline applications**: Works without internet connectivity
-- **Embedded systems**: 3 MB model runs on low-resource devices
+- **Embedded systems**: 6 MB model runs on low-resource devices
 
 ## Training data
 
@@ -184,7 +184,7 @@ Built from real public data:
 4. **Japan** Meiji Yasuda newborn-name surveys: 2,387 unique kanji names
 5. **China** Ministry of Public Security name reports: 49 official given names
 
-Combined: 140,536 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
+Combined: 140,547 unique names (911 million recorded births). Names with 85%+ statistical association are labeled `girl-associated` or `boy-associated`. Below that threshold: `uncertain`.
 
 ## Training from source
 
@@ -202,7 +202,7 @@ commits the model. Trigger it under Actions > Train Model > Run workflow,
 or run the two steps locally:
 
 ```bash
-python train_config.py 262144 2-6 20.0 lbfgs   # one configuration
+python train_config.py 524288 1-6 160.0 lbfgs  # one configuration
 python train_finalize.py                      # pick best, evaluate, save
 ```
 
@@ -222,7 +222,7 @@ Optional fields: `weight`, `country`, `language`, `year`.
 
 | Feature | genderfluid-tiny | gender-guesser | chicksexer |
 |---------|-----------------|----------------|------------|
-| Model size | 3 MB | 600 KB+ | 10 MB+ |
+| Model size | 6 MB | 600 KB+ | 10 MB+ |
 | License | Polyform NC | GPLv3 | -- |
 | Last updated | 2026 | 2016 | -- |
 | Approach | ML (n-gram + LR) | Lookup table | ML |
@@ -247,11 +247,11 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### What data is it trained on?
 
-140,536 unique names from U.S. SSA baby names (1880-2020), U.S. Census 2020, French INSEE first names (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births.
+140,547 unique names from U.S. SSA baby names (1880-2020), U.S. Census 2020, French INSEE first names (1900-2024), Japanese newborn surveys, and Chinese government name reports - 911 million recorded births.
 
 ### How accurate is it?
 
-81.0% accuracy on held-out test data (macro F1 0.686). Girl-associated names: 90% F1. Boy-associated names: 82% F1. Uncertain/ambiguous names: 34% F1.
+82.5% accuracy on held-out test data (macro F1 0.699). Girl-associated names: 90% F1. Boy-associated names: 83% F1. Uncertain/ambiguous names: 36% F1.
 
 ### Does it work offline?
 
