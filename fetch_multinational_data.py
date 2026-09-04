@@ -7,6 +7,10 @@ Sources:
     - U.S. Census Bureau 2020 first names (data/census_2020_firstnames_sex.xlsx)
   Europe:
     - INSEE France "Base prénoms" 1900-2024 (downloaded from data.gouv.fr)
+    - INE Spain "Nombres y apellidos más frecuentes" Padrón 2025 (given
+      names with >=20 holders, by sex, official xlsx)
+    - Institute for Language and Folklore (Sweden) newborn top-name tables
+      2023-2025 with real counts (official xlsx)
   Asia:
     - Meiji Yasuda Life newborn name survey, Japan (downloaded JSON)
     - Ministry of Public Security annual name reports, China (official
@@ -34,6 +38,8 @@ import os
 import sys
 import urllib.request
 
+_UA = {"User-Agent": "Mozilla/5.0 (genderfluid-tiny data fetch; research use)"}
+
 from genderfluid.preprocessing import normalize_name
 
 ASSOC_THRESHOLD = 0.85
@@ -43,6 +49,19 @@ VAL_FRACTION = 0.10
 INSEE_DATASET_API = "https://www.data.gouv.fr/api/1/datasets/base-prenoms-2024-insee/"
 SSA_ZIP_URL = "https://www.ssa.gov/oact/babynames/names.zip"
 MEIJI_INDEX_URL = "https://www.meijiyasuda.co.jp/enjoy/ranking/assets/json/index_name.json"
+
+# Spain: INE "Nombres y apellidos mas frecuentes" - Padron-based frequency of
+# every given name with >=20 holders nationwide, by sex (Hombres/Mujeres
+# sheets: rank, name, frequency, mean age). Official INE publication.
+ES_NAMES_URL = "https://www.ine.es/daco/daco42/nombyapel/nombres_por_edad_media.xlsx"
+
+# Sweden: Institute for Language and Folklore (official, skatteverket data)
+# newborn top-name tables with real counts. One file per year.
+SE_ISOF_FILES = [
+    (2025, "https://www.isof.se/download/18.331a790519cc9cca613dd136/1773161563268/Statistik%20babynamn%202025%20ny.xlsx"),
+    (2024, "https://www.isof.se/download/18.359aef78194d854194abcde2/1740489507331/Statistik%20babynamn%202024.xlsx"),
+    (2023, "https://www.isof.se/download/18.7ada16dc193deb67224b7be6/1736421128822/Tilltalsnamn%20nyf%C3%B6dda%202023.xlsx"),
+]
 
 # Official statistics from the Ministry of Public Security (China) annual
 # name reports, published via state media. Facts (name -> sex association)
@@ -340,6 +359,148 @@ def _load_china_mps() -> dict:
     return counts
 
 
+def _download_to(url: str, dest: str, timeout: int = 300) -> bool:
+    """Download url to dest unless dest already exists and is non-empty."""
+    if os.path.exists(dest) and os.path.getsize(dest) > 0:
+        return True
+    os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+    try:
+        req = urllib.request.Request(url, headers=_UA)
+        with urllib.request.urlopen(req, timeout=timeout) as resp, \
+                open(dest, "wb") as out:
+            out.write(resp.read())
+        return True
+    except Exception as e:
+        print(f"WARNING: download failed for {url}: {e}")
+        return False
+
+
+def _load_spain_ine() -> dict:
+    """Spain INE: given-name frequency by sex (Padron 2025, frequency >= 20).
+
+    Returns {name: (girl_count, boy_count)}. Names are stored without
+    accents in the official file ("MARIA", "JOSE"); compounds such as
+    "JOSE ANTONIO" are single given-name entries in Spanish records.
+    """
+    try:
+        import openpyxl
+    except ImportError:
+        print("WARNING: openpyxl not installed, skipping Spain INE source")
+        return {}
+
+    dest = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "data", "raw", "es_nombres_frecuentes.xlsx")
+    if not _download_to(ES_NAMES_URL, dest):
+        return {}
+
+    counts: dict = {}
+    try:
+        wb = openpyxl.load_workbook(dest, read_only=True)
+    except Exception as e:
+        print(f"WARNING: cannot read Spain INE file: {e}")
+        return {}
+
+    for ws in wb.worksheets:
+        title = (ws.title or "").lower()
+        is_girl = "mujer" in title
+        is_boy = "hombre" in title
+        if not (is_girl or is_boy):
+            continue
+        header_seen = False
+        for row in ws.iter_rows(values_only=True):
+            if not row:
+                continue
+            if not header_seen:
+                if any(str(c).upper() == "NOMBRE" for c in row if c is not None):
+                    header_seen = True
+                continue
+            name = row[1] if len(row) > 1 else None
+            freq = row[2] if len(row) > 2 else None
+            if name is None:
+                continue
+            try:
+                freq = int(freq)
+            except (TypeError, ValueError):
+                continue
+            norm = normalize_name(str(name))
+            if not norm or freq <= 0:
+                continue
+            bucket = counts.setdefault(norm, [0, 0])
+            if is_girl:
+                bucket[0] += freq
+            else:
+                bucket[1] += freq
+    wb.close()
+    return counts
+
+
+def _load_sweden_isof() -> dict:
+    """Sweden isoF newborn top-name tables (official, real counts).
+
+    Each year file has "Flickor YYYY" (girls) and "Pojkar YYYY" (boys)
+    sheets with columns [rank 2024, rank 2023, name, count, variants];
+    only the main spelling and its real count are used.
+    """
+    try:
+        import openpyxl
+    except ImportError:
+        print("WARNING: openpyxl not installed, skipping Sweden isoF source")
+        return {}
+
+    counts: dict = {}
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "raw")
+    for year, url in SE_ISOF_FILES:
+        dest = os.path.join(base, f"isof_babynamn_{year}.xlsx")
+        if not _download_to(url, dest):
+            continue
+        try:
+            wb = openpyxl.load_workbook(dest, read_only=True)
+        except Exception as e:
+            print(f"WARNING: cannot read Sweden isoF {year}: {e}")
+            continue
+        for ws in wb.worksheets:
+            title = (ws.title or "").lower()
+            is_girl = "flick" in title  # sheets are "Flickor YYYY" / "Pojkar YYYY"
+            is_boy = "pojk" in title
+            if not (is_girl or is_boy):
+                continue
+            rows = ws.iter_rows(values_only=True)
+            col_name = col_count = None
+            for row in rows:
+                if not row:
+                    continue
+                for j, c in enumerate(row):
+                    cs = str(c).strip().upper() if c is not None else ""
+                    if col_name is None and cs == "NAMN":
+                        col_name = j
+                    elif col_count is None and (cs.startswith("ANTAL") or "TOTALT" in cs):
+                        col_count = j
+                if col_name is not None and col_count is not None:
+                    break
+            if col_name is None or col_count is None:
+                continue
+            for row in rows:
+                if len(row) <= max(col_name, col_count):
+                    continue
+                name = row[col_name]
+                if name is None:
+                    continue
+                try:
+                    antal = int(row[col_count])
+                except (TypeError, ValueError):
+                    continue
+                norm = normalize_name(str(name))
+                if not norm or antal <= 0:
+                    continue
+                bucket = counts.setdefault(norm, [0, 0])
+                if is_girl:
+                    bucket[0] += antal
+                else:
+                    bucket[1] += antal
+        wb.close()
+    return counts
+
+
 def _weight_for(total: int) -> float:
     """Weight by frequency: names with 10k+ records get full weight."""
     w = min(1.0, max(0.05, (total + 1) ** 0.25 / 10.0))
@@ -359,6 +520,8 @@ def main():
         "CN_MPS": _load_china_mps(),
     }
     sources["FR_INSEE"] = _load_insee()
+    sources["ES_INE"] = _load_spain_ine()
+    sources["SE_ISOFF"] = _load_sweden_isof()
 
     for source, counts in sources.items():
         total_records = sum(g + b for g, b in counts.values())

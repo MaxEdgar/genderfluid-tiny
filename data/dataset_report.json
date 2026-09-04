@@ -14,19 +14,25 @@
     },
     "FR_INSEE": {
       "unique_names": 48506
+    },
+    "ES_INE": {
+      "unique_names": 62444
+    },
+    "SE_ISOFF": {
+      "unique_names": 224
     }
   },
-  "unique_names_total": 140547,
-  "total_recorded_births": 911725025,
+  "unique_names_total": 186734,
+  "total_recorded_births": 956724057,
   "label_counts": {
-    "girl-associated": 79998,
-    "boy-associated": 50907,
-    "uncertain": 9642
+    "girl-associated": 103109,
+    "boy-associated": 73908,
+    "uncertain": 9717
   },
   "split_sizes": {
-    "train": 118581,
-    "validation": 10979,
-    "test": 10987
+    "train": 157583,
+    "validation": 14564,
+    "test": 14587
   },
   "association_threshold": 0.85
 }
