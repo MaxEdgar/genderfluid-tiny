@@ -123,7 +123,7 @@ Input name
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (1-6 grams)
+Character n-gram extraction (2-6 grams)
   |
 Hashing trick (524,288-dim feature vector)
   |
@@ -142,11 +142,11 @@ Tested on held-out test data (10,987 names):
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 82.5% |
-| Macro F1 | 0.699 |
-| Girl-associated F1 | 0.902 |
-| Boy-associated F1 | 0.834 |
-| Uncertain F1 | 0.360 |
+| Accuracy | 83.1% |
+| Macro F1 | 0.704 |
+| Girl-associated F1 | 0.903 |
+| Boy-associated F1 | 0.838 |
+| Uncertain F1 | 0.370 |
 
 Primarily U.S./European training data with growing Asian (Japanese/Chinese) coverage. Accuracy varies by cultural context.
 
@@ -203,7 +203,7 @@ commits the model. Trigger it under Actions > Train Model > Run workflow,
 or run the two steps locally:
 
 ```bash
-python train_config.py 524288 1-6 160.0 lbfgs  # one configuration
+python train_config.py 524288 2-6 160.0 lbfgs  # one configuration
 python train_finalize.py                      # pick best, evaluate, save
 ```
 
@@ -252,7 +252,7 @@ All inference runs locally. Names are not transmitted to any external service. L
 
 ### How accurate is it?
 
-82.5% accuracy on held-out test data (macro F1 0.699). Girl-associated names: 90% F1. Boy-associated names: 83% F1. Uncertain/ambiguous names: 36% F1.
+83.1% accuracy on held-out test data (macro F1 0.704). Girl-associated names: 90% F1. Boy-associated names: 84% F1. Uncertain/ambiguous names: 37% F1.
 
 ### Does it work offline?
 

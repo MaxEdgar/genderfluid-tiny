@@ -473,7 +473,7 @@ Isabella</code></pre><button class="code-copy" title="Copy"><svg viewBox="0 0 24
   |
 Unicode normalization + lowercase
   |
-Character n-gram extraction (1-6 grams)
+Character n-gram extraction (2-6 grams)
   |
 Hashing trick (524,288-dim feature vector)
   |
@@ -495,7 +495,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <div class="grid">
             <div class="item"><strong>Fully offline</strong><span>No internet. No API. No data leaves your machine.</span></div>
             <div class="item"><strong>6 MB model</strong><span>Still smaller than a low-res image.</span></div>
-            <div class="item"><strong>Millisecond-fast</strong><span>4.4 ms per name on a 2-core CPU.</span></div>
+            <div class="item"><strong>Millisecond-fast</strong><span>3.5 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
             <div class="item"><strong>Real data</strong><span>140,547 names from SSA, Census, INSEE, Japan and China.</span></div>
@@ -527,11 +527,11 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
         <p>Tested on held-out test data (10,987 names):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>82.5%</td></tr>
-            <tr><td>Macro F1</td><td>0.699</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.902</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.834</td></tr>
-            <tr><td>Uncertain F1</td><td>0.360</td></tr>
+            <tr><td>Accuracy</td><td>83.1%</td></tr>
+            <tr><td>Macro F1</td><td>0.704</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.903</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.838</td></tr>
+            <tr><td>Uncertain F1</td><td>0.370</td></tr>
             <tr><td>Calibration error</td><td>0.080</td></tr>
         </table>
         <p>Primarily U.S./European training data with growing Asian coverage.
