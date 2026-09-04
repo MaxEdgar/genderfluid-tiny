@@ -1,8 +1,8 @@
 {"name": "minnie", "label": "girl-associated", "weight": 1.0, "girl_count": 179840, "boy_count": 862, "total_records": 180702, "countries": "PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "alice", "label": "girl-associated", "weight": 1.0, "girl_count": 1424758, "boy_count": 2591, "total_records": 1427349, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "alice", "label": "girl-associated", "weight": 1.0, "girl_count": 1423239, "boy_count": 2591, "total_records": 1425830, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "mabel", "label": "girl-associated", "weight": 1.0, "girl_count": 161165, "boy_count": 472, "total_records": 161637, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "julia", "label": "girl-associated", "weight": 1.0, "girl_count": 1490896, "boy_count": 3466, "total_records": 1494362, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
-{"name": "edith", "label": "girl-associated", "weight": 1.0, "girl_count": 531127, "boy_count": 1135, "total_records": 532262, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "julia", "label": "girl-associated", "weight": 1.0, "girl_count": 1490214, "boy_count": 3466, "total_records": 1493680, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
+{"name": "edith", "label": "girl-associated", "weight": 1.0, "girl_count": 530473, "boy_count": 1135, "total_records": 531608, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "mattie", "label": "girl-associated", "weight": 1.0, "girl_count": 160171, "boy_count": 934, "total_records": 161105, "countries": "FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "catherine", "label": "girl-associated", "weight": 1.0, "girl_count": 2254750, "boy_count": 2618, "total_records": 2257368, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "lillian", "label": "girl-associated", "weight": 1.0, "girl_count": 636754, "boy_count": 1999, "total_records": 638753, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
@@ -12,12 +12,12 @@
 {"name": "sadie", "label": "girl-associated", "weight": 1.0, "girl_count": 206682, "boy_count": 369, "total_records": 207051, "countries": "FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "georgia", "label": "girl-associated", "weight": 1.0, "girl_count": 235689, "boy_count": 880, "total_records": 236569, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "amanda", "label": "girl-associated", "weight": 1.0, "girl_count": 1523116, "boy_count": 2755, "total_records": 1525871, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "viola", "label": "girl-associated", "weight": 1.0, "girl_count": 156777, "boy_count": 485, "total_records": 157262, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "viola", "label": "girl-associated", "weight": 1.0, "girl_count": 156448, "boy_count": 485, "total_records": 156933, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "virginia", "label": "girl-associated", "weight": 1.0, "girl_count": 985710, "boy_count": 2311, "total_records": 988021, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "esther", "label": "girl-associated", "weight": 1.0, "girl_count": 516533, "boy_count": 1387, "total_records": 517920, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "sara", "label": "girl-associated", "weight": 1.0, "girl_count": 1107373, "boy_count": 1773, "total_records": 1109146, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "sara", "label": "girl-associated", "weight": 1.0, "girl_count": 1106789, "boy_count": 1773, "total_records": 1108562, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "dorothy", "label": "girl-associated", "weight": 1.0, "girl_count": 1414164, "boy_count": 4061, "total_records": 1418225, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "millie", "label": "girl-associated", "weight": 1.0, "girl_count": 51577, "boy_count": 272, "total_records": 51849, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "millie", "label": "girl-associated", "weight": 1.0, "girl_count": 51188, "boy_count": 272, "total_records": 51460, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "lucinda", "label": "girl-associated", "weight": 1.0, "girl_count": 70311, "boy_count": 41, "total_records": 70352, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "marian", "label": "uncertain", "weight": 1.0, "girl_count": 202487, "boy_count": 141793, "total_records": 344280, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "teresa", "label": "girl-associated", "weight": 1.0, "girl_count": 1248277, "boy_count": 1566, "total_records": 1249843, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
@@ -49,7 +49,7 @@
 {"name": "beryl", "label": "uncertain", "weight": 1.0, "girl_count": 16485, "boy_count": 3181, "total_records": 19666, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "emmer", "label": "girl-associated", "weight": 0.7033, "girl_count": 2375, "boy_count": 70, "total_records": 2445, "countries": "US_CENSUS,US_SSA"}
 {"name": "wanda", "label": "girl-associated", "weight": 1.0, "girl_count": 555000, "boy_count": 1181, "total_records": 556181, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "wilda", "label": "girl-associated", "weight": 1.0, "girl_count": 17310, "boy_count": 32, "total_records": 17342, "countries": "FR_INSEE,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "wilda", "label": "girl-associated", "weight": 1.0, "girl_count": 17205, "boy_count": 32, "total_records": 17237, "countries": "FR_INSEE,US_CENSUS,US_SSA"}
 {"name": "juliet", "label": "girl-associated", "weight": 1.0, "girl_count": 66472, "boy_count": 69, "total_records": 66541, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "ione", "label": "girl-associated", "weight": 1.0, "girl_count": 13171, "boy_count": 252, "total_records": 13423, "countries": "ES_INE,FR_INSEE,US_CENSUS,US_SSA"}
 {"name": "letta", "label": "girl-associated", "weight": 0.5737, "girl_count": 1079, "boy_count": 3, "total_records": 1082, "countries": "PL_PESEL,US_CENSUS,US_SSA"}
@@ -85,14 +85,14 @@
 {"name": "manuela", "label": "girl-associated", "weight": 1.0, "girl_count": 193039, "boy_count": 197, "total_records": 193236, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "mozella", "label": "girl-associated", "weight": 0.6945, "girl_count": 2320, "boy_count": 5, "total_records": 2325, "countries": "US_CENSUS,US_SSA"}
 {"name": "sabra", "label": "girl-associated", "weight": 0.9774, "girl_count": 9111, "boy_count": 14, "total_records": 9125, "countries": "ES_INE,FR_INSEE,US_CENSUS,US_SSA"}
-{"name": "charlie", "label": "uncertain", "weight": 1.0, "girl_count": 106514, "boy_count": 305492, "total_records": 412006, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
-{"name": "benjamin", "label": "boy-associated", "weight": 1.0, "girl_count": 3405, "boy_count": 1852589, "total_records": 1855994, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "charlie", "label": "uncertain", "weight": 1.0, "girl_count": 106514, "boy_count": 304376, "total_records": 410890, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
+{"name": "benjamin", "label": "boy-associated", "weight": 1.0, "girl_count": 3405, "boy_count": 1851843, "total_records": 1855248, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "jim", "label": "boy-associated", "weight": 1.0, "girl_count": 1311, "boy_count": 258238, "total_records": 259549, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "august", "label": "boy-associated", "weight": 1.0, "girl_count": 8775, "boy_count": 81334, "total_records": 90109, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "august", "label": "boy-associated", "weight": 1.0, "girl_count": 8775, "boy_count": 79882, "total_records": 88657, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "leonard", "label": "boy-associated", "weight": 1.0, "girl_count": 2051, "boy_count": 459373, "total_records": 461424, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "horace", "label": "boy-associated", "weight": 1.0, "girl_count": 237, "boy_count": 70838, "total_records": 71075, "countries": "FR_INSEE,US_CENSUS,US_SSA"}
 {"name": "alonzo", "label": "boy-associated", "weight": 1.0, "girl_count": 222, "boy_count": 69761, "total_records": 69983, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "leon", "label": "boy-associated", "weight": 1.0, "girl_count": 1757, "boy_count": 321140, "total_records": 322897, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "leon", "label": "boy-associated", "weight": 1.0, "girl_count": 1757, "boy_count": 319830, "total_records": 321587, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "harold", "label": "boy-associated", "weight": 1.0, "girl_count": 2895, "boy_count": 746404, "total_records": 749299, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "silas", "label": "boy-associated", "weight": 1.0, "girl_count": 302, "boy_count": 99173, "total_records": 99475, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "earnest", "label": "boy-associated", "weight": 1.0, "girl_count": 859, "boy_count": 74716, "total_records": 75575, "countries": "PL_PESEL,US_CENSUS,US_SSA"}
@@ -319,7 +319,7 @@
 {"name": "magie", "label": "girl-associated", "weight": 0.4951, "girl_count": 587, "boy_count": 13, "total_records": 600, "countries": "US_CENSUS,US_SSA"}
 {"name": "noreen", "label": "girl-associated", "weight": 1.0, "girl_count": 37138, "boy_count": 16, "total_records": 37154, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "silva", "label": "girl-associated", "weight": 0.7797, "girl_count": 3498, "boy_count": 197, "total_records": 3695, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "svea", "label": "girl-associated", "weight": 0.6594, "girl_count": 1890, "boy_count": 0, "total_records": 1890, "countries": "FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "svea", "label": "girl-associated", "weight": 0.6225, "girl_count": 1501, "boy_count": 0, "total_records": 1501, "countries": "FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "marko", "label": "boy-associated", "weight": 1.0, "girl_count": 42, "boy_count": 14796, "total_records": 14838, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "omega", "label": "uncertain", "weight": 0.8193, "girl_count": 3361, "boy_count": 1144, "total_records": 4505, "countries": "FR_INSEE,US_CENSUS,US_SSA"}
 {"name": "loie", "label": "girl-associated", "weight": 0.4567, "girl_count": 399, "boy_count": 35, "total_records": 434, "countries": "US_CENSUS,US_SSA"}
@@ -781,7 +781,7 @@
 {"name": "telma", "label": "girl-associated", "weight": 0.8855, "girl_count": 6131, "boy_count": 17, "total_records": 6148, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "vernella", "label": "girl-associated", "weight": 0.2817, "girl_count": 62, "boy_count": 0, "total_records": 62, "countries": "US_SSA"}
 {"name": "rico", "label": "boy-associated", "weight": 1.0, "girl_count": 123, "boy_count": 19230, "total_records": 19353, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
-{"name": "aston", "label": "boy-associated", "weight": 0.8963, "girl_count": 378, "boy_count": 6074, "total_records": 6452, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "aston", "label": "boy-associated", "weight": 0.88, "girl_count": 378, "boy_count": 5617, "total_records": 5995, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "corbit", "label": "boy-associated", "weight": 0.3627, "girl_count": 0, "boy_count": 172, "total_records": 172, "countries": "US_CENSUS,US_SSA"}
 {"name": "grenville", "label": "boy-associated", "weight": 0.236, "girl_count": 0, "boy_count": 30, "total_records": 30, "countries": "US_SSA"}
 {"name": "talton", "label": "boy-associated", "weight": 0.4458, "girl_count": 7, "boy_count": 387, "total_records": 394, "countries": "US_CENSUS,US_SSA"}
@@ -1785,7 +1785,7 @@
 {"name": "vernessia", "label": "girl-associated", "weight": 0.2, "girl_count": 15, "boy_count": 0, "total_records": 15, "countries": "US_SSA"}
 {"name": "ylonda", "label": "girl-associated", "weight": 0.4745, "girl_count": 506, "boy_count": 0, "total_records": 506, "countries": "US_CENSUS,US_SSA"}
 {"name": "donathan", "label": "boy-associated", "weight": 0.5415, "girl_count": 0, "boy_count": 859, "total_records": 859, "countries": "US_CENSUS,US_SSA"}
-{"name": "amir", "label": "boy-associated", "weight": 1.0, "girl_count": 955, "boy_count": 143397, "total_records": 144352, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "amir", "label": "boy-associated", "weight": 1.0, "girl_count": 955, "boy_count": 142979, "total_records": 143934, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "bradrick", "label": "boy-associated", "weight": 0.4409, "girl_count": 6, "boy_count": 371, "total_records": 377, "countries": "US_CENSUS,US_SSA"}
 {"name": "erric", "label": "boy-associated", "weight": 0.5047, "girl_count": 4, "boy_count": 644, "total_records": 648, "countries": "US_CENSUS,US_SSA"}
 {"name": "tondalaya", "label": "girl-associated", "weight": 0.445, "girl_count": 391, "boy_count": 0, "total_records": 391, "countries": "US_CENSUS,US_SSA"}
@@ -2856,7 +2856,7 @@
 {"name": "chasen", "label": "boy-associated", "weight": 0.7682, "girl_count": 37, "boy_count": 3445, "total_records": 3482, "countries": "US_CENSUS,US_SSA"}
 {"name": "damonn", "label": "boy-associated", "weight": 0.219, "girl_count": 0, "boy_count": 22, "total_records": 22, "countries": "US_SSA"}
 {"name": "lamondo", "label": "boy-associated", "weight": 0.1627, "girl_count": 0, "boy_count": 6, "total_records": 6, "countries": "US_SSA"}
-{"name": "luka", "label": "boy-associated", "weight": 1.0, "girl_count": 991, "boy_count": 59671, "total_records": 60662, "countries": "ES_INE,FR_INSEE,PL_PESEL,SE_ISOFF,US_CENSUS,US_SSA"}
+{"name": "luka", "label": "boy-associated", "weight": 1.0, "girl_count": 991, "boy_count": 59425, "total_records": 60416, "countries": "ES_INE,FR_INSEE,PL_PESEL,US_CENSUS,US_SSA"}
 {"name": "broch", "label": "boy-associated", "weight": 0.236, "girl_count": 0, "boy_count": 30, "total_records": 30, "countries": "US_SSA"}
 {"name": "dareck", "label": "boy-associated", "weight": 0.2723, "girl_count": 0, "boy_count": 54, "total_records": 54, "countries": "ES_INE,US_SSA"}
 {"name": "derrius", "label": "boy-associated", "weight": 0.6136, "girl_count": 11, "boy_count": 1406, "total_records": 1417, "countries": "US_CENSUS,US_SSA"}
@@ -14584,7 +14584,6 @@
 {"name": "wendy estefania", "label": "girl-associated", "weight": 0.2141, "girl_count": 20, "boy_count": 0, "total_records": 20, "countries": "ES_INE"}
 {"name": "yaiza dolores", "label": "girl-associated", "weight": 0.2141, "girl_count": 20, "boy_count": 0, "total_records": 20, "countries": "ES_INE"}
 {"name": "yvonne patricia", "label": "girl-associated", "weight": 0.2141, "girl_count": 20, "boy_count": 0, "total_records": 20, "countries": "ES_INE"}
-{"name": "märta", "label": "girl-associated", "weight": 0.4766, "girl_count": 515, "boy_count": 0, "total_records": 515, "countries": "SE_ISOFF"}
 {"name": "mikołaj", "label": "boy-associated", "weight": 1.0, "girl_count": 0, "boy_count": 135118, "total_records": 135118, "countries": "PL_PESEL"}
 {"name": "czesław", "label": "boy-associated", "weight": 1.0, "girl_count": 0, "boy_count": 65077, "total_records": 65077, "countries": "PL_PESEL"}
 {"name": "bronisław", "label": "boy-associated", "weight": 1.0, "girl_count": 0, "boy_count": 21621, "total_records": 21621, "countries": "PL_PESEL"}
