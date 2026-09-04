@@ -336,7 +336,7 @@
         associated with feminine or masculine naming conventions. It outputs
         <code>girl-associated</code>, <code>boy-associated</code>, or <code>uncertain</code>.</p>
         <div class="callout">
-            <strong>186,734 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Spanish INE, Swedish official name lists, Japanese newborn surveys and Chinese government reports (957M births).
+            <strong>204,234 names</strong> trained from U.S. Social Security Administration (1880-2020), Census 2020, French INSEE, Spanish INE, Swedish official name lists, the Polish PESEL register, Japanese newborn surveys and Chinese government reports (1B+ births).
         </div>
     </section>
 
@@ -498,7 +498,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <div class="item"><strong>Millisecond-fast</strong><span>3.5 ms per name on a 2-core CPU.</span></div>
             <div class="item"><strong>CPU only</strong><span>No GPU. No CUDA. Works on old hardware.</span></div>
             <div class="item"><strong>Uncertain category</strong><span>Does not force binary. Ambiguous names get flagged.</span></div>
-            <div class="item"><strong>Real data</strong><span>186,734 names from SSA, Census, INSEE, Spain, Sweden, Japan and China.</span></div>
+            <div class="item"><strong>Real data</strong><span>204,234 names from SSA, Census, INSEE, Spain, Sweden, Poland, Japan and China.</span></div>
             <div class="item"><strong>Unicode support</strong><span>Handles accented characters, hanzi, hyphens, apostrophes.</span></div>
             <div class="item"><strong>Simple API</strong><span>One function call. No complex setup.</span></div>
         </div>
@@ -524,15 +524,15 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
     <!-- ACCURACY -->
     <section id="accuracy">
         <h2>Accuracy</h2>
-        <p>Tested on held-out test data (14,587 names):</p>
+        <p>Tested on held-out test data (15,977 names, none seen in training):</p>
         <table>
             <tr><th>Metric</th><th>Value</th></tr>
-            <tr><td>Accuracy</td><td>85.5%</td></tr>
-            <tr><td>Macro F1</td><td>0.709</td></tr>
-            <tr><td>Girl-associated F1</td><td>0.918</td></tr>
-            <tr><td>Boy-associated F1</td><td>0.873</td></tr>
-            <tr><td>Uncertain F1</td><td>0.335</td></tr>
-            <tr><td>Calibration error</td><td>0.072</td></tr>
+            <tr><td>Accuracy</td><td>85.4%</td></tr>
+            <tr><td>Macro F1</td><td>0.703</td></tr>
+            <tr><td>Girl-associated F1</td><td>0.915</td></tr>
+            <tr><td>Boy-associated F1</td><td>0.875</td></tr>
+            <tr><td>Uncertain F1</td><td>0.318</td></tr>
+            <tr><td>Calibration error</td><td>0.075</td></tr>
         </table>
         <p>Primarily U.S./European training data with growing Asian coverage.
         Accuracy varies by cultural context.</p>
@@ -589,7 +589,7 @@ Output: girl-associated / boy-associated / uncertain</code></pre><button class="
             <li>China Ministry of Public Security name reports: 60 official given names</li>
             <li>Sweden official name statistics (isoF): 224 unique names</li>
         </ul>
-        <p>Combined: 186,734 unique names across all sources.</p>
+        <p>Combined: 204,234 unique names across all sources.</p>
         <p>Names with 85%+ statistical association are labeled
         <code>girl-associated</code> or <code>boy-associated</code>.
         Below that threshold: <code>uncertain</code>.</p>

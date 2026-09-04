@@ -7,6 +7,9 @@
 | U.S. Social Security Administration baby names | United States | 1880-2020, names with 5+ occurrences | Public domain (U.S. government work) |
 | U.S. Census Bureau 2020 first names | United States | 2020, frequently occurring first names by sex | Public domain (U.S. government work) |
 | INSEE "Base prénoms" | France | 1900-2024 | Open License 2.0 (Etalab) |
+| INE name statistics | Spain | Padron, names with 20+ holders | Reuse permitted with attribution |
+| Institute for Language and Folklore | Sweden | Newborn top names 2023-2025 | Published statistics |
+| PESEL register (Ministry of Digitisation) | Poland | Living people's first names, 2024 snapshot | dane.gov.pl open data (CC BY) |
 | Meiji Yasuda Life newborn name survey | Japan | 2025 edition, kanji names labeled male/female/mixed | Public website; survey facts used, no raw counts published |
 | Ministry of Public Security annual name reports | China | 2018-2021, top newborn names by sex (all four published reports) | Official government statistics via state media (People's Daily, China News, Xinhua, China Daily) |
 
@@ -21,11 +24,12 @@
 3. Parses the local Census file.
 4. Downloads the Japan Meiji Yasuda name index and reads the China MPS
    name lists embedded in the fetcher.
-5. Normalizes names and merges per-name counts by sex across all sources.
-6. Labels by statistical association: >=85% of recorded births female ->
+5. Downloads the Spain INE, Sweden isoF and Poland PESEL files.
+6. Normalizes names and merges per-name counts by sex across all sources.
+7. Labels by statistical association: >=85% of recorded births female ->
    `girl-associated`, >=85% male -> `boy-associated`, otherwise `uncertain`.
-7. Weights rows by frequency (names with 10k+ records get full weight).
-8. Splits 80/10/10 partitioned by normalized name, so a name never appears
+8. Weights rows by frequency (names with 10k+ records get full weight).
+9. Splits 80/10/10 partitioned by normalized name, so a name never appears
    in two splits.
 
 Japan and China contribute no raw birth counts (the survey and the reports
